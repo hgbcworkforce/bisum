@@ -1,0 +1,128 @@
+---
+description: Core rules, conventions, and architectural guidelines for the BISUM Conference Website project.
+globs:
+alwaysApply: true
+---
+
+## Project Overview: BISUM Conference Website
+You are an expert full-stack developer working on the BISUM Conference Website codebase.  
+Your primary goal is to build a secure, user-friendly, and scalable platform that supports attendee registration, online payment, and administrative management for the annual conference.  
+Adhere strictly to the rules, patterns, and conventions outlined in this document to ensure code quality, consistency, and maintainability.
+
+## Technology Stack
+The project uses the following technologies. Do not introduce new libraries or frameworks without explicit instruction.
+
+- **Frontend**
+  - React.js (SPA for dynamic UI)
+  - Tailwind CSS (utility-first styling)
+  - Axios (HTTP client for backend API calls)
+  - Formik & Yup (form management & validation)
+
+- **Backend**
+  - Node.js (runtime environment)
+  - Express.js (RESTful API framework)
+  - Mongoose (MongoDB ODM)
+  - Flutterwave SDK (secure payment integration)
+  - Nodemailer (automated email notifications)
+  - dotenv (environment variable management)
+
+- **Database**
+  - MongoDB for attendee and registration data (NoSQL document store for data)
+
+- **Deployment**
+  - Namecheap (cPanel hosting)
+  - cPanel Node.js Selector (backend deployment)
+  - Subdomain (bisum.hgbcglobal.org)
+
+## Architecture & Code Style
+
+- **Directory Structure**
+    ```
+    /conference-website/
+    ├── client/ (React frontend)
+    │   ├── public/          # static assets
+    │   ├── src/
+    │   │   ├── components/  # reusable React components
+    │   │   ├── pages/       # top-level pages (Home, Register, Schedule, etc.)
+    │   │   ├── services/    # Axios API services
+    │   │   ├── App.js
+    │   │   └── index.js
+    │   └── package.json
+    │
+    └── server/ (Node backend)
+        ├── models/          # Mongoose schemas (Attendee.js)
+        ├── routes/          # Express routes (registrationRoutes.js)
+        ├── controllers/     # route handlers
+        ├── config/          # DB and config files
+        ├── .env             # environment variables
+        ├── server.js        # app entry point
+        └── package.json
+    ```
+
+- **Component Design**
+  - Use functional React components with hooks.
+  - Keep components modular, reusable, and styled with Tailwind utility classes.
+  - Separate form logic using Formik + Yup for validation.
+
+- **Naming Conventions**
+  - Components: PascalCase (e.g., `RegisterForm.jsx`)
+  - Files: camelCase for utilities and services (e.g., `apiService.js`)
+  - Backend: use clear suffixes (`registrationController.js`, `attendeeModel.js`).
+
+- **Error Handling**
+  - Backend: wrap async route handlers with try/catch.
+  - Frontend: display user-friendly error messages for API errors, form validation, and payment failures.
+
+- **API Keys & Secrets**
+  - Never hardcode secrets (Flutterwave keys, email credentials).
+  - Store all secrets in `.env` files and access via `process.env`.
+
+## Code Patterns to Follow
+
+- **Registration Workflow**
+  - Use a single-page form (Formik + Yup) for attendee data collection.
+  - Submit form data to backend API via Axios.
+  - Redirect securely to Flutterwave hosted payment page.
+  - On payment success, backend confirms via Flutterwave webhook and sends attendee confirmation email.
+
+- **Payments**
+  - Always process payments via the Flutterwave SDK
+  - Verify payment status with backend callback before confirming registration
+  - Store transaction reference securely in MongoDB
+
+- **Admin Dashboard**
+  - Protected by login/authentication.
+  - Use server-side rendered views (React pages) with API calls for attendee management.
+  - Provide sortable/searchable attendee table with details view and payment breakdown.
+  - Must be behind secure authentication
+  - Use JWT or session-based auth for admin login
+  - Admin can search, filter, and export attendee data
+
+
+- **Frontend-Backend Interaction**
+  - All API communication happens through Axios service functions in `/services`.
+  - Never call backend routes directly in components.
+
+- **Emails**
+  - Use Nodemailer for sending confirmation emails
+  - Include registration details, custom registration number (Bisum/25/reg_id e.g Bisum/25/0003) and receipt in email body.
+  - Use templates for consistent formatting
+
+- **Database Operations**
+  - Use Mongoose schemas for attendees and payments.
+  - Validate inputs at both backend and database schema level.
+
+## Verification Checklist
+Before finalizing your response, verify the following:
+
+- Is the frontend built with React + Tailwind CSS and follows component conventions?
+- Are forms implemented with Formik + Yup for validation?
+- Are all API requests made through Axios service functions?
+- Does the backend use Express routes, controllers, and Mongoose models?
+- Is Flutterwave integrated securely for payments (never storing card details directly)?
+- Are payments processed only via Flutterwave SDK with verification logic?
+- Are all secrets managed with environment variables (`.env`), and never hardcoded?
+- Is the admin dashboard protected with authentication?
+- Is attendee and payment data stored and retrievable from MongoDB correctly?
+- Does the project follow the defined `/client` and `/server` structure?
+- Is the project following the context of project-plan.txt file?
