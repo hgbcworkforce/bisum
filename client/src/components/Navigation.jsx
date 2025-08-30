@@ -12,9 +12,9 @@ const Navigation = ({ onNavigate }) => {
     {
       id: "register",
       label: "Register",
-      path: "#register",
+      path: "/register",
       isCTA: true,
-      isRoute: false,
+      isRoute: true,
     },
   ];
 
