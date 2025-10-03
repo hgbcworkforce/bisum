@@ -97,6 +97,8 @@ First Name
 Last Name
 Email Address (must be unique)
 Phone Number
+Age Range (dropdown: Under 18, 18–24, 25–34, 35–44, 45+)
+Attendance Type (radio options: In-Person, Virtual)
 How you heard about Bisum (e.g Church, Flyer, social media, friend’s recommendation, etc)
 Employment status (e.g., Student, working class, business owner)
 Expectations for the conference
