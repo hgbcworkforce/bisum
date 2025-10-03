@@ -233,6 +233,8 @@ const Speakers = () => {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
       />
+
+      <Footer />
     </div>
   );
 };

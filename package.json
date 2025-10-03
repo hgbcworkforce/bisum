@@ -1,0 +1,47 @@
+{
+  "name": "bisum-conference",
+  "version": "1.0.0",
+  "description": "BISUM Technology Conference - Modern conference management system built with React and Supabase",
+  "private": true,
+  "scripts": {
+    "dev": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "preview": "cd client && npm run preview",
+    "lint": "cd client && npm run lint",
+    "install-client": "cd client && npm install",
+    "setup": "npm run install-client",
+    "test-supabase": "node migrate-to-supabase.js test-connection",
+    "test-schema": "node migrate-to-supabase.js test-schema",
+    "create-sample-data": "node migrate-to-supabase.js create-sample-data",
+    "verify-setup": "node migrate-to-supabase.js verify-setup",
+    "clean": "cd client && rm -rf node_modules dist",
+    "postinstall": "npm run setup"
+  },
+  "keywords": [
+    "conference",
+    "registration",
+    "payment",
+    "supabase",
+    "react",
+    "flutterwave",
+    "real-time",
+    "management"
+  ],
+  "author": "BISUM Conference Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/bisum-conference.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/bisum-conference/issues"
+  },
+  "homepage": "https://github.com/your-username/bisum-conference#readme",
+  "workspaces": [
+    "client"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}

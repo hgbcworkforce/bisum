@@ -1,54 +1,83 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DashboardLayout from "../../components/admin/DashboardLayout";
+import {
+  registrationAPI,
+  paymentAPI,
+  handleApiError,
+  formatCurrency,
+} from "../../services/supabaseService";
 
 const AdminDashboard = () => {
-  const [stats] = useState({
-    totalAttendees: 245,
-    totalRevenue: 3675000, // in Naira
-    pendingPayments: 23,
-    confirmedSpeakers: 8,
+  const [stats, setStats] = useState({
+    totalAttendees: 0,
+    totalRevenue: 0,
+    pendingPayments: 0,
+    completedPayments: 0,
+    successRate: 0,
   });
 
-  const [recentRegistrations] = useState([
-    {
-      id: 1,
-      name: "John Doe",
-      email: "john@example.com",
-      registeredAt: "2025-01-15 10:30 AM",
-      paymentStatus: "paid",
-      attendanceType: "in-person",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      email: "jane@example.com",
-      registeredAt: "2025-01-15 09:45 AM",
-      paymentStatus: "pending",
-      attendanceType: "virtual",
-    },
-    {
-      id: 3,
-      name: "Michael Johnson",
-      email: "michael@example.com",
-      registeredAt: "2025-01-15 08:20 AM",
-      paymentStatus: "paid",
-      attendanceType: "in-person",
-    },
-    {
-      id: 4,
-      name: "Sarah Wilson",
-      email: "sarah@example.com",
-      registeredAt: "2025-01-14 16:15 PM",
-      paymentStatus: "paid",
-      attendanceType: "virtual",
-    },
-  ]);
+  const [recentRegistrations, setRecentRegistrations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("en-NG", {
-      style: "currency",
-      currency: "NGN",
-    }).format(amount);
+  // Fetch dashboard data on component mount
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Fetch registration stats
+      const registrationStatsResult = await registrationAPI.getStats();
+
+      // Fetch payment stats
+      const paymentStatsResult = await paymentAPI.getStats();
+
+      // Fetch recent attendees
+      const recentAttendeesResult = await registrationAPI.getAllAttendees({
+        page: 1,
+        limit: 5,
+        sortBy: "created_at",
+        sortOrder: "desc",
+      });
+
+      if (registrationStatsResult.success && paymentStatsResult.success) {
+        const regStats = registrationStatsResult.data;
+        const payStats = paymentStatsResult.data;
+
+        setStats({
+          totalAttendees: regStats.totalRegistrations || 0,
+          totalRevenue: payStats.successfulAmount || 0,
+          pendingPayments: regStats.pendingPayments || 0,
+          completedPayments: regStats.completedPayments || 0,
+          successRate: parseFloat(payStats.successRate || 0),
+          byType: regStats.byType || {},
+        });
+      }
+
+      if (recentAttendeesResult.success) {
+        setRecentRegistrations(recentAttendeesResult.data || []);
+      }
+    } catch (error) {
+      console.error("Dashboard data fetch error:", error);
+      const errorInfo = handleApiError(error);
+      setError(errorInfo.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleString("en-NG", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   const getPaymentStatusBadge = (status) => {
