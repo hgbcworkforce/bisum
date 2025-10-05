@@ -14,12 +14,10 @@ const Registration = () => {
     lastName: "",
     email: "",
     phoneNumber: "",
-    organization: "",
-    position: "",
     registrationType: "professional",
-    dietaryRestrictions: "",
-    specialNeeds: "",
-    sessionPreferences: [],
+    referralSource: "",
+    breakoutSessionChoice: "",
+    expectations: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -107,34 +105,24 @@ const Registration = () => {
 
     if (!formData.phoneNumber.trim()) {
       newErrors.phoneNumber = "Phone number is required";
-    } else if (
-      !/^(\+234|0)[789][01]\d{8}$/.test(formData.phoneNumber.replace(/\s/g, ""))
-    ) {
-      newErrors.phoneNumber = "Please enter a valid Nigerian phone number";
+    } else {
+      // Remove all non-digit characters for validation
+      const digitsOnly = formData.phoneNumber.replace(/\D/g, "");
+      if (digitsOnly.length < 10 || digitsOnly.length > 15) {
+        newErrors.phoneNumber = "Please enter a valid phone number (10-15 digits)";
+      }
     }
 
-    if (!formData.organization.trim()) {
-      newErrors.organization = "Organization is required";
-    } else if (formData.organization.trim().length > 100) {
-      newErrors.organization = "Organization name cannot exceed 100 characters";
+    if (!formData.referralSource) {
+      newErrors.referralSource = "Referral source is required";
+    }
+
+    if (!formData.breakoutSessionChoice) {
+      newErrors.breakoutSessionChoice = "Breakout session choice is required";
     }
 
     if (!formData.registrationType) {
       newErrors.registrationType = "Please select a registration type";
-    }
-
-    // Validate dietary restrictions length
-    if (
-      formData.dietaryRestrictions &&
-      formData.dietaryRestrictions.length > 200
-    ) {
-      newErrors.dietaryRestrictions =
-        "Dietary restrictions cannot exceed 200 characters";
-    }
-
-    // Validate special needs length
-    if (formData.specialNeeds && formData.specialNeeds.length > 200) {
-      newErrors.specialNeeds = "Special needs cannot exceed 200 characters";
     }
 
     setErrors(newErrors);
@@ -159,7 +147,18 @@ const Registration = () => {
 
     try {
       // Register attendee
-      const registrationResult = await registrationAPI.register(formData);
+      const registrationData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phoneNumber: formData.phoneNumber,
+        registrationType: formData.registrationType,
+        referralSource: formData.referralSource,
+        breakoutSessionChoice: formData.breakoutSessionChoice,
+        expectations: formData.expectations,
+      };
+
+      const registrationResult = await registrationAPI.register(registrationData);
 
       if (registrationResult.success) {
         setAttendeeData(registrationResult.data);
@@ -513,65 +512,8 @@ const Registration = () => {
                         </p>
                       )}
                       <p className="mt-1 text-sm text-gray-500">
-                        Nigerian phone number format
+                        Include country code for international numbers.
                       </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Professional Information */}
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                    Professional Information
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {/* Organization */}
-                    <div>
-                      <label
-                        htmlFor="organization"
-                        className="block text-sm font-medium text-gray-700 mb-2"
-                      >
-                        Organization/Company *
-                      </label>
-                      <input
-                        type="text"
-                        name="organization"
-                        id="organization"
-                        value={formData.organization}
-                        onChange={handleInputChange}
-                        className={`block w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                          errors.organization
-                            ? "border-red-300 bg-red-50"
-                            : "border-gray-300"
-                        }`}
-                        placeholder="Your organization or company"
-                        maxLength="100"
-                      />
-                      {errors.organization && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {errors.organization}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Position */}
-                    <div>
-                      <label
-                        htmlFor="position"
-                        className="block text-sm font-medium text-gray-700 mb-2"
-                      >
-                        Position/Title
-                      </label>
-                      <input
-                        type="text"
-                        name="position"
-                        id="position"
-                        value={formData.position}
-                        onChange={handleInputChange}
-                        className="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Your job title or position"
-                        maxLength="100"
-                      />
                     </div>
                   </div>
                 </div>
@@ -609,108 +551,84 @@ const Registration = () => {
                   </div>
                 </div>
 
-                {/* Session Preferences */}
+                {/* Referral Source */}
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                    Session Preferences (Optional)
+                    How did you hear about us? *
                   </h3>
-                  <p className="text-gray-600 mb-4">
-                    Select the sessions you're most interested in attending:
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {sessionOptions.map((session) => (
-                      <div key={session} className="flex items-center">
-                        <input
-                          id={session}
-                          name="sessionPreferences"
-                          type="checkbox"
-                          value={session}
-                          checked={formData.sessionPreferences.includes(
-                            session,
-                          )}
-                          onChange={handleInputChange}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
-                        <label
-                          htmlFor={session}
-                          className="ml-3 block text-sm text-gray-700"
-                        >
-                          {session}
-                        </label>
-                      </div>
-                    ))}
+                  <div>
+                    <select
+                      id="referralSource"
+                      name="referralSource"
+                      value={formData.referralSource}
+                      onChange={handleInputChange}
+                      className={`block w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.referralSource
+                        ? "border-red-300 bg-red-50"
+                        : "border-gray-300"
+                        }`}
+                    >
+                      <option value="">Select an option</option>
+                      <option value="church">Church</option>
+                      <option value="instagram">Instagram</option>
+                      <option value="recommendation_from_friend">Recommendation from a friend</option>
+                      <option value="whatsapp">WhatsApp</option>
+                      <option value="facebook">Facebook</option>
+                      <option value="flyer">Flyer</option>
+                    </select>
+                    {errors.referralSource && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.referralSource}
+                      </p>
+                    )}
                   </div>
                 </div>
 
-                {/* Additional Information */}
+                {/* Breakout Session Choice */}
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                    Additional Information (Optional)
+                    Breakout Session Choice *
                   </h3>
-                  <div className="space-y-6">
-                    {/* Dietary Restrictions */}
-                    <div>
-                      <label
-                        htmlFor="dietaryRestrictions"
-                        className="block text-sm font-medium text-gray-700 mb-2"
-                      >
-                        Dietary Restrictions or Allergies
-                      </label>
-                      <textarea
-                        name="dietaryRestrictions"
-                        id="dietaryRestrictions"
-                        rows={3}
-                        value={formData.dietaryRestrictions}
-                        onChange={handleInputChange}
-                        className={`block w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                          errors.dietaryRestrictions
-                            ? "border-red-300 bg-red-50"
-                            : "border-gray-300"
+                  <div>
+                    <select
+                      id="breakoutSessionChoice"
+                      name="breakoutSessionChoice"
+                      value={formData.breakoutSessionChoice}
+                      onChange={handleInputChange}
+                      className={`block w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.breakoutSessionChoice
+                        ? "border-red-300 bg-red-50"
+                        : "border-gray-300"
                         }`}
-                        placeholder="Please specify any dietary restrictions or food allergies..."
-                        maxLength="200"
-                      />
-                      {errors.dietaryRestrictions && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {errors.dietaryRestrictions}
-                        </p>
-                      )}
-                      <p className="mt-1 text-sm text-gray-500">
-                        {formData.dietaryRestrictions.length}/200 characters
+                    >
+                      <option value="">Select an option</option>
+                      <option value="investment">Investment</option>
+                      <option value="tech">Tech</option>
+                      <option value="fashion">Fashion</option>
+                      <option value="agriculture">Agriculture</option>
+                      <option value="foods">Foods</option>
+                    </select>
+                    {errors.breakoutSessionChoice && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.breakoutSessionChoice}
                       </p>
-                    </div>
+                    )}
+                  </div>
+                </div>
 
-                    {/* Special Needs */}
-                    <div>
-                      <label
-                        htmlFor="specialNeeds"
-                        className="block text-sm font-medium text-gray-700 mb-2"
-                      >
-                        Special Accessibility Needs
-                      </label>
-                      <textarea
-                        name="specialNeeds"
-                        id="specialNeeds"
-                        rows={3}
-                        value={formData.specialNeeds}
-                        onChange={handleInputChange}
-                        className={`block w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                          errors.specialNeeds
-                            ? "border-red-300 bg-red-50"
-                            : "border-gray-300"
-                        }`}
-                        placeholder="Please describe any special accessibility requirements..."
-                        maxLength="200"
-                      />
-                      {errors.specialNeeds && (
-                        <p className="mt-1 text-sm text-red-600">
-                          {errors.specialNeeds}
-                        </p>
-                      )}
-                      <p className="mt-1 text-sm text-gray-500">
-                        {formData.specialNeeds.length}/200 characters
-                      </p>
-                    </div>
+                {/* Expectations */}
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                    Expectations (Optional)
+                  </h3>
+                  <div>
+                    <textarea
+                      id="expectations"
+                      name="expectations"
+                      value={formData.expectations}
+                      onChange={handleInputChange}
+                      rows={3}
+                      className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                      placeholder="What do you hope to gain from the conference?"
+                    />
                   </div>
                 </div>
 
@@ -748,7 +666,7 @@ const Registration = () => {
                     className={`w-full flex justify-center items-center px-8 py-4 border border-transparent text-lg font-semibold rounded-lg text-white transition-all duration-200 ${
                       isSubmitting
                         ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                        : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform cursor-pointer shadow-lg hover:shadow-xl"
                     }`}
                   >
                     {isSubmitting ? (
