@@ -303,14 +303,32 @@ export const deleteAttendee = async (id) => {
 // Get registration statistics
 export const getRegistrationStats = async () => {
   try {
-    // Get total registrations
+    // Get all necessary fields
     const { data: allAttendees, error: allError } = await supabase
       .from(TABLES.ATTENDEES)
-      .select('registration_type, payment_status, status')
+      .select('registration_type, payment_status, status, breakout_session_choice');
 
-    if (allError) throw allError
+    if (allError) throw allError;
 
-    // Calculate statistics
+    // Calculate breakout session popularity
+    const sessionCounts = allAttendees.reduce((acc, attendee) => {
+      const choice = attendee.breakout_session_choice;
+      if (choice) {
+        acc[choice] = (acc[choice] || 0) + 1;
+      }
+      return acc;
+    }, {});
+
+    let popularSession = { name: 'N/A', count: 0 };
+    if (Object.keys(sessionCounts).length > 0) {
+      const mostPopular = Object.entries(sessionCounts).sort((a, b) => b[1] - a[1])[0];
+      popularSession = {
+        name: mostPopular[0],
+        count: mostPopular[1],
+      };
+    }
+
+    // Calculate other statistics
     const stats = {
       totalRegistrations: allAttendees.length,
       activeRegistrations: allAttendees.filter(a => a.status === ATTENDEE_STATUS.ACTIVE).length,
@@ -322,26 +340,27 @@ export const getRegistrationStats = async () => {
         professional: allAttendees.filter(a => a.registration_type === REGISTRATION_TYPES.PROFESSIONAL).length,
         speaker: allAttendees.filter(a => a.registration_type === REGISTRATION_TYPES.SPEAKER).length,
         sponsor: allAttendees.filter(a => a.registration_type === REGISTRATION_TYPES.SPONSOR).length
-      }
-    }
+      },
+      popularSession: popularSession, // Add the new stat here
+    };
 
     // Calculate conversion rate
     stats.paymentCompletionRate = stats.totalRegistrations > 0
       ? ((stats.completedPayments / stats.totalRegistrations) * 100).toFixed(2)
-      : 0
+      : 0;
 
     return {
       success: true,
-      data: stats
-    }
+      data: stats,
+    };
   } catch (error) {
-    console.error('Error fetching registration stats:', error)
+    console.error('Error fetching registration stats:', error);
     return {
       success: false,
-      error: handleSupabaseError(error)
-    }
+      error: handleSupabaseError(error),
+    };
   }
-}
+};
 
 // Check if email is already registered
 export const checkEmailExists = async (email) => {

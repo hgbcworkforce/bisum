@@ -11,9 +11,8 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState({
     totalAttendees: 0,
     totalRevenue: 0,
-    pendingPayments: 0,
-    completedPayments: 0,
-    successRate: 0,
+    byType: {},
+    popularSession: { name: 'N/A', count: 0 },
   });
 
   const [recentRegistrations, setRecentRegistrations] = useState([]);
@@ -51,10 +50,8 @@ const AdminDashboard = () => {
         setStats({
           totalAttendees: regStats.totalRegistrations || 0,
           totalRevenue: payStats.successfulAmount || 0,
-          pendingPayments: regStats.pendingPayments || 0,
-          completedPayments: regStats.completedPayments || 0,
-          successRate: parseFloat(payStats.successRate || 0),
           byType: regStats.byType || {},
+          popularSession: regStats.popularSession || { name: 'N/A', count: 0 },
         });
       }
 
@@ -83,7 +80,7 @@ const AdminDashboard = () => {
   const getPaymentStatusBadge = (status) => {
     const baseClasses = "px-2 py-1 text-xs font-medium rounded-full";
     switch (status) {
-      case "paid":
+      case "completed":
         return `${baseClasses} bg-green-100 text-green-800`;
       case "pending":
         return `${baseClasses} bg-yellow-100 text-yellow-800`;
@@ -95,11 +92,11 @@ const AdminDashboard = () => {
   };
 
   const getAttendanceTypeBadge = (type) => {
-    const baseClasses = "px-2 py-1 text-xs font-medium rounded-full";
+    const baseClasses = "px-2 py-1 text-xs font-medium rounded-full capitalize";
     switch (type) {
-      case "in-person":
+      case "student":
         return `${baseClasses} bg-blue-100 text-blue-800`;
-      case "virtual":
+      case "professional":
         return `${baseClasses} bg-purple-100 text-purple-800`;
       default:
         return `${baseClasses} bg-gray-100 text-gray-800`;
@@ -146,24 +143,6 @@ const AdminDashboard = () => {
                 </p>
               </div>
             </div>
-            <div className="mt-4">
-              <div className="flex items-center text-sm text-green-600">
-                <svg
-                  className="w-4 h-4 mr-1"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                  />
-                </svg>
-                +12% from last week
-              </div>
-            </div>
           </div>
 
           {/* Total Revenue */}
@@ -193,27 +172,9 @@ const AdminDashboard = () => {
                 </p>
               </div>
             </div>
-            <div className="mt-4">
-              <div className="flex items-center text-sm text-green-600">
-                <svg
-                  className="w-4 h-4 mr-1"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                  />
-                </svg>
-                +8% from last month
-              </div>
-            </div>
           </div>
 
-          {/* Pending Payments */}
+          {/* Registration Breakdown */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center">
               <div className="p-3 bg-yellow-100 rounded-lg">
@@ -227,40 +188,22 @@ const AdminDashboard = () => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                   />
                 </svg>
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">
-                  Pending Payments
+                  By Type
                 </p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {stats.pendingPayments}
+                <p className="text-lg font-bold text-gray-900">
+                  {stats.byType.professional || 0} Prof. / {stats.byType.student || 0} Student
                 </p>
-              </div>
-            </div>
-            <div className="mt-4">
-              <div className="flex items-center text-sm text-yellow-600">
-                <svg
-                  className="w-4 h-4 mr-1"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"
-                  />
-                </svg>
-                Requires attention
               </div>
             </div>
           </div>
 
-          {/* Confirmed Speakers */}
+          {/* Most Popular Session */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center">
               <div className="p-3 bg-purple-100 rounded-lg">
@@ -274,35 +217,17 @@ const AdminDashboard = () => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
                   />
                 </svg>
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">
-                  Confirmed Speakers
+                  Popular Session
                 </p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {stats.confirmedSpeakers}
+                <p className="text-lg font-bold text-gray-900 capitalize">
+                  {stats.popularSession.name} ({stats.popularSession.count})
                 </p>
-              </div>
-            </div>
-            <div className="mt-4">
-              <div className="flex items-center text-sm text-green-600">
-                <svg
-                  className="w-4 h-4 mr-1"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                All speakers confirmed
               </div>
             </div>
           </div>
@@ -344,7 +269,7 @@ const AdminDashboard = () => {
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-900">
-                          {registration.name}
+                          {registration.firstName} {registration.lastName}
                         </p>
                         <p className="text-sm text-gray-500">
                           {registration.email}
@@ -353,7 +278,7 @@ const AdminDashboard = () => {
                     </div>
                     <div className="text-right">
                       <p className="text-xs text-gray-500">
-                        {registration.registeredAt}
+                        {formatDate(registration.createdAt)}
                       </p>
                       <div className="flex items-center space-x-2 mt-1">
                         <span
@@ -365,10 +290,10 @@ const AdminDashboard = () => {
                         </span>
                         <span
                           className={getAttendanceTypeBadge(
-                            registration.attendanceType,
+                            registration.registrationType,
                           )}
                         >
-                          {registration.attendanceType}
+                          {registration.registrationType}
                         </span>
                       </div>
                     </div>
