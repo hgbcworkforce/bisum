@@ -219,9 +219,12 @@ const Speakers = () => {
                 Register now to secure your spot and learn from the best minds
                 in technology
               </p>
-              <button className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+
+              <a
+                href="/register"
+                className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
                 Register for BISUM 2025
-              </button>
+              </a>
             </div>
           </div>
         </section>

@@ -4,12 +4,12 @@
 export const speakersData = [
   {
     id: 1,
-    name: "Dr. Sarah Okafor",
+    name: "Pastor Samson Ayangoke",
     title: "AI Research Director",
     company: "University of Lagos",
     bio: "Dr. Sarah Okafor is a leading AI researcher with over 15 years of experience in machine learning and artificial intelligence. She has published over 50 research papers and leads groundbreaking research in AI applications for African contexts, focusing on healthcare and education solutions.\n\nHer work has been recognized internationally, and she serves on the editorial boards of several top-tier AI journals. She is passionate about making AI accessible and beneficial for developing nations.",
     image:
-      "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+    "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
     expertise: [
       "Artificial Intelligence",
       "Machine Learning",
@@ -17,7 +17,7 @@ export const speakersData = [
       "Education Technology",
     ],
     category: "keynote",
-    featured: true,
+
     experience:
       "15+ years in AI research, former Microsoft Research scientist, founded 3 AI startups",
     achievements: [
@@ -55,7 +55,7 @@ export const speakersData = [
       "Web3",
     ],
     category: "keynote",
-    featured: true,
+
     experience:
       "12+ years in blockchain development, architect of 3 major blockchain platforms",
     achievements: [
@@ -80,7 +80,7 @@ export const speakersData = [
   },
   {
     id: 3,
-    name: "Dr. Jennifer Green",
+    name: "Mr. Sayi Ajamu",
     title: "Environmental Tech Researcher",
     company: "GreenTech Innovation Labs",
     bio: "Dr. Jennifer Green specializes in developing sustainable technology solutions and has led multiple green tech initiatives. Her research focuses on renewable energy systems, sustainable manufacturing, and environmental impact assessment of emerging technologies.\n\nShe has been instrumental in developing policies for sustainable tech adoption across Africa and serves as an advisor to several governments on environmental technology.",
@@ -94,7 +94,7 @@ export const speakersData = [
       "Renewable Systems",
     ],
     category: "keynote",
-    featured: true,
+
     experience:
       "18+ years in environmental technology, former UN Environmental Programme advisor",
     achievements: [
@@ -130,7 +130,7 @@ export const speakersData = [
       "UI/UX Design",
       "App Architecture",
     ],
-    category: "workshop",
+    category: "breakout",
     experience:
       "8+ years in mobile development, led teams at 3 successful startups",
     achievements: [
@@ -140,9 +140,9 @@ export const speakersData = [
       "Speaker at 20+ mobile development conferences",
     ],
     session: {
-      title: "Workshop: Building Your First Mobile App",
+      title: "breakout: Building Your First Mobile App",
       time: "1:30 PM - 3:00 PM",
-      venue: "Workshop Room A",
+      venue: "breakout Room A",
     },
     social: {
       linkedin: "https://linkedin.com/in/amanda-rodriguez-mobile",
@@ -193,7 +193,7 @@ export const speakersData = [
     company: "SecureTech Institute",
     bio: "Professor Anderson is a world-renowned cybersecurity expert with expertise in threat detection, network security, and privacy protection. She has developed security frameworks used by major corporations and government agencies worldwide.\n\nHer research has been published in top security journals, and she regularly consults for international organizations on cybersecurity policy and best practices.",
     image:
-      "https://images.unsplash.com/photo-1580894742444-42a597a51854?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+    "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
     expertise: [
       "Cybersecurity",
       "Network Security",
@@ -201,7 +201,7 @@ export const speakersData = [
       "Threat Detection",
       "Security Architecture",
     ],
-    category: "workshop",
+    category: "breakout",
     experience:
       "20+ years in cybersecurity, former NSA researcher, founded 2 security startups",
     achievements: [
@@ -211,9 +211,9 @@ export const speakersData = [
       "Testified before Congress on cybersecurity policy",
     ],
     session: {
-      title: "Workshop: Essential Cybersecurity for Modern Businesses",
+      title: "breakout: Essential Cybersecurity for Modern Businesses",
       time: "2:00 PM - 3:30 PM",
-      venue: "Workshop Room B",
+      venue: "breakout Room B",
     },
     social: {
       linkedin: "https://linkedin.com/in/lisa-anderson-security",
@@ -222,73 +222,14 @@ export const speakersData = [
     quote:
       "Security is not a product, but a process. It's about building a culture of awareness and preparedness.",
   },
-  {
-    id: 7,
-    name: "James Kim",
-    title: "DevOps Engineering Manager",
-    company: "CloudScale Technologies",
-    bio: "James is a DevOps expert who has helped organizations scale their infrastructure from startups to enterprise level. He specializes in cloud architecture, containerization, and CI/CD pipeline optimization.\n\nHe has led digital transformation initiatives at several Fortune 500 companies and is a certified expert in AWS, Azure, and Google Cloud platforms.",
-    image:
-      "https://images.unsplash.com/photo-1622463267620-1e0e0d3c0aaf?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-    expertise: [
-      "DevOps",
-      "Cloud Architecture",
-      "Kubernetes",
-      "CI/CD",
-      "Infrastructure Automation",
-    ],
-    category: "technical",
-    experience:
-      "12+ years in DevOps, led infrastructure teams at Netflix and Spotify",
-    achievements: [
-      "Reduced deployment times by 90% across multiple organizations",
-      "Built infrastructure serving 100M+ users daily",
-      "Created open-source tools used by 10k+ developers",
-      "AWS, Azure, and GCP certified solution architect",
-    ],
-    social: {
-      linkedin: "https://linkedin.com/in/james-kim-devops",
-      twitter: "https://twitter.com/jameskimdevops",
-    },
-  },
-  {
-    id: 8,
-    name: "Dr. Rachel Thompson",
-    title: "Data Science Director",
-    company: "DataInsights Corp",
-    bio: "Dr. Thompson is a data science leader with expertise in machine learning, big data analytics, and statistical modeling. She has helped organizations leverage data to make better business decisions and has built predictive models for various industries including healthcare, finance, and retail.\n\nShe holds a PhD in Statistics from Stanford University and has been recognized as one of the top data scientists under 40.",
-    image:
-      "https://images.unsplash.com/photo-1593104547489-5cfb3839a3b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-    expertise: [
-      "Data Science",
-      "Machine Learning",
-      "Big Data",
-      "Statistical Analysis",
-      "Predictive Modeling",
-    ],
-    category: "technical",
-    experience:
-      "14+ years in data science, former Google and Facebook data scientist",
-    achievements: [
-      "Built ML models processing 1TB+ data daily",
-      "Led data science teams of 50+ people",
-      "Published research cited 1000+ times",
-      "Created data science curriculum for 3 universities",
-    ],
-    social: {
-      linkedin: "https://linkedin.com/in/rachel-thompson-data",
-      website: "https://rachelthompsondata.com",
-    },
-  },
 ];
 
 // Available speaker categories for filtering
 export const speakerCategories = [
   "all",
   "keynote",
-  "workshop",
+  "breakout",
   "panel",
-  "technical",
 ];
 
 // Helper function to get featured speakers

@@ -1,184 +1,68 @@
-import { useState, useMemo, useEffect } from "react";
-import { Navigation } from "../../components";
+import { useState, useEffect, useCallback } from "react";
+import DashboardLayout from '../../components/admin/DashboardLayout';
+import { paymentAPI, handleApiError, formatCurrency } from '../../services/supabaseService';
 
 const AdminPaymentSummary = () => {
-  const [paymentData, setPaymentData] = useState([]);
+  const [payments, setPayments] = useState([]);
+  const [totalAmount, setTotalAmount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0 });
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortField, setSortField] = useState("date");
+  const [filterStatus, setFilterStatus] = useState("all"); // ADDED: Missing state
+  const [sortField, setSortField] = useState("created_at");
   const [sortDirection, setSortDirection] = useState("desc");
-  const [filterCategory, setFilterCategory] = useState("all");
-  const [filterPaymentMethod, setFilterPaymentMethod] = useState("all");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [dateFilter, setDateFilter] = useState("all");
 
-  // Mock data for development - replace with API call
   useEffect(() => {
-    const fetchPaymentData = async () => {
-      try {
-        setLoading(true);
-        // TODO: Replace with actual API call
-        // const response = await fetch('/api/admin/payments');
-        // const data = await response.json();
+    calculateTotalAmount();
+  }, [payments]);
 
-        // Mock data for now
-        const mockData = [
-          {
-            id: "m5gr84i9",
-            attendeeName: "John Doe",
-            email: "john.doe@email.com",
-            registrationNumber: "BISUM/2025/0001",
-            amount: 50000,
-            category: "Registration",
-            paymentMethod: "Flutterwave",
-            transactionRef: "FLW-MOCK-123456789",
-            status: "completed",
-            date: "2024-01-15T10:30:00Z",
-          },
-          {
-            id: "3u1reuv4",
-            attendeeName: "Jane Smith",
-            email: "jane.smith@email.com",
-            registrationNumber: "BISUM/2025/0002",
-            amount: 50000,
-            category: "Registration",
-            paymentMethod: "Flutterwave",
-            transactionRef: "FLW-MOCK-987654321",
-            status: "completed",
-            date: "2024-01-16T14:00:00Z",
-          },
-          {
-            id: "derv1ws0",
-            attendeeName: "Michael Johnson",
-            email: "michael.j@email.com",
-            registrationNumber: "BISUM/2025/0003",
-            amount: 50000,
-            category: "Registration",
-            paymentMethod: "Flutterwave",
-            transactionRef: "FLW-MOCK-456789123",
-            status: "completed",
-            date: "2024-01-17T11:20:00Z",
-          },
-          {
-            id: "5kma53ae",
-            attendeeName: "Emily Davis",
-            email: "emily.davis@email.com",
-            registrationNumber: "BISUM/2025/0004",
-            amount: 50000,
-            category: "Registration",
-            paymentMethod: "Flutterwave",
-            transactionRef: "FLW-MOCK-789123456",
-            status: "completed",
-            date: "2024-02-01T09:00:00Z",
-          },
-          {
-            id: "bhqecj4p",
-            attendeeName: "Sarah Wilson",
-            email: "sarah.w@email.com",
-            registrationNumber: "BISUM/2025/0005",
-            amount: 50000,
-            category: "Registration",
-            paymentMethod: "Flutterwave",
-            transactionRef: "FLW-MOCK-321654987",
-            status: "pending",
-            date: "2024-02-02T15:45:00Z",
-          },
-        ];
+  const fetchPayments = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        setPaymentData(mockData);
-        setLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch payment data:", error);
-        setError("Failed to fetch payment data");
-        setLoading(false);
+      const options = {
+        page: pagination.page,
+        limit: pagination.limit,
+        search: searchTerm,
+        status: filterStatus !== "all" ? filterStatus : undefined, // ADDED: Pass status filter
+        sortBy: sortField,
+        sortOrder: sortDirection,
+        dateFilter: dateFilter,
+      };
+
+      const result = await paymentAPI.getAllPayments(options);
+
+      if (result.success) {
+        setPayments(result.data || []);
+        setPagination(prev => ({ ...prev, total: result.pagination.total }));
+      } else {
+        throw new Error(result.message || 'Failed to fetch payments');
       }
-    };
+    } catch (err) {
+      const errorInfo = handleApiError(err);
+      setError(errorInfo.message);
+      console.error('Payment fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [pagination.page, pagination.limit, searchTerm, filterStatus, sortField, sortDirection, dateFilter]);
 
-    fetchPaymentData();
-  }, []);
+  useEffect(() => {
+    fetchPayments();
+  }, [fetchPayments]);
 
-  // Format currency
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("en-NG", {
-      style: "currency",
-      currency: "NGN",
-    }).format(amount);
+  const calculateTotalAmount = () => {
+    const total = payments.reduce((acc, payment) => acc + (payment.amount || 0), 0);
+    setTotalAmount(total);
   };
 
-  // Format date
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-NG", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+  const handlePageChange = (newPage) => {
+    setPagination(prev => ({ ...prev, page: newPage }));
   };
 
-  // Filter and sort data
-  const filteredAndSortedData = useMemo(() => {
-    let filtered = paymentData.filter((payment) => {
-      const matchesSearch =
-        payment.attendeeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        payment.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        payment.registrationNumber
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        payment.transactionRef.toLowerCase().includes(searchTerm.toLowerCase());
-
-      const matchesCategory =
-        filterCategory === "all" || payment.category === filterCategory;
-      const matchesPaymentMethod =
-        filterPaymentMethod === "all" ||
-        payment.paymentMethod === filterPaymentMethod;
-
-      return matchesSearch && matchesCategory && matchesPaymentMethod;
-    });
-
-    // Sort data
-    filtered.sort((a, b) => {
-      let aValue = a[sortField];
-      let bValue = b[sortField];
-
-      if (sortField === "amount") {
-        aValue = Number(aValue);
-        bValue = Number(bValue);
-      } else if (sortField === "date") {
-        aValue = new Date(aValue);
-        bValue = new Date(bValue);
-      } else {
-        aValue = String(aValue).toLowerCase();
-        bValue = String(bValue).toLowerCase();
-      }
-
-      if (sortDirection === "asc") {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
-    });
-
-    return filtered;
-  }, [
-    paymentData,
-    searchTerm,
-    sortField,
-    sortDirection,
-    filterCategory,
-    filterPaymentMethod,
-  ]);
-
-  // Pagination
-  const totalPages = Math.ceil(filteredAndSortedData.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedData = filteredAndSortedData.slice(
-    startIndex,
-    startIndex + itemsPerPage,
-  );
-
-  // Handle sort
   const handleSort = (field) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -188,98 +72,34 @@ const AdminPaymentSummary = () => {
     }
   };
 
-  // Calculate summary statistics
-  const summaryStats = useMemo(() => {
-    const completedPayments = paymentData.filter(
-      (p) => p.status === "completed",
-    );
-    const pendingPayments = paymentData.filter((p) => p.status === "pending");
-    const totalRevenue = completedPayments.reduce(
-      (sum, p) => sum + p.amount,
-      0,
-    );
-
-    return {
-      totalPayments: paymentData.length,
-      completedPayments: completedPayments.length,
-      pendingPayments: pendingPayments.length,
-      totalRevenue,
-      averagePayment:
-        completedPayments.length > 0
-          ? totalRevenue / completedPayments.length
-          : 0,
-    };
-  }, [paymentData]);
-
-  // Export data
-  const exportToCSV = () => {
-    const headers = [
-      "Registration Number",
-      "Attendee Name",
-      "Email",
-      "Amount",
-      "Category",
-      "Payment Method",
-      "Transaction Ref",
-      "Status",
-      "Date",
-    ];
-    const csvData = [
-      headers,
-      ...filteredAndSortedData.map((payment) => [
-        payment.registrationNumber,
-        payment.attendeeName,
-        payment.email,
-        payment.amount,
-        payment.category,
-        payment.paymentMethod,
-        payment.transactionRef,
-        payment.status,
-        formatDate(payment.date),
-      ]),
-    ];
-
-    const csvContent = csvData.map((row) => row.join(",")).join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `bisum-payments-${new Date().toISOString().split("T")[0]}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleString('en-NG', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Navigation />
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Navigation />
-        <div className="container mx-auto px-4 py-8">
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-            <p>Error: {error}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const getStatusBadge = (status) => {
+    const baseClasses = 'inline-flex px-2 py-1 text-xs font-semibold rounded-full capitalize';
+    switch (status) {
+      case 'completed':
+        return `${baseClasses} bg-green-100 text-green-800`;
+      case 'pending':
+        return `${baseClasses} bg-yellow-100 text-yellow-800`;
+      case 'failed':
+        return `${baseClasses} bg-red-100 text-red-800`;
+      default:
+        return `${baseClasses} bg-gray-100 text-gray-800`;
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-
-      <div className="container mx-auto px-4 py-8">
+    <DashboardLayout>
+      <div className="space-y-6">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -290,41 +110,10 @@ const AdminPaymentSummary = () => {
           </p>
         </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-sm font-medium text-gray-500 mb-2">
-              Total Payments
-            </h3>
-            <p className="text-3xl font-bold text-gray-900">
-              {summaryStats.totalPayments}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-sm font-medium text-gray-500 mb-2">
-              Completed
-            </h3>
-            <p className="text-3xl font-bold text-green-600">
-              {summaryStats.completedPayments}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-sm font-medium text-gray-500 mb-2">Pending</h3>
-            <p className="text-3xl font-bold text-yellow-600">
-              {summaryStats.pendingPayments}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-sm font-medium text-gray-500 mb-2">
-              Total Revenue
-            </h3>
-            <p className="text-3xl font-bold text-blue-600">
-              {formatCurrency(summaryStats.totalRevenue)}
-            </p>
-          </div>
+        {/* Summary Card */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="text-sm text-gray-600 mb-1">Total Amount</div>
+          <div className="text-3xl font-bold text-gray-900">{formatCurrency(totalAmount)}</div>
         </div>
 
         {/* Filters and Search */}
@@ -336,7 +125,7 @@ const AdminPaymentSummary = () => {
               </label>
               <input
                 type="text"
-                placeholder="Search by name, email, registration number, or transaction ref..."
+                placeholder="Search by ref, name, email, or reg number..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -345,47 +134,54 @@ const AdminPaymentSummary = () => {
 
             <div className="w-48">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Category
+                Status
               </label>
               <select
-                value={filterCategory}
-                onChange={(e) => setFilterCategory(e.target.value)}
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="all">All Categories</option>
-                <option value="Registration">Registration</option>
-                <option value="Workshop">Workshop</option>
-                <option value="Merchandise">Merchandise</option>
-              </select>
-            </div>
-
-            <div className="w-48">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Payment Method
-              </label>
-              <select
-                value={filterPaymentMethod}
-                onChange={(e) => setFilterPaymentMethod(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="all">All Methods</option>
-                <option value="Flutterwave">Flutterwave</option>
-                <option value="PayPal">PayPal</option>
-                <option value="Stripe">Stripe</option>
+                <option value="all">All Status</option>
+                <option value="completed">Completed</option>
+                <option value="pending">Pending</option>
+                <option value="failed">Failed</option>
               </select>
             </div>
           </div>
 
-          <div className="flex justify-between items-center">
-            <p className="text-sm text-gray-600">
-              Showing {paginatedData.length} of {filteredAndSortedData.length}{" "}
-              payments
-            </p>
+          {/* Date Filter Buttons */}
+          <div className="flex space-x-2">
             <button
-              onClick={exportToCSV}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+              onClick={() => setDateFilter("day")}
+              className={`px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                dateFilter === "day" ? "bg-blue-600 text-white" : "bg-blue-500 text-white hover:bg-blue-700"
+              }`}
             >
-              Export CSV
+              Day
+            </button>
+            <button
+              onClick={() => setDateFilter("week")}
+              className={`px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                dateFilter === "week" ? "bg-blue-600 text-white" : "bg-blue-500 text-white hover:bg-blue-700"
+              }`}
+            >
+              Week
+            </button>
+            <button
+              onClick={() => setDateFilter("month")}
+              className={`px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                dateFilter === "month" ? "bg-blue-600 text-white" : "bg-blue-500 text-white hover:bg-blue-700"
+              }`}
+            >
+              Month
+            </button>
+            <button
+              onClick={() => setDateFilter("all")}
+              className={`px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 ${
+                dateFilter === "all" ? "bg-gray-400 text-gray-900" : "bg-gray-300 text-gray-700 hover:bg-gray-400"
+              }`}
+            >
+              All
             </button>
           </div>
         </div>
@@ -398,210 +194,115 @@ const AdminPaymentSummary = () => {
                 <tr>
                   <th
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleSort("registrationNumber")}
-                  >
-                    Registration #
-                    {sortField === "registrationNumber" && (
-                      <span className="ml-1">
-                        {sortDirection === "asc" ? "↑" : "↓"}
-                      </span>
-                    )}
-                  </th>
-                  <th
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleSort("attendeeName")}
+                    onClick={() => handleSort("attendees.registration_number")}
                   >
                     Attendee
-                    {sortField === "attendeeName" && (
-                      <span className="ml-1">
-                        {sortDirection === "asc" ? "↑" : "↓"}
-                      </span>
-                    )}
                   </th>
                   <th
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                     onClick={() => handleSort("amount")}
                   >
                     Amount
-                    {sortField === "amount" && (
-                      <span className="ml-1">
-                        {sortDirection === "asc" ? "↑" : "↓"}
-                      </span>
-                    )}
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Payment Method
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Transaction Ref
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Transaction Ref
+                  </th>
                   <th
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleSort("date")}
+                    onClick={() => handleSort("created_at")}
                   >
                     Date
-                    {sortField === "date" && (
-                      <span className="ml-1">
-                        {sortDirection === "asc" ? "↑" : "↓"}
-                      </span>
-                    )}
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {paginatedData.map((payment) => (
-                  <tr key={payment.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {payment.registrationNumber}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        {payment.attendeeName}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {payment.email}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {formatCurrency(payment.amount)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {payment.paymentMethod}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">
-                      {payment.transactionRef}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          payment.status === "completed"
-                            ? "bg-green-100 text-green-800"
-                            : payment.status === "pending"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {payment.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate(payment.date)}
+                {loading ? (
+                  <tr>
+                    <td colSpan="5" className="text-center py-12">
+                      <div className="text-gray-500">Loading payments...</div>
                     </td>
                   </tr>
-                ))}
+                ) : error ? (
+                  <tr>
+                    <td colSpan="5" className="text-center py-12">
+                      <div className="text-red-500">{error}</div>
+                      <button
+                        onClick={fetchPayments}
+                        className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                      >
+                        Retry
+                      </button>
+                    </td>
+                  </tr>
+                ) : payments.length > 0 ? (
+                  payments.map((payment) => (
+                    <tr key={payment.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">
+                          {payment.attendees?.first_name} {payment.attendees?.last_name}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {payment.attendees?.registration_number || 'N/A'}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {formatCurrency(payment.amount)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={getStatusBadge(payment.status)}>
+                          {payment.status || 'pending'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">
+                        {payment.transaction_ref || 'N/A'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {formatDate(payment.created_at)}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="text-center py-12">
+                      <div className="text-gray-500">No payments found.</div>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
 
           {/* Pagination */}
-          {totalPages > 1 && (
+          {pagination.total > 0 && (
             <div className="bg-white px-6 py-3 border-t border-gray-200 flex items-center justify-between">
-              <div className="flex-1 flex justify-between sm:hidden">
+              <div className="text-sm text-gray-700">
+                Showing <span className="font-medium">{(pagination.page - 1) * pagination.limit + 1}</span> to <span className="font-medium">{Math.min(pagination.page * pagination.limit, pagination.total)}</span> of{' '}
+                <span className="font-medium">{pagination.total}</span> results
+              </div>
+              <div className="flex items-center space-x-2">
                 <button
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => handlePageChange(pagination.page - 1)}
+                  disabled={pagination.page === 1}
+                  className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Previous
                 </button>
                 <button
-                  onClick={() =>
-                    setCurrentPage(Math.min(totalPages, currentPage + 1))
-                  }
-                  disabled={currentPage === totalPages}
-                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => handlePageChange(pagination.page + 1)}
+                  disabled={pagination.page * pagination.limit >= pagination.total}
+                  className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Next
                 </button>
-              </div>
-              <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm text-gray-700">
-                    Showing{" "}
-                    <span className="font-medium">{startIndex + 1}</span> to{" "}
-                    <span className="font-medium">
-                      {Math.min(
-                        startIndex + itemsPerPage,
-                        filteredAndSortedData.length,
-                      )}
-                    </span>{" "}
-                    of{" "}
-                    <span className="font-medium">
-                      {filteredAndSortedData.length}
-                    </span>{" "}
-                    results
-                  </p>
-                </div>
-                <div>
-                  <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                    <button
-                      onClick={() =>
-                        setCurrentPage(Math.max(1, currentPage - 1))
-                      }
-                      disabled={currentPage === 1}
-                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <span className="sr-only">Previous</span>
-                      <svg
-                        className="h-5 w-5"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                      (page) => (
-                        <button
-                          key={page}
-                          onClick={() => setCurrentPage(page)}
-                          className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                            currentPage === page
-                              ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
-                              : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
-                          }`}
-                        >
-                          {page}
-                        </button>
-                      ),
-                    )}
-
-                    <button
-                      onClick={() =>
-                        setCurrentPage(Math.min(totalPages, currentPage + 1))
-                      }
-                      disabled={currentPage === totalPages}
-                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <span className="sr-only">Next</span>
-                      <svg
-                        className="h-5 w-5"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                  </nav>
-                </div>
               </div>
             </div>
           )}
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 
