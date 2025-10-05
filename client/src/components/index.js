@@ -9,3 +9,5 @@ export { default as ScheduleItem } from "./ScheduleItem";
 export { default as ScheduleList } from "./ScheduleList";
 export { default as SpeakerCard } from "./SpeakerCard";
 export { default as SpeakerModal } from "./SpeakerModal";
+export { default as RegistrationFormFields } from "./RegistrationFormFields";
+export { default as PaymentMethodSelector } from "./PaymentMethodSelector";

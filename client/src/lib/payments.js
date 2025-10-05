@@ -13,9 +13,10 @@ export const createPayment = async (paymentData) => {
       status: PAYMENT_STATUS.PENDING,
       payment_method: paymentData.paymentMethod,
       payment_channel: paymentData.paymentChannel,
-      flutterwave_response: paymentData.flutterwaveResponse || {},
-      metadata: paymentData.metadata || {},
-      initiated_at: new Date().toISOString(),
+      flutterwave_response: {
+        ...paymentData.flutterwaveResponse,
+        ...paymentData.metadata
+      } || {},
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     }
@@ -57,8 +58,7 @@ export const getPaymentById = async (id) => {
           first_name,
           last_name,
           email,
-          registration_number,
-          organization
+          registration_number
         )
       `)
       .eq('id', id)
@@ -93,8 +93,7 @@ export const getPaymentByTransactionRef = async (transactionRef) => {
           first_name,
           last_name,
           email,
-          registration_number,
-          organization
+          registration_number
         )
       `)
       .eq('transaction_ref', transactionRef)
@@ -129,8 +128,7 @@ export const getPaymentByFlutterwaveId = async (flutterwaveTransactionId) => {
           first_name,
           last_name,
           email,
-          registration_number,
-          organization
+          registration_number
         )
       `)
       .eq('flutterwave_transaction_id', flutterwaveTransactionId)
@@ -202,8 +200,7 @@ export const getPayments = async (options = {}) => {
           first_name,
           last_name,
           email,
-          registration_number,
-          organization
+          registration_number
         )
       `, { count: 'exact' })
 
@@ -442,8 +439,7 @@ export const getPaymentsByDateRange = async (startDate, endDate) => {
           first_name,
           last_name,
           email,
-          registration_number,
-          organization
+          registration_number
         )
       `)
       .gte('paid_at', startDate)
@@ -499,9 +495,9 @@ export const processFlutterwaveWebhook = async (webhookData) => {
       default:
         // Update payment with webhook data for other events
         return await updatePayment(payment.id, {
-          flutterwave_response: eventData,
-          metadata: {
-            ...payment.metadata,
+          flutterwave_response: {
+            ...payment.flutterwave_response,
+            ...eventData,
             last_webhook_event: event,
             last_webhook_time: new Date().toISOString()
           }
@@ -568,14 +564,13 @@ export const exportPaymentsToCSV = async () => {
         status,
         payment_method,
         payment_channel,
-        initiated_at,
+        created_at,
         paid_at,
         attendees (
           registration_number,
           first_name,
           last_name,
-          email,
-          organization
+          email
         )
       `)
       .order('paid_at', { ascending: false })
@@ -593,12 +588,11 @@ export const exportPaymentsToCSV = async () => {
       status: payment.status,
       payment_method: payment.payment_method,
       payment_channel: payment.payment_channel,
-      initiated_at: payment.initiated_at,
+      created_at: payment.created_at,
       paid_at: payment.paid_at,
       attendee_registration_number: payment.attendees?.registration_number,
       attendee_name: `${payment.attendees?.first_name} ${payment.attendees?.last_name}`,
-      attendee_email: payment.attendees?.email,
-      attendee_organization: payment.attendees?.organization
+      attendee_email: payment.attendees?.email
     }))
 
     return {

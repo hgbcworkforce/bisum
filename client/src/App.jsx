@@ -8,6 +8,8 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminAttendees from "./pages/admin/AdminAttendees";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminPaymentSummary from "./pages/admin/AdminPaymentSummary";
+import PaymentSuccess from './pages/PaymentSuccess';
+import AdminAuth from "./pages/admin/AdminAuth";
 import "./App.css";
 
 function App() {
@@ -19,8 +21,10 @@ function App() {
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/speakers" element={<Speakers />} />
           <Route path="/register" element={<Registration />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment/callback" element={<PaymentCallback />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/auth" element={<AdminAuth />} />
           <Route path="/admin/attendees" element={<AdminAttendees />} />
           <Route path="/admin/settings" element={<AdminSettings />} />
           <Route path="/admin/payments" element={<AdminPaymentSummary />} />

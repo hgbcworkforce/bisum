@@ -3,27 +3,13 @@ import { supabase, TABLES, handleSupabaseError, generateRegistrationNumber, REGI
 // Create a new attendee registration
 export const createAttendee = async (attendeeData) => {
   try {
-    // Generate registration number
-    const registrationNumber = await generateRegistrationNumber()
-
-    // Prepare attendee data
+    // Data is already transformed by supabaseService, so use it directly
     const newAttendee = {
-      first_name: attendeeData.firstName,
-      last_name: attendeeData.lastName,
+      ...attendeeData,
       email: attendeeData.email.toLowerCase().trim(),
       phone: attendeeData.phone.trim(),
-      organization: attendeeData.organization.trim(),
-      position: attendeeData.position?.trim() || null,
-      registration_number: registrationNumber,
-      registration_type: attendeeData.registrationType,
       payment_status: 'pending',
-      dietary_restrictions: attendeeData.dietaryRestrictions?.trim() || null,
-      special_needs: attendeeData.specialNeeds?.trim() || null,
-      session_preferences: attendeeData.sessionPreferences || [],
-      status: ATTENDEE_STATUS.ACTIVE,
-      registration_date: new Date().toISOString(),
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      status: ATTENDEE_STATUS.ACTIVE
     }
 
     const { data, error } = await supabase
@@ -162,7 +148,7 @@ export const getAttendees = async (options = {}) => {
     // Apply filters
     if (search) {
       query = query.or(
-        `first_name.ilike.%${search}%,last_name.ilike.%${search}%,email.ilike.%${search}%,organization.ilike.%${search}%,registration_number.ilike.%${search}%`
+        `first_name.ilike.%${search}%,last_name.ilike.%${search}%,email.ilike.%${search}%,registration_number.ilike.%${search}%`
       )
     }
 
@@ -414,14 +400,13 @@ export const exportAttendeesToCSV = async () => {
         last_name,
         email,
         phone,
-        organization,
-        position,
         registration_type,
         payment_status,
         status,
-        registration_date,
-        dietary_restrictions,
-        special_needs
+        expectations,
+        referral_source,
+        breakout_session_choice,
+        registration_date
       `)
       .order('registration_date', { ascending: false })
 

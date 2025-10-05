@@ -1,13 +1,16 @@
--- BISUM Conference Database Schema for Supabase
--- This script creates the necessary tables and policies for the conference registration system
+-- BISUM Conference Management System Database Schema
+-- Updated with new registration form fields
+-- Version: 2.0
 
--- Enable necessary extensions
+-- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Create custom types
 CREATE TYPE registration_type AS ENUM ('student', 'professional', 'speaker', 'sponsor');
 CREATE TYPE payment_status AS ENUM ('pending', 'completed', 'failed', 'cancelled');
 CREATE TYPE attendee_status AS ENUM ('active', 'cancelled', 'refunded');
+CREATE TYPE referral_source AS ENUM ('church', 'instagram', 'recommendation_from_friend', 'whatsapp', 'facebook', 'flyer');
+CREATE TYPE breakout_session_choice AS ENUM ('investment', 'tech', 'fashion', 'agriculture', 'foods');
 
 -- Create attendees table
 CREATE TABLE IF NOT EXISTS attendees (
@@ -19,10 +22,6 @@ CREATE TABLE IF NOT EXISTS attendees (
     email VARCHAR(255) NOT NULL UNIQUE CHECK (email ~* '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
     phone VARCHAR(20) NOT NULL CHECK (phone ~ '^\+?[0-9\s\-\(\)]{10,20}$'),
 
-    -- Organization Information
-    organization VARCHAR(100) NOT NULL CHECK (LENGTH(TRIM(organization)) > 0),
-    position VARCHAR(100),
-
     -- Registration Details
     registration_number VARCHAR(50) NOT NULL UNIQUE,
     registration_type registration_type NOT NULL,
@@ -31,10 +30,10 @@ CREATE TABLE IF NOT EXISTS attendees (
     -- Payment Status
     payment_status payment_status NOT NULL DEFAULT 'pending',
 
-    -- Additional Information
-    dietary_restrictions TEXT,
-    special_needs TEXT,
-    session_preferences TEXT[] DEFAULT '{}',
+    -- New Registration Form Fields
+    expectations TEXT,
+    referral_source referral_source NOT NULL,
+    breakout_session_choice breakout_session_choice NOT NULL,
 
     -- Status
     status attendee_status NOT NULL DEFAULT 'active',
@@ -69,54 +68,45 @@ CREATE TABLE IF NOT EXISTS payments (
     -- Flutterwave Response Data
     flutterwave_response JSONB NOT NULL DEFAULT '{}',
 
-    -- Timestamps
-    initiated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    -- Payment Timestamps
     paid_at TIMESTAMPTZ,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-
-    -- Additional Information
-    metadata JSONB DEFAULT '{}',
-
-    -- Error Information (if payment failed)
-    error_message TEXT,
-    error_code VARCHAR(50)
-);
-
--- Create sessions table (for conference sessions)
-CREATE TABLE IF NOT EXISTS sessions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    title VARCHAR(200) NOT NULL,
-    description TEXT,
-    speaker_name VARCHAR(100),
-    speaker_bio TEXT,
-    session_date DATE NOT NULL,
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
-    venue VARCHAR(100),
-    capacity INTEGER CHECK (capacity > 0),
-    category VARCHAR(50),
-    is_keynote BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Create session_registrations table (for tracking who's attending which sessions)
+-- Create sessions table for conference sessions
+CREATE TABLE IF NOT EXISTS sessions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title VARCHAR(200) NOT NULL,
+    description TEXT,
+    speaker VARCHAR(100),
+    start_time TIMESTAMPTZ NOT NULL,
+    end_time TIMESTAMPTZ NOT NULL,
+    venue VARCHAR(100),
+    max_capacity INTEGER DEFAULT NULL,
+    session_type VARCHAR(50) DEFAULT 'general',
+    status VARCHAR(20) DEFAULT 'scheduled',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Create session registrations table
 CREATE TABLE IF NOT EXISTS session_registrations (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     attendee_id UUID NOT NULL REFERENCES attendees(id) ON DELETE CASCADE,
     session_id UUID NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
     registered_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    status VARCHAR(20) DEFAULT 'registered',
+
     UNIQUE(attendee_id, session_id)
 );
 
--- Create admins table for dashboard access
+-- Create admins table for admin access
 CREATE TABLE IF NOT EXISTS admins (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     email VARCHAR(255) NOT NULL UNIQUE,
     full_name VARCHAR(100) NOT NULL,
-    role VARCHAR(50) NOT NULL DEFAULT 'admin',
-    is_active BOOLEAN DEFAULT TRUE,
+    role VARCHAR(50) DEFAULT 'admin',
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -127,21 +117,22 @@ CREATE INDEX IF NOT EXISTS idx_attendees_registration_number ON attendees(regist
 CREATE INDEX IF NOT EXISTS idx_attendees_payment_status ON attendees(payment_status);
 CREATE INDEX IF NOT EXISTS idx_attendees_registration_type ON attendees(registration_type);
 CREATE INDEX IF NOT EXISTS idx_attendees_created_at ON attendees(created_at);
+CREATE INDEX IF NOT EXISTS idx_attendees_referral_source ON attendees(referral_source);
+CREATE INDEX IF NOT EXISTS idx_attendees_breakout_session ON attendees(breakout_session_choice);
 
 CREATE INDEX IF NOT EXISTS idx_payments_transaction_ref ON payments(transaction_ref);
 CREATE INDEX IF NOT EXISTS idx_payments_flutterwave_id ON payments(flutterwave_transaction_id);
 CREATE INDEX IF NOT EXISTS idx_payments_attendee_id ON payments(attendee_id);
 CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status);
-CREATE INDEX IF NOT EXISTS idx_payments_paid_at ON payments(paid_at);
 CREATE INDEX IF NOT EXISTS idx_payments_created_at ON payments(created_at);
 
-CREATE INDEX IF NOT EXISTS idx_sessions_date ON sessions(session_date);
-CREATE INDEX IF NOT EXISTS idx_sessions_category ON sessions(category);
+CREATE INDEX IF NOT EXISTS idx_sessions_start_time ON sessions(start_time);
+CREATE INDEX IF NOT EXISTS idx_sessions_status ON sessions(status);
 
 CREATE INDEX IF NOT EXISTS idx_session_registrations_attendee ON session_registrations(attendee_id);
 CREATE INDEX IF NOT EXISTS idx_session_registrations_session ON session_registrations(session_id);
 
--- Create functions for automatic timestamp updates
+-- Create triggers for updated_at timestamps
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -150,7 +141,6 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
--- Create triggers for updated_at
 CREATE TRIGGER update_attendees_updated_at BEFORE UPDATE ON attendees
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
@@ -163,39 +153,29 @@ CREATE TRIGGER update_sessions_updated_at BEFORE UPDATE ON sessions
 CREATE TRIGGER update_admins_updated_at BEFORE UPDATE ON admins
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- Function to generate registration number
+-- Function to generate registration numbers
 CREATE OR REPLACE FUNCTION generate_registration_number()
-RETURNS TRIGGER AS $$
+RETURNS VARCHAR(50) AS $$
 DECLARE
-    year_part TEXT;
-    count_part TEXT;
-    attendee_count INTEGER;
+    reg_number VARCHAR(50);
+    counter INTEGER;
+    year_suffix VARCHAR(4);
 BEGIN
-    -- Get current year
-    year_part := EXTRACT(YEAR FROM NOW())::TEXT;
+    year_suffix := EXTRACT(YEAR FROM NOW())::VARCHAR;
 
-    -- Get count of existing attendees
-    SELECT COUNT(*) + 1 INTO attendee_count FROM attendees;
+    -- Get the count of existing registrations for this year
+    SELECT COUNT(*) + 1 INTO counter
+    FROM attendees
+    WHERE registration_number LIKE 'BISUM' || year_suffix || '%';
 
-    -- Format count with leading zeros
-    count_part := LPAD(attendee_count::TEXT, 4, '0');
+    -- Format as BISUM2025001, BISUM2025002, etc.
+    reg_number := 'BISUM' || year_suffix || LPAD(counter::VARCHAR, 3, '0');
 
-    -- Generate registration number
-    NEW.registration_number := 'BISUM/' || year_part || '/' || count_part;
-
-    RETURN NEW;
+    RETURN reg_number;
 END;
-$$ language 'plpgsql';
+$$ LANGUAGE plpgsql;
 
--- Create trigger for auto-generating registration numbers
-CREATE TRIGGER generate_attendee_registration_number
-    BEFORE INSERT ON attendees
-    FOR EACH ROW
-    WHEN (NEW.registration_number IS NULL OR NEW.registration_number = '')
-    EXECUTE FUNCTION generate_registration_number();
-
--- Row Level Security (RLS) Policies
--- Enable RLS on all tables
+-- Enable Row Level Security
 ALTER TABLE attendees ENABLE ROW LEVEL SECURITY;
 ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sessions ENABLE ROW LEVEL SECURITY;
@@ -208,31 +188,19 @@ CREATE POLICY "Allow public registration" ON attendees FOR INSERT WITH CHECK (tr
 
 -- Allow attendees to view their own data
 CREATE POLICY "Attendees can view own data" ON attendees FOR SELECT
-    USING (email = auth.jwt() ->> 'email');
+    USING (auth.jwt() ->> 'email' = email);
 
 -- Allow attendees to update their own data
 CREATE POLICY "Attendees can update own data" ON attendees FOR UPDATE
-    USING (email = auth.jwt() ->> 'email');
+    USING (auth.jwt() ->> 'email' = email);
 
--- Allow admins to view all attendees
+-- Allow specific admin emails to view all attendees (replace with your admin email)
 CREATE POLICY "Admins can view all attendees" ON attendees FOR SELECT
-    USING (
-        EXISTS (
-            SELECT 1 FROM admins
-            WHERE email = auth.jwt() ->> 'email'
-            AND is_active = true
-        )
-    );
+    USING (auth.jwt() ->> 'email' = 'admin@bisumconference.org');
 
--- Allow admins to update all attendees
-CREATE POLICY "Admins can update all attendees" ON attendees FOR UPDATE
-    USING (
-        EXISTS (
-            SELECT 1 FROM admins
-            WHERE email = auth.jwt() ->> 'email'
-            AND is_active = true
-        )
-    );
+-- Allow specific admin emails to manage all attendees
+CREATE POLICY "Admins can manage all attendees" ON attendees FOR ALL
+    USING (auth.jwt() ->> 'email' = 'admin@bisumconference.org');
 
 -- Policies for payments table
 -- Allow public to insert (for payment creation)
@@ -248,41 +216,23 @@ CREATE POLICY "Attendees can view own payments" ON payments FOR SELECT
         )
     );
 
--- Allow admins to view all payments
-CREATE POLICY "Admins can view all payments" ON payments FOR SELECT
-    USING (
-        EXISTS (
-            SELECT 1 FROM admins
-            WHERE email = auth.jwt() ->> 'email'
-            AND is_active = true
-        )
-    );
+-- Allow admin to view all payments
+CREATE POLICY "Admins can view all payments" ON payments FOR ALL
+    USING (auth.jwt() ->> 'email' = 'admin@bisumconference.org');
 
--- Allow admins to update payments
-CREATE POLICY "Admins can update payments" ON payments FOR UPDATE
-    USING (
-        EXISTS (
-            SELECT 1 FROM admins
-            WHERE email = auth.jwt() ->> 'email'
-            AND is_active = true
-        )
-    );
+-- Allow admin to manage all payments
+CREATE POLICY "Admins can manage all payments" ON payments FOR ALL
+    USING (auth.jwt() ->> 'email' = 'admin@bisumconference.org');
 
 -- Policies for sessions table
 -- Allow public to view sessions
-CREATE POLICY "Allow public to view sessions" ON sessions FOR SELECT WITH CHECK (true);
+CREATE POLICY "Allow public to view sessions" ON sessions FOR SELECT USING (true);
 
--- Allow admins to manage sessions
+-- Allow admin to manage sessions
 CREATE POLICY "Admins can manage sessions" ON sessions FOR ALL
-    USING (
-        EXISTS (
-            SELECT 1 FROM admins
-            WHERE email = auth.jwt() ->> 'email'
-            AND is_active = true
-        )
-    );
+    USING (auth.jwt() ->> 'email' = 'admin@bisumconference.org');
 
--- Policies for session_registrations table
+-- Policies for session registrations
 -- Allow attendees to register for sessions
 CREATE POLICY "Attendees can register for sessions" ON session_registrations FOR INSERT
     WITH CHECK (
@@ -293,8 +243,8 @@ CREATE POLICY "Attendees can register for sessions" ON session_registrations FOR
         )
     );
 
--- Allow attendees to view their session registrations
-CREATE POLICY "Attendees can view own session registrations" ON session_registrations FOR SELECT
+-- Allow attendees to view their registrations
+CREATE POLICY "Attendees can view own registrations" ON session_registrations FOR SELECT
     USING (
         EXISTS (
             SELECT 1 FROM attendees
@@ -303,25 +253,26 @@ CREATE POLICY "Attendees can view own session registrations" ON session_registra
         )
     );
 
--- Allow admins to view all session registrations
-CREATE POLICY "Admins can view all session registrations" ON session_registrations FOR ALL
+-- Allow attendees to cancel their registrations
+CREATE POLICY "Attendees can cancel own registrations" ON session_registrations FOR DELETE
     USING (
         EXISTS (
-            SELECT 1 FROM admins
-            WHERE email = auth.jwt() ->> 'email'
-            AND is_active = true
+            SELECT 1 FROM attendees
+            WHERE attendees.id = session_registrations.attendee_id
+            AND attendees.email = auth.jwt() ->> 'email'
         )
     );
 
--- Policies for admins table
--- Only admins can view admin table
-CREATE POLICY "Admins can view admin table" ON admins FOR SELECT
-    USING (
-        email = auth.jwt() ->> 'email'
-        AND is_active = true
-    );
+-- Allow admin to manage all session registrations
+CREATE POLICY "Admins can manage all session registrations" ON session_registrations FOR ALL
+    USING (auth.jwt() ->> 'email' = 'admin@bisumconference.org');
 
--- Create views for commonly used data
+-- Policies for admins table
+-- Allow authenticated users to view admins if they are in the admin table
+CREATE POLICY "Admins can view other admins" ON admins FOR SELECT
+    USING (auth.jwt() ->> 'email' = email);
+
+-- Create useful views
 CREATE OR REPLACE VIEW attendee_summary AS
 SELECT
     a.id,
@@ -329,12 +280,13 @@ SELECT
     a.first_name || ' ' || a.last_name AS full_name,
     a.email,
     a.phone,
-    a.organization,
-    a.position,
     a.registration_type,
     a.payment_status,
     a.status,
     a.registration_date,
+    a.expectations,
+    a.referral_source,
+    a.breakout_session_choice,
     p.amount AS paid_amount,
     p.paid_at,
     CASE
@@ -346,96 +298,39 @@ SELECT
 FROM attendees a
 LEFT JOIN payments p ON a.id = p.attendee_id AND p.status = 'completed';
 
--- Create view for payment statistics
-CREATE OR REPLACE VIEW payment_statistics AS
+-- Create registration statistics view
+CREATE OR REPLACE VIEW registration_stats AS
 SELECT
-    COUNT(*) AS total_payments,
-    SUM(amount) AS total_amount,
-    COUNT(*) FILTER (WHERE status = 'completed') AS successful_payments,
-    SUM(amount) FILTER (WHERE status = 'completed') AS successful_amount,
-    COUNT(*) FILTER (WHERE status = 'pending') AS pending_payments,
-    COUNT(*) FILTER (WHERE status = 'failed') AS failed_payments,
-    ROUND(
-        (COUNT(*) FILTER (WHERE status = 'completed')::DECIMAL / COUNT(*)) * 100, 2
-    ) AS success_rate_percentage
-FROM payments;
-
--- Create view for registration statistics
-CREATE OR REPLACE VIEW registration_statistics AS
-SELECT
-    COUNT(*) AS total_registrations,
-    COUNT(*) FILTER (WHERE status = 'active') AS active_registrations,
-    COUNT(*) FILTER (WHERE payment_status = 'completed') AS completed_payments,
-    COUNT(*) FILTER (WHERE payment_status = 'pending') AS pending_payments,
-    COUNT(*) FILTER (WHERE registration_type = 'student') AS student_registrations,
-    COUNT(*) FILTER (WHERE registration_type = 'professional') AS professional_registrations,
-    COUNT(*) FILTER (WHERE registration_type = 'speaker') AS speaker_registrations,
-    COUNT(*) FILTER (WHERE registration_type = 'sponsor') AS sponsor_registrations,
-    ROUND(
-        (COUNT(*) FILTER (WHERE payment_status = 'completed')::DECIMAL / COUNT(*)) * 100, 2
-    ) AS payment_completion_rate
+    COUNT(*) as total_registrations,
+    COUNT(CASE WHEN payment_status = 'completed' THEN 1 END) as completed_payments,
+    COUNT(CASE WHEN payment_status = 'pending' THEN 1 END) as pending_payments,
+    COUNT(CASE WHEN payment_status = 'failed' THEN 1 END) as failed_payments,
+    COUNT(CASE WHEN registration_type = 'student' THEN 1 END) as student_count,
+    COUNT(CASE WHEN registration_type = 'professional' THEN 1 END) as professional_count,
+    COUNT(CASE WHEN registration_type = 'speaker' THEN 1 END) as speaker_count,
+    COUNT(CASE WHEN registration_type = 'sponsor' THEN 1 END) as sponsor_count,
+    COUNT(CASE WHEN referral_source = 'church' THEN 1 END) as church_referrals,
+    COUNT(CASE WHEN referral_source = 'instagram' THEN 1 END) as instagram_referrals,
+    COUNT(CASE WHEN referral_source = 'recommendation_from_friend' THEN 1 END) as friend_referrals,
+    COUNT(CASE WHEN referral_source = 'whatsapp' THEN 1 END) as whatsapp_referrals,
+    COUNT(CASE WHEN referral_source = 'facebook' THEN 1 END) as facebook_referrals,
+    COUNT(CASE WHEN referral_source = 'flyer' THEN 1 END) as flyer_referrals,
+    COUNT(CASE WHEN breakout_session_choice = 'investment' THEN 1 END) as investment_session,
+    COUNT(CASE WHEN breakout_session_choice = 'tech' THEN 1 END) as tech_session,
+    COUNT(CASE WHEN breakout_session_choice = 'fashion' THEN 1 END) as fashion_session,
+    COUNT(CASE WHEN breakout_session_choice = 'agriculture' THEN 1 END) as agriculture_session,
+    COUNT(CASE WHEN breakout_session_choice = 'foods' THEN 1 END) as foods_session
 FROM attendees;
 
--- Insert some sample sessions
-INSERT INTO sessions (title, description, speaker_name, speaker_bio, session_date, start_time, end_time, venue, capacity, category, is_keynote) VALUES
-('Opening Keynote: Future of Technology in Nigeria', 'An inspiring talk about the technological landscape in Nigeria', 'Dr. Adebayo Ogundimu', 'Renowned tech leader and entrepreneur', CURRENT_DATE + INTERVAL '30 days', '09:00:00', '10:30:00', 'Main Auditorium', 500, 'keynote', true),
-('Building Scalable Web Applications', 'Learn how to build applications that can handle millions of users', 'Sarah Johnson', 'Senior Software Engineer at Google', CURRENT_DATE + INTERVAL '30 days', '11:00:00', '12:00:00', 'Tech Hall A', 100, 'technical', false),
-('Entrepreneurship in the Digital Age', 'Starting and scaling a tech business in today\'s market', 'Chika Nwobi', 'CEO of L5Lab', CURRENT_DATE + INTERVAL '30 days', '14:00:00', '15:00:00', 'Business Hall', 150, 'business', false),
-('AI and Machine Learning Workshop', 'Hands-on workshop on implementing ML solutions', 'Prof. Kemi Adeyeye', 'AI Research Lead', CURRENT_DATE + INTERVAL '30 days', '15:30:00', '17:00:00', 'Workshop Room 1', 50, 'workshop', false);
+-- Insert sample admin user (update email as needed)
+INSERT INTO admins (email, full_name, role)
+VALUES ('admin@bisumconference.org', 'Conference Administrator', 'super_admin')
+ON CONFLICT (email) DO NOTHING;
 
--- Create initial admin user (you should change this email to your actual admin email)
-INSERT INTO admins (email, full_name, role, is_active) VALUES
-('admin@bisum.org', 'BISUM Admin', 'super_admin', true);
+-- Add column comments for documentation
+COMMENT ON COLUMN attendees.expectations IS 'Optional field for attendee expectations from the conference';
+COMMENT ON COLUMN attendees.referral_source IS 'Required field indicating how the attendee heard about the conference';
+COMMENT ON COLUMN attendees.breakout_session_choice IS 'Required field for the attendees chosen breakout session';
 
--- Grant necessary permissions (run these as superuser if needed)
--- GRANT USAGE ON SCHEMA public TO anon, authenticated;
--- GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO authenticated;
--- GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO authenticated;
-
--- Create function to cleanup old pending payments (run daily)
-CREATE OR REPLACE FUNCTION cleanup_old_pending_payments()
-RETURNS INTEGER AS $$
-DECLARE
-    deleted_count INTEGER;
-BEGIN
-    -- Delete payments that have been pending for more than 24 hours
-    DELETE FROM payments
-    WHERE status = 'pending'
-    AND created_at < NOW() - INTERVAL '24 hours';
-
-    GET DIAGNOSTICS deleted_count = ROW_COUNT;
-
-    -- Update corresponding attendee payment status
-    UPDATE attendees
-    SET payment_status = 'failed', updated_at = NOW()
-    WHERE payment_status = 'pending'
-    AND NOT EXISTS (
-        SELECT 1 FROM payments
-        WHERE payments.attendee_id = attendees.id
-        AND payments.status IN ('pending', 'completed')
-    );
-
-    RETURN deleted_count;
-END;
-$$ LANGUAGE plpgsql;
-
--- Comments for documentation
-COMMENT ON TABLE attendees IS 'Conference attendees registration data';
-COMMENT ON TABLE payments IS 'Payment records for conference registrations';
-COMMENT ON TABLE sessions IS 'Conference sessions and workshops';
-COMMENT ON TABLE session_registrations IS 'Attendee registrations for specific sessions';
-COMMENT ON TABLE admins IS 'Admin users for dashboard access';
-
-COMMENT ON FUNCTION generate_registration_number() IS 'Automatically generates unique registration numbers';
-COMMENT ON FUNCTION cleanup_old_pending_payments() IS 'Cleans up old pending payments that were never completed';
-
--- Final message
-DO $$
-BEGIN
-    RAISE NOTICE 'BISUM Conference database schema created successfully!';
-    RAISE NOTICE 'Next steps:';
-    RAISE NOTICE '1. Update admin email in the admins table';
-    RAISE NOTICE '2. Configure your Supabase environment variables';
-    RAISE NOTICE '3. Set up Flutterwave payment integration';
-    RAISE NOTICE '4. Test the registration and payment flow';
-END $$;
+-- Success message
+SELECT 'BISUM Conference Database Schema created successfully with new registration fields!' as status;

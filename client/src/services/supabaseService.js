@@ -53,8 +53,9 @@ const validateRegistrationData = (data) => {
     "lastName",
     "email",
     "phoneNumber",
-    "organization",
     "registrationType",
+    "referralSource",
+    "breakoutSessionChoice",
   ];
 
   requiredFields.forEach((field) => {
@@ -75,7 +76,7 @@ const validateRegistrationData = (data) => {
   // Phone validation (flexible format)
   if (
     data.phoneNumber &&
-    !/^[\d\s\+\-()]{10,}$/.test(data.phoneNumber.trim())
+    !/^\+?\d{7,15}$/.test(data.phoneNumber.trim())
   ) {
     errors.phoneNumber = "Please enter a valid phone number";
   }
@@ -118,17 +119,20 @@ const sanitizeRegistrationData = (data) => {
 
 // Transform data from old format to new Supabase format
 const transformToSupabaseFormat = (data) => {
+  // Generate registration number if not provided
+  const registrationNumber = data.registrationNumber ||
+    `BISUM${new Date().getFullYear()}${String(Date.now()).slice(-6)}`;
+
   return {
-    firstName: data.firstName,
-    lastName: data.lastName,
+    first_name: data.firstName,
+    last_name: data.lastName,
     email: data.email,
     phone: data.phoneNumber || data.phone, // Support both field names
-    organization: data.organization,
-    position: data.position || null,
-    registrationType: data.registrationType,
-    dietaryRestrictions: data.dietaryRestrictions || null,
-    specialNeeds: data.specialNeeds || null,
-    sessionPreferences: data.sessionPreferences || []
+    registration_number: registrationNumber,
+    registration_type: data.registrationType,
+    expectations: data.expectations || null,
+    referral_source: data.referralSource,
+    breakout_session_choice: data.breakoutSessionChoice
   };
 };
 
@@ -144,21 +148,16 @@ const transformFromSupabaseFormat = (data) => {
     email: data.email,
     phoneNumber: data.phone,
     phone: data.phone,
-    organization: data.organization,
-    position: data.position,
     registrationNumber: data.registration_number,
     registrationType: data.registration_type,
     registrationDate: data.registration_date,
     paymentStatus: data.payment_status,
-    dietaryRestrictions: data.dietary_restrictions,
-    specialNeeds: data.special_needs,
-    sessionPreferences: data.session_preferences || [],
+    expectations: data.expectations,
+    referralSource: data.referral_source,
+    breakoutSessionChoice: data.breakout_session_choice,
     status: data.status,
     createdAt: data.created_at,
-    updatedAt: data.updated_at,
-    // Add computed properties
-    isFullyRegistered: data.payment_status === 'completed',
-    payments: data.payments || []
+    updatedAt: data.updated_at
   };
 };
 
@@ -316,14 +315,14 @@ export const registrationAPI = {
           case 'paymentStatus':
             supabaseUpdateData.payment_status = sanitizedData[key];
             break;
-          case 'dietaryRestrictions':
-            supabaseUpdateData.dietary_restrictions = sanitizedData[key];
+          case 'expectations':
+            supabaseUpdateData.expectations = sanitizedData[key];
             break;
-          case 'specialNeeds':
-            supabaseUpdateData.special_needs = sanitizedData[key];
+          case 'referralSource':
+            supabaseUpdateData.referral_source = sanitizedData[key];
             break;
-          case 'sessionPreferences':
-            supabaseUpdateData.session_preferences = sanitizedData[key];
+          case 'breakoutSessionChoice':
+            supabaseUpdateData.breakout_session_choice = sanitizedData[key];
             break;
           default:
             supabaseUpdateData[key] = sanitizedData[key];
@@ -420,85 +419,56 @@ export const registrationAPI = {
 
 // Payment API methods (updated to use Supabase)
 export const paymentAPI = {
-  // Initialize payment
-  initialize: async (paymentData) => {
+  // Private helper to initialize Flutterwave payment.
+  _initializeFlutterwavePayment: async (paymentData) => {
     try {
-      // Validate required fields
-      if (!paymentData.attendeeId || !paymentData.amount) {
-        throw new ApiError("Attendee ID and amount are required", 400);
+      if (!paymentData || !paymentData.registrationData) {
+        throw new ApiError("Registration data is required for payment initialization", 400);
       }
 
-      // Get attendee to validate registration type and calculate price
-      const attendeeResult = await getAttendeeById(paymentData.attendeeId);
-      if (!attendeeResult.success) {
-        throw new ApiError("Invalid attendee ID", 400);
-      }
+      const { registrationData, amount } = paymentData;
+      const { email, phoneNumber, firstName, lastName, registrationType } = registrationData;
 
-      const attendee = attendeeResult.data;
-      const expectedAmount = REGISTRATION_PRICES[attendee.registration_type] || 0;
-
-      // Validate amount matches expected price
-      if (Math.abs(paymentData.amount - expectedAmount) > 1) { // Allow 1 naira tolerance
-        throw new ApiError(`Invalid amount. Expected ${expectedAmount} for ${attendee.registration_type}`, 400);
+      // Basic validation
+      if (!email || !amount || !firstName || !lastName) {
+        throw new ApiError("Missing required fields for payment initialization", 400);
       }
 
       // Generate transaction reference
-      const transactionRef = `BISUM_${Date.now()}_${attendee.registration_number}`;
-      const flutterwaveTransactionId = `FW_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-      // Create payment record
-      const paymentCreateData = {
-        transactionRef,
-        flutterwaveTransactionId,
-        attendeeId: paymentData.attendeeId,
-        amount: expectedAmount,
-        currency: 'NGN',
-        paymentMethod: 'card', // Default, will be updated by webhook
-        paymentChannel: 'web',
-        flutterwaveResponse: {},
-        metadata: {
-          registrationType: attendee.registration_type,
-          attendeeName: `${attendee.first_name} ${attendee.last_name}`,
-          attendeeEmail: attendee.email
-        }
-      };
-
-      const result = await createPayment(paymentCreateData);
-
-      if (!result.success) {
-        throw new ApiError(result.error || "Failed to initialize payment", 400);
-      }
+      const transactionRef = `BISUM_${Date.now()}_${String(Math.random()).substring(2, 8)}`;
 
       // Return Flutterwave initialization data
       return {
         success: true,
         data: {
-          paymentId: result.data.id,
           transactionRef,
-          flutterwaveTransactionId,
-          amount: expectedAmount,
+          amount,
           currency: 'NGN',
           // Flutterwave specific data for frontend
           flutterwaveConfig: {
             public_key: import.meta.env.VITE_FLUTTERWAVE_PUBLIC_KEY,
             tx_ref: transactionRef,
-            amount: expectedAmount,
+            amount,
             currency: 'NGN',
             payment_options: 'card,mobilemoney,ussd',
             customer: {
-              email: attendee.email,
-              phone_number: attendee.phone,
-              name: `${attendee.first_name} ${attendee.last_name}`
+              email: email,
+              phone_number: phoneNumber,
+              name: `${firstName} ${lastName}`
             },
             customizations: {
-              title: 'BISUM Conference 2024',
-              description: `Registration fee for ${attendee.registration_type}`,
-              logo: `${window.location.origin}/logo.png`
+              title: 'BISUM Conference 2025',
+              description: `Registration fee for ${registrationType}`,
+              logo: 'https://res.cloudinary.com/ddk9omr4r/image/upload/v1758730588/lewas-growth-oil-logo_l8gsjy.png' // QUICK FIX: Replace localhost URL with a public one.
             },
-            redirect_url: `${window.location.origin}/payment-callback`
+            redirect_url: `https://www.google.com/`, // Dynamic redirect URL
+            meta: {
+              // Pass all registration data to the webhook/verification
+              registrationData: JSON.stringify(registrationData)
+            }
           }
         },
-        message: "Payment initialized successfully",
+        message: "Payment details prepared successfully",
       };
     } catch (error) {
       console.error("Initialize Payment API Error:", error);
@@ -506,6 +476,162 @@ export const paymentAPI = {
         throw error;
       }
       throw new ApiError(error.message || "Failed to initialize payment", 500);
+    }
+  },
+
+  // Main entry point for payment initialization, dispatches to specific payment gateways
+  initialize: async ({ amount, registrationData, paymentMethod }) => {
+    try {
+      if (!registrationData || !amount || !paymentMethod) {
+        throw new ApiError("Missing required data for payment initialization.", 400);
+      }
+
+      if (paymentMethod === 'flutterwave') {
+        return await paymentAPI._initializeFlutterwavePayment({ amount, registrationData });
+      } else if (paymentMethod === 'bank_transfer') {
+        // For bank transfers, we might create a pending payment record
+        // or just return instructions. For now, let's return instructions.
+        return await paymentAPI.initiateBankTransfer({ amount, registrationData });
+      } else if (paymentMethod === 'opay') {
+        return await paymentAPI.initiateOpayPayment({ amount, registrationData });
+      }
+      else {
+        throw new ApiError("Unsupported payment method.", 400);
+      }
+    } catch (error) {
+      console.error(`Initialize Payment API Error (${paymentMethod}):`, error);
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(error.message || `Failed to initialize ${paymentMethod} payment.`, 500);
+    }
+  },
+
+  verifyTransaction: async (transactionId) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('verify-payment', {
+        method: 'GET',
+        params: { transaction_id: transactionId },
+      });
+
+      if (error) {
+        throw new ApiError(error.message, 500);
+      }
+
+      if (data.error) {
+        throw new ApiError(data.error, 400);
+      }
+
+      return {
+        success: true,
+        data: data.data,
+        message: data.message,
+      };
+    } catch (error) {
+      console.error('Verify Transaction API Error:', error);
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(error.message || 'Failed to verify transaction', 500);
+    }
+  },
+
+  // Initiate bank transfer payment
+  initiateBankTransfer: async ({ amount, registrationData }) => {
+    try {
+      // In a real scenario, you might create a pending payment record in Supabase
+      // and associate it with the registration data.
+      // For this example, we'll return success with bank details.
+
+      // Generate a unique reference for the bank transfer
+      const bankTransferRef = `BISUM_BT_${Date.now()}_${String(Math.random()).substring(2, 8)}`;
+
+      // Store a pending payment record if necessary (not implemented here)
+      // Example:
+      // const { data, error } = await supabase.from('payments').insert([
+      //   {
+      //     amount: amount,
+      //     currency: 'NGN',
+      //     status: 'pending',
+      //     payment_method: 'bank_transfer',
+      //     transaction_ref: bankTransferRef,
+      //     // Store registrationData in metadata if needed for later processing
+      //     metadata: { registrationData },
+      //   }
+      // ]).select();
+      // if (error) throw new ApiError(error.message, 500);
+
+      return {
+        success: true,
+        data: {
+          transactionRef: bankTransferRef,
+          amount,
+          currency: 'NGN',
+          instructions: {
+            accountName: 'BISUM Conference',
+            accountNumber: '1234567890', // Replace with actual account number
+            bankName: 'Example Bank PLC', // Replace with actual bank name
+            amountDue: formatCurrency(amount, 'NGN'),
+            reference: bankTransferRef,
+          },
+          registrationData: registrationData, // Return for client-side display
+        },
+        message: "Bank transfer details provided. Awaiting payment.",
+      };
+    } catch (error) {
+      console.error("Initiate Bank Transfer API Error:", error);
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(error.message || "Failed to initiate bank transfer", 500);
+    }
+  },
+
+  // Initiate Opay payment
+  initiateOpayPayment: async ({ amount, registrationData }) => {
+    try {
+      // In a real scenario, this would involve a backend call to Opay's API
+      // to generate a payment link or QR code, or initiate a direct debit.
+      // For this example, we'll return simulated Opay details.
+
+      const opayRef = `BISUM_OPAY_${Date.now()}_${String(Math.random()).substring(2, 8)}`;
+
+      // Simulate creating a pending payment record
+      // const { data, error } = await supabase.from('payments').insert([
+      //   {
+      //     amount: amount,
+      //     currency: 'NGN',
+      //     status: 'pending',
+      //     payment_method: 'opay',
+      //     transaction_ref: opayRef,
+      //     metadata: { registrationData },
+      //   }
+      // ]).select();
+      // if (error) throw new ApiError(error.message, 500);
+
+      return {
+        success: true,
+        data: {
+          transactionRef: opayRef,
+          amount,
+          currency: 'NGN',
+          instructions: {
+            accountName: 'BISUM Conference Opay',
+            phoneNumber: '+2348011223344', // Replace with actual Opay business number
+            amountDue: formatCurrency(amount, 'NGN'),
+            reference: opayRef,
+            // Could include a QR code URL or deep link here
+          },
+          registrationData: registrationData,
+        },
+        message: "Opay payment details provided. Awaiting payment.",
+      };
+    } catch (error) {
+      console.error("Initiate Opay Payment API Error:", error);
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(error.message || "Failed to initiate Opay payment", 500);
     }
   },
 
@@ -703,6 +829,76 @@ export const paymentAPI = {
       throw new ApiError(error.message || "Failed to export payments", 500);
     }
   },
+
+  // Handle successful payment and complete registration
+  handlePaymentSuccess: async (transactionRef, flutterwaveTransactionId) => {
+    try {
+      if (!transactionRef && !flutterwaveTransactionId) {
+        throw new ApiError("Transaction reference or Flutterwave ID is required", 400);
+      }
+
+      // Get payment record
+      let paymentResult;
+      if (transactionRef) {
+        paymentResult = await getPaymentByTransactionRef(transactionRef);
+      } else {
+        paymentResult = await getPaymentByFlutterwaveId(flutterwaveTransactionId);
+      }
+
+      if (!paymentResult.success) {
+        throw new ApiError("Payment not found", 404);
+      }
+
+      const payment = paymentResult.data;
+
+      // Check if this payment has registration data (new flow)
+      if (payment.flutterwave_response?.registrationData && !payment.attendee_id) {
+        const registrationData = payment.flutterwave_response.registrationData;
+
+        // Complete the registration now that payment is successful
+        const registrationResult = await registrationAPI.register(registrationData);
+
+        if (registrationResult.success) {
+          // Update payment record with attendee ID
+          const updateResult = await updatePayment(payment.id, {
+            attendeeId: registrationResult.data.id,
+            status: 'completed',
+            paidAt: new Date().toISOString()
+          });
+
+          // Update attendee payment status
+          await updateAttendeePaymentStatus(registrationResult.data.id, 'completed');
+
+          return {
+            success: true,
+            data: {
+              attendee: registrationResult.data,
+              payment: payment,
+              message: "Registration completed successfully after payment!"
+            }
+          };
+        } else {
+          throw new ApiError("Failed to complete registration after payment", 500);
+        }
+      } else {
+        // Old flow or already processed
+        return {
+          success: true,
+          data: {
+            payment: payment,
+            message: "Payment already processed"
+          }
+        };
+      }
+
+    } catch (error) {
+      console.error("Payment Success Handler Error:", error);
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError(error.message || "Failed to handle payment success", 500);
+    }
+  },
 };
 
 // Utility function to handle API errors consistently (keeping compatibility)
@@ -742,6 +938,4 @@ export { ApiError };
 export const registrationTypes = [
   { value: REGISTRATION_TYPES.STUDENT, label: `Student - ${formatCurrency(REGISTRATION_PRICES[REGISTRATION_TYPES.STUDENT])}`, price: REGISTRATION_PRICES[REGISTRATION_TYPES.STUDENT] },
   { value: REGISTRATION_TYPES.PROFESSIONAL, label: `Professional - ${formatCurrency(REGISTRATION_PRICES[REGISTRATION_TYPES.PROFESSIONAL])}`, price: REGISTRATION_PRICES[REGISTRATION_TYPES.PROFESSIONAL] },
-  { value: REGISTRATION_TYPES.SPEAKER, label: `Speaker - ${formatCurrency(REGISTRATION_PRICES[REGISTRATION_TYPES.SPEAKER])}`, price: REGISTRATION_PRICES[REGISTRATION_TYPES.SPEAKER] },
-  { value: REGISTRATION_TYPES.SPONSOR, label: `Sponsor - ${formatCurrency(REGISTRATION_PRICES[REGISTRATION_TYPES.SPONSOR])}`, price: REGISTRATION_PRICES[REGISTRATION_TYPES.SPONSOR] },
 ];

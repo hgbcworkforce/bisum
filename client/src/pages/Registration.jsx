@@ -133,7 +133,6 @@ const Registration = () => {
     e.preventDefault();
 
     if (!validateForm()) {
-      // Scroll to first error
       const firstErrorField = Object.keys(errors)[0];
       if (firstErrorField) {
         const element = document.querySelector(`[name="${firstErrorField}"]`);
@@ -146,30 +145,54 @@ const Registration = () => {
     setErrors({});
 
     try {
-      // Register attendee
-      const registrationData = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        phoneNumber: formData.phoneNumber,
-        registrationType: formData.registrationType,
-        referralSource: formData.referralSource,
-        breakoutSessionChoice: formData.breakoutSessionChoice,
-        expectations: formData.expectations,
-      };
+      // Save form data to session storage
+      sessionStorage.setItem("registrationData", JSON.stringify(formData));
 
-      const registrationResult = await registrationAPI.register(registrationData);
+      // If payment is required, proceed to payment
+      if (currentPrice > 0) {
+        const paymentResult = await paymentAPI._initializeFlutterwavePayment({
+          amount: currentPrice,
+          registrationData: formData,
+        });
 
-      if (registrationResult.success) {
-        setAttendeeData(registrationResult.data);
-        setSubmitSuccess(true);
-        setRegistrationComplete(true);
+        if (paymentResult.success && paymentResult.data.flutterwaveConfig) {
+          const config = paymentResult.data.flutterwaveConfig;
 
-        // If payment is required, proceed to payment
-        if (currentPrice > 0) {
-          await handlePaymentInitialization(registrationResult.data.attendeeId);
+          const form = document.createElement("form");
+          form.method = "POST";
+          form.action = "https://checkout.flutterwave.com/v3/hosted/pay";
+          form.style.display = "none";
+
+          Object.keys(config).forEach((key) => {
+            if (typeof config[key] === "object") {
+              Object.keys(config[key]).forEach((subKey) => {
+                const input = document.createElement("input");
+                input.name = `${key}[${subKey}]`;
+                input.value = config[key][subKey];
+                form.appendChild(input);
+              });
+            } else {
+              const input = document.createElement("input");
+              input.name = key;
+              input.value = config[key];
+              form.appendChild(input);
+            }
+          });
+
+          document.body.appendChild(form);
+          form.submit();
         } else {
-          // Free registration (speakers)
+          throw new Error("Payment initialization failed");
+        }
+      } else {
+        // Free registration (speakers) - This flow needs to be re-evaluated.
+        // For now, we can just redirect to a success page with the data.
+        // Or we can register them directly here. Let's do that.
+        const registrationResult = await registrationAPI.register(formData);
+        if (registrationResult.success) {
+          setAttendeeData(registrationResult.data);
+          setSubmitSuccess(true);
+          setRegistrationComplete(true);
           showSuccessMessage(
             "Registration completed successfully! Welcome to BISUM Conference 2025.",
           );
@@ -178,65 +201,9 @@ const Registration = () => {
     } catch (error) {
       const errorInfo = handleApiError(error);
       console.error("Registration error:", error);
-
-      if (errorInfo.data?.errors) {
-        setErrors(errorInfo.data.errors);
-      } else {
-        setErrors({ general: errorInfo.message });
-      }
+      setErrors({ general: errorInfo.message });
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const handlePaymentInitialization = async (attendeeId) => {
-    if (currentPrice === 0) return;
-
-    setIsProcessingPayment(true);
-
-    try {
-      const paymentResult = await paymentAPI.initialize({
-        attendeeId: attendeeId,
-        amount: currentPrice,
-        registrationType: formData.registrationType,
-      });
-
-      if (paymentResult.success && paymentResult.data.flutterwaveConfig) {
-        // Use Flutterwave React SDK or redirect to payment page
-        const config = paymentResult.data.flutterwaveConfig;
-
-        // For now, we'll create a form and submit it to Flutterwave
-        const form = document.createElement("form");
-        form.method = "POST";
-        form.action = "https://checkout.flutterwave.com/v3/hosted/pay";
-        form.style.display = "none";
-
-        Object.keys(config).forEach((key) => {
-          if (typeof config[key] === "object") {
-            Object.keys(config[key]).forEach((subKey) => {
-              const input = document.createElement("input");
-              input.name = `${key}[${subKey}]`;
-              input.value = config[key][subKey];
-              form.appendChild(input);
-            });
-          } else {
-            const input = document.createElement("input");
-            input.name = key;
-            input.value = config[key];
-            form.appendChild(input);
-          }
-        });
-
-        document.body.appendChild(form);
-        form.submit();
-      } else {
-        throw new Error("Payment initialization failed");
-      }
-    } catch (error) {
-      const errorInfo = handleApiError(error);
-      console.error("Payment initialization error:", error);
-      setErrors({ payment: errorInfo.message });
-      setIsProcessingPayment(false);
     }
   };
 

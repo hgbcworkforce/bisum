@@ -88,19 +88,21 @@ export const useDashboardRealtime = (onStatsUpdate) => {
             }
 
             // Add to recent registrations (keep only last 5)
-            const newAttendee = {
-              id: newRecord.id,
-              fullName: `${newRecord.first_name} ${newRecord.last_name}`,
-              email: newRecord.email,
-              registrationDate: newRecord.created_at,
-              paymentStatus: newRecord.payment_status,
-              registrationType: newRecord.registration_type
-            };
+            {
+              const newAttendee = {
+                id: newRecord.id,
+                fullName: `${newRecord.first_name} ${newRecord.last_name}`,
+                email: newRecord.email,
+                registrationDate: newRecord.created_at,
+                paymentStatus: newRecord.payment_status,
+                registrationType: newRecord.registration_type
+              };
 
-            newStats.recentRegistrations = [
-              newAttendee,
-              ...prevStats.recentRegistrations.slice(0, 4)
-            ];
+              newStats.recentRegistrations = [
+                newAttendee,
+                ...newStats.recentRegistrations.slice(0, 4)
+              ];
+            }
             break;
 
           case 'UPDATE':
@@ -190,19 +192,16 @@ export const useDashboardRealtime = (onStatsUpdate) => {
 };
 
 // Custom hook for managing registration form with real-time validation
-export const useRegistrationForm = (initialData = {}) => {
+export const useRegistrationForm = () => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
     phoneNumber: '',
-    organization: '',
-    position: '',
     registrationType: 'professional',
-    dietaryRestrictions: '',
-    specialNeeds: '',
-    sessionPreferences: [],
-    ...initialData
+    expectations: '',
+    referralSource: '',
+    breakoutSessionChoice: '',
   });
 
   const [errors, setErrors] = useState({});
@@ -213,55 +212,43 @@ export const useRegistrationForm = (initialData = {}) => {
   const emailCheckTimeoutRef = useRef(null);
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
 
-    if (type === 'checkbox') {
-      if (name === 'sessionPreferences') {
-        const session = value;
-        setFormData(prev => ({
-          ...prev,
-          sessionPreferences: checked
-            ? [...prev.sessionPreferences, session]
-            : prev.sessionPreferences.filter(s => s !== session)
-        }));
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+
+    // Real-time email validation
+    if (name === 'email' && value) {
+      // Clear existing timeout
+      if (emailCheckTimeoutRef.current) {
+        clearTimeout(emailCheckTimeoutRef.current);
       }
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
 
-      // Real-time email validation
-      if (name === 'email' && value) {
-        // Clear existing timeout
-        if (emailCheckTimeoutRef.current) {
-          clearTimeout(emailCheckTimeoutRef.current);
-        }
+      // Set new timeout for email check
+      emailCheckTimeoutRef.current = setTimeout(async () => {
+        try {
+          const { checkEmailExists } = await import('../lib/attendees.js');
+          const result = await checkEmailExists(value);
+          setEmailExists(result.exists);
 
-        // Set new timeout for email check
-        emailCheckTimeoutRef.current = setTimeout(async () => {
-          try {
-            const { checkEmailExists } = await import('../lib/attendees.js');
-            const result = await checkEmailExists(value);
-            setEmailExists(result.exists);
-
-            if (result.exists) {
-              setErrors(prev => ({
-                ...prev,
-                email: 'This email is already registered'
-              }));
-            } else {
-              setErrors(prev => {
-                const newErrors = { ...prev };
-                delete newErrors.email;
-                return newErrors;
-              });
-            }
-          } catch (error) {
-            console.warn('Email check failed:', error);
+          if (result.exists) {
+            setErrors(prev => ({
+              ...prev,
+              email: 'This email is already registered'
+            }));
+          } else {
+            setErrors(prev => {
+              const newErrors = { ...prev };
+              delete newErrors.email;
+              return newErrors;
+            });
           }
-        }, 500); // 500ms debounce
-      }
+        } catch (error) {
+          console.warn('Email check failed:', error);
+        }
+      }, 500); // 500ms debounce
     }
 
     // Clear error when user starts typing
@@ -283,8 +270,9 @@ export const useRegistrationForm = (initialData = {}) => {
       'lastName',
       'email',
       'phoneNumber',
-      'organization',
-      'registrationType'
+      'registrationType',
+      'referralSource',
+      'breakoutSessionChoice'
     ];
 
     requiredFields.forEach(field => {
@@ -299,7 +287,7 @@ export const useRegistrationForm = (initialData = {}) => {
     }
 
     // Phone validation
-    if (formData.phoneNumber && !/^[\d\s\+\-()]{10,}$/.test(formData.phoneNumber.trim())) {
+    if (formData.phoneNumber && !/^[\d\s+\-()]{10,}$/.test(formData.phoneNumber.trim())) {
       newErrors.phoneNumber = 'Please enter a valid phone number';
     }
 
@@ -320,13 +308,10 @@ export const useRegistrationForm = (initialData = {}) => {
       lastName: '',
       email: '',
       phoneNumber: '',
-      organization: '',
-      position: '',
       registrationType: 'professional',
-      dietaryRestrictions: '',
-      specialNeeds: '',
-      sessionPreferences: [],
-      ...initialData
+      expectations: '',
+      referralSource: '',
+      breakoutSessionChoice: '',
     });
     setErrors({});
     setEmailExists(false);
