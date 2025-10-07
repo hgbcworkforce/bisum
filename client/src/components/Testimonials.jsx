@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Testimonials = () => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
@@ -34,62 +34,43 @@ const Testimonials = () => {
         "The keynote speeches were inspiring and the workshops provided actionable strategies that I immediately implemented in my startup.",
       rating: 5,
     },
-  ];
-
-  const sponsors = [
-    {
-      id: 1,
-      name: "Microsoft",
-      logo: "https://img.logos-world.net/wp-content/uploads/2020/09/Microsoft-Logo.png",
-      tier: "Platinum",
-    },
-    {
-      id: 2,
-      name: "Google",
-      logo: "https://logos-world.net/wp-content/uploads/2020/09/Google-Logo.png",
-      tier: "Platinum",
-    },
-    {
-      id: 3,
-      name: "Amazon",
-      logo: "https://logos-world.net/wp-content/uploads/2020/04/Amazon-Logo.png",
-      tier: "Gold",
-    },
     {
       id: 4,
-      name: "Meta",
-      logo: "https://logos-world.net/wp-content/uploads/2021/10/Meta-Logo.png",
-      tier: "Gold",
+      name: "David Lee",
+      role: "Software Engineer at Google",
+      image:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+      testimonial:
+        "A fantastic event! The quality of the sessions and the expertise of the speakers were top-notch. I'll definitely be back next year.",
+      rating: 5,
     },
     {
       id: 5,
-      name: "Apple",
-      logo: "https://logos-world.net/wp-content/uploads/2020/04/Apple-Logo.png",
-      tier: "Silver",
-    },
-    {
-      id: 6,
-      name: "Netflix",
-      logo: "https://logos-world.net/wp-content/uploads/2020/04/Netflix-Logo.png",
-      tier: "Silver",
+      name: "Emily White",
+      role: "UX Designer",
+      image:
+        "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+      testimonial:
+        "I loved the focus on user-centric design. The workshops were practical, and I left with a notebook full of new ideas and techniques.",
+      rating: 5,
     },
   ];
 
-  const nextTestimonial = () => {
-    setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-  };
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 5000); // Change testimonial every 5 seconds
 
-  const prevTestimonial = () => {
-    setCurrentTestimonial(
-      (prev) => (prev - 1 + testimonials.length) % testimonials.length,
-    );
-  };
+    return () => clearInterval(timer); // Cleanup the timer on component unmount
+  }, [testimonials.length]);
 
   const renderStars = (rating) => {
     return [...Array(5)].map((_, i) => (
       <svg
         key={i}
-        className={`w-5 h-5 ${i < rating ? "text-yellow-400" : "text-gray-300"}`}
+        className={`w-5 h-5 ${
+          i < rating ? "text-yellow-400" : "text-gray-300"
+        }`}
         fill="currentColor"
         viewBox="0 0 20 20"
       >
@@ -101,7 +82,6 @@ const Testimonials = () => {
   return (
     <section id="testimonials" className="py-20 bg-gray-50">
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Testimonials Section */}
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
             What Attendees Say
@@ -112,152 +92,64 @@ const Testimonials = () => {
           </p>
         </div>
 
-        {/* Testimonial Carousel */}
-        <div className="relative max-w-4xl mx-auto mb-20">
-          <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-              {/* Profile Image */}
-              <div className="flex-shrink-0">
-                <img
-                  src={testimonials[currentTestimonial].image}
-                  alt={testimonials[currentTestimonial].name}
-                  className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover shadow-lg"
-                />
-              </div>
-
-              {/* Testimonial Content */}
-              <div className="flex-1 text-center md:text-left">
-                <div className="flex justify-center md:justify-start mb-4">
-                  {renderStars(testimonials[currentTestimonial].rating)}
-                </div>
-
-                <blockquote className="text-lg md:text-xl text-gray-700 mb-6 leading-relaxed">
-                  "{testimonials[currentTestimonial].testimonial}"
-                </blockquote>
-
-                <div>
-                  <p className="text-xl font-semibold text-gray-900">
-                    {testimonials[currentTestimonial].name}
-                  </p>
-                  <p className="text-blue-600 font-medium">
-                    {testimonials[currentTestimonial].role}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Navigation Arrows */}
-          <button
-            onClick={prevTestimonial}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white shadow-lg rounded-full p-3 hover:bg-gray-50 transition-colors duration-200"
-            aria-label="Previous testimonial"
-          >
-            <svg
-              className="w-6 h-6 text-gray-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-          </button>
-
-          <button
-            onClick={nextTestimonial}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white shadow-lg rounded-full p-3 hover:bg-gray-50 transition-colors duration-200"
-            aria-label="Next testimonial"
-          >
-            <svg
-              className="w-6 h-6 text-gray-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </button>
-
-          {/* Dots Indicator */}
-          <div className="flex justify-center mt-8 space-x-3">
-            {testimonials.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentTestimonial(index)}
-                className={`w-3 h-3 rounded-full transition-colors duration-200 ${
-                  index === currentTestimonial ? "bg-blue-600" : "bg-gray-300"
-                }`}
-                aria-label={`Go to testimonial ${index + 1}`}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Sponsors Section */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Our Sponsors
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Proudly supported by industry-leading organizations
-          </p>
-        </div>
-
-        {/* Sponsors Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center">
-          {sponsors.map((sponsor) => (
+        <div className="relative max-w-6xl mx-auto">
+          <div className="overflow-hidden">
             <div
-              key={sponsor.id}
-              className="group relative bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              className="flex transition-transform duration-500 ease-in-out"
+              style={{
+                transform: `translateX(calc(-${
+                  currentTestimonial * 100
+                }% / var(--slides-to-show)))`,
+              }}
             >
-              <div className="flex items-center justify-center h-20">
-                <img
-                  src={sponsor.logo}
-                  alt={sponsor.name}
-                  className="max-w-full max-h-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
-                />
-              </div>
-              <div className="absolute top-2 right-2">
-                <span
-                  className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                    sponsor.tier === "Platinum"
-                      ? "bg-purple-100 text-purple-800"
-                      : sponsor.tier === "Gold"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : "bg-gray-100 text-gray-800"
-                  }`}
+              {testimonials.map((testimonial) => (
+                <div
+                  key={testimonial.id}
+                  className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 px-4"
+                  style={{ "--slides-to-show": "1" }}
                 >
-                  {sponsor.tier}
-                </span>
-              </div>
+                  <div className="bg-white rounded-2xl shadow-xl p-8 h-full flex flex-col">
+                    <div className="flex-shrink-0 mb-6 text-center">
+                      <img
+                        src={testimonial.image}
+                        alt={testimonial.name}
+                        className="w-24 h-24 rounded-full object-cover shadow-lg mx-auto"
+                      />
+                    </div>
+                    <div className="flex-1 text-center">
+                      <div className="flex justify-center mb-4">
+                        {renderStars(testimonial.rating)}
+                      </div>
+                      <blockquote className="text-lg text-gray-700 mb-6 leading-relaxed">
+                        "{testimonial.testimonial}"
+                      </blockquote>
+                      <div>
+                        <p className="text-xl font-semibold text-gray-900">
+                          {testimonial.name}
+                        </p>
+                        <p className="text-blue-600 font-medium">
+                          {testimonial.role}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
 
-        {/* Become a Sponsor CTA */}
-        <div className="text-center mt-16">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 md:p-12">
-            <h3 className="text-3xl font-bold text-white mb-4">
-              Become a Sponsor
-            </h3>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              Partner with us to reach thousands of industry professionals and
-              showcase your brand
-            </p>
-            <button className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
-              View Sponsorship Packages
-            </button>
-          </div>
+        <div className="flex justify-center mt-8 space-x-3">
+          {testimonials.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentTestimonial(index)}
+              className={`w-3 h-3 rounded-full transition-colors duration-200 ${
+                index === currentTestimonial ? "bg-blue-600" : "bg-gray-300"
+              }`}
+              aria-label={`Go to testimonial ${index + 1}`}
+            />
+          ))}
         </div>
       </div>
     </section>

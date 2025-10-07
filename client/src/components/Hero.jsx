@@ -2,7 +2,7 @@ import { CountdownTimer } from "./";
 
 const Hero = () => {
   // Conference date: November 15, 2025
-  const conferenceDate = new Date("November 15, 2025 09:00:00").getTime();
+  const conferenceDate = new Date("November 13, 2025 17:00:00").getTime();
 
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
@@ -39,10 +39,10 @@ const Hero = () => {
         {/* Conference Dates */}
         <div className="mb-8">
           <p className="text-2xl sm:text-3xl text-blue-400 font-semibold mb-2">
-            November 15, 2025
+            November 13 - 15, 2025
           </p>
           <p className="text-lg text-gray-200">
-            Lagos, Nigeria • 9:00 AM - 6:00 PM
+            Higher Ground Baptist Church, Ogbomoso, Nigeria.
           </p>
         </div>
 
@@ -51,15 +51,12 @@ const Hero = () => {
 
         {/* Call to Action */}
         <div className="mt-10 space-y-4">
-          <button
-            onClick={() => scrollToSection("register")}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-full text-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-blue-500/50"
+          <a
+            href="/register"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-full text-xl font-semibold transition-all duration-300 transform cursor-pointer shadow-lg hover:shadow-blue-500/50"
           >
             Register Now
-          </button>
-          <p className="text-sm text-gray-400">
-            Early bird pricing available until October 31st
-          </p>
+          </a>
         </div>
       </div>
 
