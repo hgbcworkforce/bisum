@@ -186,29 +186,6 @@ const Footer = () => {
               ))}
             </ul>
           </div>
-
-          {/* Newsletter Signup */}
-          <div>
-            <h4 className="text-xl font-semibold mb-6 text-white">
-              Stay Updated
-            </h4>
-            <p className="text-gray-400 mb-4">
-              Subscribe to get the latest updates about the conference.
-            </p>
-            <form className="space-y-3">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
-              />
-              <button
-                type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200"
-              >
-                Subscribe
-              </button>
-            </form>
-          </div>
         </div>
 
         {/* Divider */}
@@ -233,13 +210,6 @@ const Footer = () => {
               </a>
             ))}
           </div>
-        </div>
-
-        {/* Conference Date Reminder */}
-        <div className="text-center mt-8 p-4 bg-gray-800 rounded-lg">
-          <p className="text-blue-400 font-semibold">
-            📅 Save the Date: November 15, 2025 | Lagos, Nigeria
-          </p>
         </div>
       </div>
     </footer>

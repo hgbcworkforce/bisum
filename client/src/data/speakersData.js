@@ -32,9 +32,9 @@ export const speakersData = [
       venue: "Main Auditorium",
     },
     social: {
-      linkedin: "https://linkedin.com/in/sarah-okafor",
       twitter: "https://twitter.com/sarah_okafor_ai",
-      website: "https://sarahokafor.ai",
+      instagram: "https://sarahokafor.ai",
+      facebook: "https://facebook.com/sarahokafor",
     },
     quote:
       "AI should be a tool for equality, not division. Our role is to ensure it serves humanity's best interests.",
@@ -42,41 +42,40 @@ export const speakersData = [
   {
     id: 2,
     name: "Dr Adebayo Adekunle",
-    title: "Blockchain Solutions Architect",
-    company: "BlockTech Solutions",
-    bio: "Michael is a pioneering blockchain architect who has implemented secure digital transaction systems across multiple industries. With expertise in cryptocurrency, DeFi, and smart contracts, he has helped Fortune 500 companies integrate blockchain technology.\n\nHe is the author of 'Blockchain Revolution' and a frequent speaker at international tech conferences.",
-    image:
-      "https://qrdiyvwefkdrjgjkxsph.supabase.co/storage/v1/object/public/Bisum'25%20Images/Dr%20Adebayo.jpg",
+    title: "Consultant Obstetrician & Gynaecologist, Entrepreneur, Educator",
+    company: "Adebayo Healthcare Limited",
+    bio: "Dr. Adebayo Adekunle is an exemplary leader in medicine, business, and education. He became the first consultant in his class, rising to the position of Consultant Obstetrician and Gynaecologist within just four and a half years of commencing residency. Currently, he serves as Head of Clinical Services at the Nigerian Police Hospital, Falomo, Ikoyi, Lagos, and Chairman of the Medical Advisory Council. He is the CEO of Adebayo Healthcare Limited, owning multiple hospitals and diagnostic centers across Lagos and Oyo State, and is also the founder of Abisola Foods, reflecting his passion for food security and sustainable entrepreneurship. As a lecturer at LAUTECH’s College of Health Sciences, he mentors the next generation of doctors. Dr. Adebayo is also a global speaker, certified in Leadership and Management in Health from the University of Washington, and has earned over 40 professional and community awards. In 2022, he established the Adebayo Dream Humanitarian Foundation (ADHF), which has provided free healthcare to over 5,000 people. Beyond his professional pursuits, he is a devoted husband to Mrs. Abisola Adekunle and father of two children.",
+    image: "https://bhxxyjgpzozcvuyxzfyn.supabase.co/storage/v1/object/public/Bisum%20Pictures/Dr%20Adebayo.jpg",
     expertise: [
-      "Blockchain",
-      "Cryptocurrency",
-      "Smart Contracts",
-      "DeFi",
-      "Web3",
+      "Healthcare Leadership",
+      "Entrepreneurship",
+      "Obstetrics & Gynaecology",
+      "Medical Education",
+      "Public Speaking",
+      "Community Development"
     ],
     category: "keynote",
-
-    experience:
-      "12+ years in blockchain development, architect of 3 major blockchain platforms",
+    experience: "15+ years in medicine, healthcare leadership, and entrepreneurship",
     achievements: [
-      "Architected blockchain systems processing $10B+ in transactions",
-      "Author of bestselling book 'Blockchain Revolution'",
-      "Founded successful blockchain startup acquired by IBM",
-      "Advisory board member of 5+ blockchain companies",
+      "First in his class to become Consultant Obstetrician & Gynaecologist",
+      "Head of Clinical Services, Nigerian Police Hospital Falomo",
+      "CEO of Adebayo Healthcare Limited and multiple specialist hospitals",
+      "Founder of Abisola Foods, promoting food security",
+      "Lecturer at LAUTECH’s College of Health Sciences",
+      "Over 40 professional and community awards, including Leadership Award by the Office of the Wife of the Vice President of Nigeria",
+      "Founder of Adebayo Dream Humanitarian Foundation (ADHF), impacting 5,000+ people"
     ],
     session: {
-      title: "Blockchain Revolution: Building Trust in Digital Transactions",
+      title: "Keynote: Leadership, Health, and Entrepreneurship for Community Impact",
       time: "11:30 AM - 12:15 PM",
-      venue: "Main Auditorium",
+      venue: "Main Auditorium"
     },
     social: {
       linkedin: "https://www.linkedin.com/in/thedradebayo1/",
       twitter: "https://x.com/thedradebayo",
       instagram: "https://instagram.com/thedradebayo",
-      facebook: "https://facebook.com/thedradebayo",
-    },
-    quote:
-      "Blockchain isn't just about cryptocurrency; it's about creating a more transparent and trustworthy digital world.",
+      facebook: "https://facebook.com/thedradebayo"
+    }
   },
   {
     id: 3,
@@ -111,46 +110,47 @@ export const speakersData = [
     social: {
       linkedin: "https://linkedin.com/in/jennifer-green-greentech",
       website: "https://jennifergreentech.org",
+      twitter: "https://twitter.com/jennifergreen",
+      instagram: "https://instagram.com/jennifergreen",
+      facebook: "https://facebook.com/jennifergreen",
     },
     quote:
       "Technology without sustainability is just sophisticated destruction. We must build for the planet we want to leave behind.",
   },
   {
     id: 4,
-    name: "Amanda Rodriguez",
-    title: "Senior Mobile Developer",
-    company: "TechCorp Mobile Division",
-    bio: "Amanda has over 8 years of experience in mobile app development and has built apps with millions of downloads. She specializes in cross-platform development using React Native and Flutter, and has led mobile development teams at three different startups.\n\nShe's passionate about creating accessible mobile experiences and has contributed to several open-source mobile frameworks.",
-    image:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+    name: "Mr Taiwo Olaonipekun",
+    title: "Founder & CEO",
+    company: "Farmfixers",
+    bio: "Taiwo Olaonipekun is the visionary force behind Farmfixers, an agri-tech enterprise he founded in 2014 to revolutionise farming practices through absentee farming and farm management. Under his leadership, Farmfixers has successfully managed over 400 acres of farmland, empowering local farmers and youth with essential farm inputs, modern training, and strategic marketing channels. His initiatives have boosted productivity, enhanced profitability, and provided a platform for farmers to showcase their creativity. Taiwo is deeply committed to eradicating hunger and poverty by improving the livelihoods of rural communities while delivering strong returns to investors. Beyond his professional pursuits, he is a passionate believer in God, happily married to Oluwabusayomi Olaonipekun, and blessed with a son.",
+    image: "https://bhxxyjgpzozcvuyxzfyn.supabase.co/storage/v1/object/public/Bisum%20Pictures/Olaonipekun%20Taiwo.jpg",
     expertise: [
-      "Mobile Development",
-      "React Native",
-      "Flutter",
-      "UI/UX Design",
-      "App Architecture",
+      "AgriTech Innovation",
+      "Farm Management",
+      "Absentee Farming",
+      "Agricultural Marketing",
+      "Rural Empowerment"
     ],
-    category: "breakout",
-    experience:
-      "8+ years in mobile development, led teams at 3 successful startups",
+    category: "keynote",
+    experience: "10+ years leading agri-tech innovations, managing 400+ acres of farmland",
     achievements: [
-      "Built mobile apps with 5M+ combined downloads",
-      "Core contributor to React Native framework",
-      "Led mobile team that won 'App of the Year' award",
-      "Speaker at 20+ mobile development conferences",
+      "Founder of Farmfixers, a pioneering agri-tech company",
+      "Successfully managed 400+ acres of farmland",
+      "Created platforms for local farmers to showcase innovative practices",
+      "Empowered rural farmers and youth with modern agricultural training",
+      "Delivered consistent returns to investors while improving community livelihoods"
     ],
     session: {
-      title: "breakout: Building Your First Mobile App",
-      time: "1:30 PM - 3:00 PM",
-      venue: "breakout Room A",
+      title: "Keynote: Innovating Agriculture through Absentee Farming",
+      time: "10:00 AM - 11:30 AM",
+      venue: "Main Hall"
     },
     social: {
-      linkedin: "https://linkedin.com/in/amanda-rodriguez-mobile",
-      twitter: "https://twitter.com/amandadev",
-      website: "https://amandarodriguez.dev",
-    },
-    quote:
-      "Great mobile apps don't just work well; they feel like magic in the user's hands.",
+      linkedin: "https://www.linkedin.com/in/taiwo-olaonipekun-33b455120",
+      twitter: "https://x.com/taiwothefarmer",
+      instagram: "https://www.instagram.com/ola.onipekuntaiwo/",
+      facebook: "https://web.facebook.com/taiwo.olaonipekun.94/"
+    }
   },
   {
     id: 5,
@@ -222,6 +222,114 @@ export const speakersData = [
     quote:
       "Security is not a product, but a process. It's about building a culture of awareness and preparedness.",
   },
+  {
+    id: 7,
+    name: "Prof. Lisa Anderson",
+    title: "Cybersecurity Research Lead",
+    company: "SecureTech Institute",
+    bio: "Professor Anderson is a world-renowned cybersecurity expert with expertise in threat detection, network security, and privacy protection. She has developed security frameworks used by major corporations and government agencies worldwide.\n\nHer research has been published in top security journals, and she regularly consults for international organizations on cybersecurity policy and best practices.",
+    image:
+    "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+    expertise: [
+      "Cybersecurity",
+      "Network Security",
+      "Privacy Protection",
+      "Threat Detection",
+      "Security Architecture",
+    ],
+    category: "story",
+    experience:
+      "20+ years in cybersecurity, former NSA researcher, founded 2 security startups",
+    achievements: [
+      "Developed security frameworks used by Fortune 100 companies",
+      "Published 80+ papers in top cybersecurity journals",
+      "Discovered 15+ critical security vulnerabilities",
+      "Testified before Congress on cybersecurity policy",
+    ],
+    session: {
+      title: "breakout: Essential Cybersecurity for Modern Businesses",
+      time: "2:00 PM - 3:30 PM",
+      venue: "breakout Room B",
+    },
+    social: {
+      linkedin: "https://linkedin.com/in/lisa-anderson-security",
+      website: "https://lisaandersonsec.com",
+    },
+    quote:
+      "Security is not a product, but a process. It's about building a culture of awareness and preparedness.",
+  },
+  {
+    id: 8,
+    name: "Prof. Lisa Anderson",
+    title: "Cybersecurity Research Lead",
+    company: "SecureTech Institute",
+    bio: "Professor Anderson is a world-renowned cybersecurity expert with expertise in threat detection, network security, and privacy protection. She has developed security frameworks used by major corporations and government agencies worldwide.\n\nHer research has been published in top security journals, and she regularly consults for international organizations on cybersecurity policy and best practices.",
+    image:
+    "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+    expertise: [
+      "Cybersecurity",
+      "Network Security",
+      "Privacy Protection",
+      "Threat Detection",
+      "Security Architecture",
+    ],
+    category: "breakout",
+    experience:
+      "20+ years in cybersecurity, former NSA researcher, founded 2 security startups",
+    achievements: [
+      "Developed security frameworks used by Fortune 100 companies",
+      "Published 80+ papers in top cybersecurity journals",
+      "Discovered 15+ critical security vulnerabilities",
+      "Testified before Congress on cybersecurity policy",
+    ],
+    session: {
+      title: "breakout: Essential Cybersecurity for Modern Businesses",
+      time: "2:00 PM - 3:30 PM",
+      venue: "breakout Room B",
+    },
+    social: {
+      linkedin: "https://linkedin.com/in/lisa-anderson-security",
+      website: "https://lisaandersonsec.com",
+    },
+    quote:
+      "Security is not a product, but a process. It's about building a culture of awareness and preparedness.",
+  },
+  {
+    id: 9,
+    name: "Prof. Lisa Anderson",
+    title: "Cybersecurity Research Lead",
+    company: "SecureTech Institute",
+    bio: "Professor Anderson is a world-renowned cybersecurity expert with expertise in threat detection, network security, and privacy protection. She has developed security frameworks used by major corporations and government agencies worldwide.\n\nHer research has been published in top security journals, and she regularly consults for international organizations on cybersecurity policy and best practices.",
+    image:
+    "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+    expertise: [
+      "Cybersecurity",
+      "Network Security",
+      "Privacy Protection",
+      "Threat Detection",
+      "Security Architecture",
+    ],
+    category: "breakout",
+    experience:
+      "20+ years in cybersecurity, former NSA researcher, founded 2 security startups",
+    achievements: [
+      "Developed security frameworks used by Fortune 100 companies",
+      "Published 80+ papers in top cybersecurity journals",
+      "Discovered 15+ critical security vulnerabilities",
+      "Testified before Congress on cybersecurity policy",
+    ],
+    session: {
+      title: "breakout: Essential Cybersecurity for Modern Businesses",
+      time: "2:00 PM - 3:30 PM",
+      venue: "breakout Room B",
+    },
+    social: {
+      linkedin: "https://linkedin.com/in/lisa-anderson-security",
+      website: "https://lisaandersonsec.com",
+    },
+    quote:
+      "Security is not a product, but a process. It's about building a culture of awareness and preparedness.",
+  },
 ];
 
 // Available speaker categories for filtering
@@ -230,6 +338,7 @@ export const speakerCategories = [
   "keynote",
   "breakout",
   "panel",
+  "story",
 ];
 
 // Helper function to get featured speakers

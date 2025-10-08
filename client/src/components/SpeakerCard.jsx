@@ -56,26 +56,6 @@ const SpeakerCard = ({ speaker, onSpeakerClick }) => {
             />
           )}
         </div>
-
-        {/* Hover Overlay */}
-        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">
-            <div className="bg-white rounded-full p-3 shadow-lg">
-              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        {/* Featured Badge */}
-        {speaker.featured && (
-          <div className="absolute top-4 right-4">
-            <span className="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-semibold">
-              Featured
-            </span>
-          </div>
-        )}
       </div>
 
       {/* Speaker Info */}

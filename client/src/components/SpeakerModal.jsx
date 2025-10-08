@@ -27,7 +27,7 @@ const SpeakerModal = ({ speaker, isOpen, onClose }) => {
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop with blur */}
       <div
-        className="fixed inset-0 backdrop-blur-xl bg-black bg-opacity-10 transition-all duration-300"
+        className="fixed inset-0 backdrop-blur-lg bg-opacity-10 transition-all duration-300"
         style={{
           backdropFilter: "blur(20px) saturate(180%) brightness(0.9)",
           WebkitBackdropFilter: "blur(20px) saturate(180%) brightness(0.9)",
