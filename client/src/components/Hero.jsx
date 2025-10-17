@@ -31,9 +31,8 @@ const Hero = () => {
 
         {/* Description */}
         <p className="text-lg sm:text-xl lg:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto font-light">
-          Join us for the most innovative and inspiring conference of the year.
-          Connect with industry leaders, discover cutting-edge technologies, and
-          shape the future.
+          Join us to experience an atmosphere of learning, connection, and transformation.
+          Gain practical insights, meet inspiring leaders, and take bold steps toward your future.
         </p>
 
         {/* Conference Dates */}

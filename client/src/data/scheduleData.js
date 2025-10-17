@@ -12,7 +12,7 @@ export const sessions = [
       avatar:
         "https://images.unsplash.com/photo-1521737711867-e3b97375f902?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
     },
-    venue: "Main Lobby",
+    venue: "Main Auditorium",
     description:
       "Join us for registration, networking, and coffee before the conference begins.",
     hasReminder: true,

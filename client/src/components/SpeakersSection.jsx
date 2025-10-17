@@ -24,7 +24,7 @@ const SpeakersSection = () => {
               <img
                 src={speaker.image}
                 alt={speaker.name}
-                className="w-full h-64 object-cover"
+                className="w-full h-[400px] object-cover"
               />
               <div className="p-6 flex-grow flex flex-col">
                 <h3 className="text-2xl font-bold text-gray-900">

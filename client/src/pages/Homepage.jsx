@@ -35,9 +35,14 @@ const Homepage = () => {
         className="py-20 bg-white"
       >
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center text-gray-800 mb-12">
-            Event Schedule
-          </h2>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Event Schedule
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Explore the exciting lineup of sessions and workshops that will take place during the BISUM Conference.
+            </p>
+          </div>
           <ScheduleList sessions={sessions.slice(0, 3)} />
           <div className="text-center mt-8">
             <Link

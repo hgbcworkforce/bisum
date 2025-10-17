@@ -375,57 +375,53 @@ export const markPaymentAsFailed = async (paymentId, errorMessage = '', errorCod
 // Get payment statistics
 export const getPaymentStats = async (dateRange = null) => {
   try {
+    // Using a view is more efficient, but since we can't create one,
+    // let's ensure the query is as efficient as possible.
+    // If a payment_stats view existed, the query would be:
+    // let { data, error } = await supabase.from('payment_stats').select('*').single();
+
     let query = supabase
       .from(TABLES.PAYMENTS)
-      .select('amount, status, currency, paid_at, created_at')
+      .select('amount, status', { count: 'exact' });
 
-    // Apply date filter if provided
     if (dateRange && dateRange.from && dateRange.to) {
-      query = query.gte('paid_at', dateRange.from).lte('paid_at', dateRange.to)
+      query = query.gte('created_at', dateRange.from).lte('created_at', dateRange.to);
     }
 
-    const { data, error } = await query
+    const { data, error, count } = await query;
 
     if (error) {
-      throw error
+      throw error;
     }
 
-    // Calculate statistics
+    const successfulPayments = data.filter(p => p.status === 'completed');
+    const successfulAmount = successfulPayments.reduce((sum, p) => sum + p.amount, 0);
+    const totalPayments = count;
+
     const stats = {
-      totalPayments: data.length,
-      totalAmount: data.reduce((sum, payment) => sum + (payment.amount || 0), 0),
-      successfulPayments: data.filter(p => p.status === PAYMENT_STATUS.COMPLETED).length,
-      successfulAmount: data
-        .filter(p => p.status === PAYMENT_STATUS.COMPLETED)
-        .reduce((sum, payment) => sum + (payment.amount || 0), 0),
-      pendingPayments: data.filter(p => p.status === PAYMENT_STATUS.PENDING).length,
-      failedPayments: data.filter(p => p.status === PAYMENT_STATUS.FAILED).length,
-      cancelledPayments: data.filter(p => p.status === PAYMENT_STATUS.CANCELLED).length,
-      averageAmount: 0,
-      successRate: 0
-    }
-
-    // Calculate averages and rates
-    if (stats.successfulPayments > 0) {
-      stats.averageAmount = stats.successfulAmount / stats.successfulPayments
-    }
-
-    if (stats.totalPayments > 0) {
-      stats.successRate = ((stats.successfulPayments / stats.totalPayments) * 100).toFixed(2)
-    }
+      totalPayments: totalPayments,
+      totalAmount: data.reduce((sum, p) => sum + p.amount, 0),
+      successfulPayments: successfulPayments.length,
+      successfulAmount: successfulAmount,
+      pendingPayments: data.filter(p => p.status === 'pending').length,
+      failedPayments: data.filter(p => p.status === 'failed').length,
+      cancelledPayments: data.filter(p => p.status === 'cancelled').length,
+      averageAmount: successfulPayments.length > 0 ? successfulAmount / successfulPayments.length : 0,
+      successRate: totalPayments > 0 ? ((successfulPayments.length / totalPayments) * 100).toFixed(2) : 0,
+    };
 
     return {
       success: true,
-      data: stats
-    }
+      data: stats,
+    };
   } catch (error) {
-    console.error('Error fetching payment stats:', error)
+    console.error('Error fetching payment stats:', error);
     return {
       success: false,
-      error: handleSupabaseError(error)
-    }
+      error: handleSupabaseError(error),
+    };
   }
-}
+};
 
 // Get payments by date range
 export const getPaymentsByDateRange = async (startDate, endDate) => {

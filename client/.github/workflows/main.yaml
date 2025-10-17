@@ -1,0 +1,37 @@
+name: Deploy to cPanel
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x, 19.x]
+
+    steps:
+      - name: Checkout Code 🚚
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies 📦
+        run: npm install
+
+      - name: Build React App 🏗️
+        run: npm run build
+
+      - name: Upload to cPanel 📂
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /public_html/bisum.hgbcinfluencers.org/
+          exclude: |
+            **/.git**
+            **/.git*/**
+            **/node_modules/**
+            **/.**

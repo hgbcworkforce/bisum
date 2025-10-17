@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import DashboardLayout from '../../components/admin/DashboardLayout';
 import { registrationAPI, handleApiError } from '../../services/supabaseService';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import { Search } from 'lucide-react';
 
 const AdminAttendees = () => {
   const [attendees, setAttendees] = useState([]);
@@ -8,7 +11,8 @@ const AdminAttendees = () => {
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0 });
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [sortBy, setSortBy] = useState('registration_date-desc');
+  const [isExporting, setIsExporting] = useState(false);
 
   const fetchAttendees = useCallback(async () => {
     try {
@@ -19,7 +23,7 @@ const AdminAttendees = () => {
         page: pagination.page,
         limit: pagination.limit,
         search: searchTerm,
-        paymentStatus: filterStatus === 'all' ? null : filterStatus,
+        sortBy: sortBy,
       };
 
       const result = await registrationAPI.getAllAttendees(options);
@@ -36,7 +40,7 @@ const AdminAttendees = () => {
     } finally {
       setLoading(false);
     }
-  }, [pagination.page, pagination.limit, searchTerm, filterStatus]);
+  }, [pagination.page, pagination.limit, searchTerm, sortBy]);
 
   useEffect(() => {
     fetchAttendees();
@@ -46,29 +50,83 @@ const AdminAttendees = () => {
     setPagination(prev => ({ ...prev, page: newPage }));
   };
 
-  const getPaymentStatusBadge = (status) => {
-    const baseClasses = 'px-2 py-1 text-xs font-medium rounded-full capitalize';
-    switch (status) {
-      case 'completed':
-        return `${baseClasses} bg-green-100 text-green-800`;
-      case 'pending':
-        return `${baseClasses} bg-yellow-100 text-yellow-800`;
-      case 'failed':
-        return `${baseClasses} bg-red-100 text-red-800`;
-      default:
-        return `${baseClasses} bg-gray-100 text-gray-800`;
+  const handleCsvExport = async () => {
+    setIsExporting(true);
+    try {
+      const result = await registrationAPI.exportAttendees();
+      if (result.success) {
+        const data = result.data;
+        const headers = [
+          "S/N",
+          "Registration Date",
+          "Fullname",
+          "Email",
+          "Participant Type",
+          "Breakout Session",
+          "Registration Number"
+        ];
+        const csvContent = [
+          headers.join(','),
+          ...data.map((attendee, index) => [
+            index + 1,
+            new Date(attendee.registration_date).toLocaleDateString(),
+            `"${attendee.first_name} ${attendee.last_name}"`,
+            attendee.email,
+            attendee.registration_type,
+            attendee.breakout_session_choice,
+            attendee.registration_number
+          ].join(','))
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        if (link.href) {
+          URL.revokeObjectURL(link.href);
+        }
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.setAttribute('download', 'attendees.csv');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        throw new Error(result.message || 'Failed to export data');
+      }
+    } catch (err) {
+      const errorInfo = handleApiError(err);
+      alert(`Export failed: ${errorInfo.message}`);
+    } finally {
+      setIsExporting(false);
     }
   };
 
-  const getRegistrationTypeBadge = (type) => {
-    const baseClasses = 'px-2 py-1 text-xs font-medium rounded-full capitalize';
-    switch (type) {
-      case 'student':
-        return `${baseClasses} bg-blue-100 text-blue-800`;
-      case 'professional':
-        return `${baseClasses} bg-purple-100 text-purple-800`;
-      default:
-        return `${baseClasses} bg-gray-100 text-gray-800`;
+  const handlePdfExport = async () => {
+    setIsExporting(true);
+    try {
+      const result = await registrationAPI.exportAttendees();
+      if (result.success) {
+        const doc = new jsPDF();
+        doc.autoTable({
+          head: [['S/N', 'Registration Date', 'Fullname', 'Email', 'Participant Type', 'Breakout Session', 'Reg. Number']],
+          body: result.data.map((attendee, index) => [
+            index + 1,
+            new Date(attendee.registration_date).toLocaleDateString(),
+            `${attendee.first_name} ${attendee.last_name}`,
+            attendee.email,
+            attendee.registration_type,
+            attendee.breakout_session_choice,
+            attendee.registration_number,
+          ]),
+        });
+        doc.save('attendees.pdf');
+      } else {
+        throw new Error(result.message || 'Failed to export data');
+      }
+    } catch (err) {
+      const errorInfo = handleApiError(err);
+      alert(`Export failed: ${errorInfo.message}`);
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -92,9 +150,20 @@ const AdminAttendees = () => {
               Manage and view all registered conference attendees
             </p>
           </div>
-          <div className="mt-4 sm:mt-0">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-              Export Data
+          <div className="mt-4 sm:mt-0 flex space-x-2">
+            <button
+              onClick={handleCsvExport}
+              disabled={isExporting}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 disabled:bg-gray-400"
+            >
+              {isExporting ? 'Exporting...' : 'Export CSV'}
+            </button>
+            <button
+              onClick={handlePdfExport}
+              disabled={isExporting}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 disabled:bg-gray-400"
+            >
+              {isExporting ? 'Exporting...' : 'Export PDF'}
             </button>
           </div>
         </div>
@@ -105,9 +174,7 @@ const AdminAttendees = () => {
             {/* Search */}
             <div className="relative flex-1 max-w-md">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+                <Search className="h-5 w-5 text-gray-400" />
               </div>
               <input
                 type="text"
@@ -118,17 +185,23 @@ const AdminAttendees = () => {
               />
             </div>
 
-            {/* Filter */}
+            {/* Sort By */}
             <div className="flex items-center space-x-4">
               <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
                 className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-lg"
               >
-                <option value="all">All Status</option>
-                <option value="completed">Completed</option>
-                <option value="pending">Pending</option>
-                <option value="failed">Failed</option>
+                <option value="registration_date-desc">Registration Date (Newest)</option>
+                <option value="registration_date-asc">Registration Date (Oldest)</option>
+                <option value="registration_number-asc">Registration Number (Asc)</option>
+                <option value="registration_number-desc">Registration Number (Desc)</option>
+                <option value="first_name-asc">Name (A-Z)</option>
+                <option value="first_name-desc">Name (Z-A)</option>
+                <option value="breakout_session_choice-asc">Breakout Session (A-Z)</option>
+                <option value="breakout_session_choice-desc">Breakout Session (Z-A)</option>
+                <option value="registration_type-asc">Participant Type (A-Z)</option>
+                <option value="registration_type-desc">Participant Type (Z-A)</option>
               </select>
             </div>
           </div>
@@ -141,76 +214,70 @@ const AdminAttendees = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Attendee
+                    S/N
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Contact
+                    Registration Date
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Registration
+                    Fullname
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                    Email
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Type
+                    Participant Type
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Breakout Session
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Reg. Number
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {loading ? (
                   <tr>
-                    <td colSpan="6" className="text-center py-12">
+                    <td colSpan="7" className="text-center py-12">
                       <div className="text-gray-500">Loading attendees...</div>
                     </td>
                   </tr>
                 ) : error ? (
                   <tr>
-                    <td colSpan="6" className="text-center py-12">
+                    <td colSpan="7" className="text-center py-12">
                       <div className="text-red-500">{error}</div>
                     </td>
                   </tr>
                 ) : attendees.length > 0 ? (
-                  attendees.map((attendee) => (
+                  attendees.map((attendee, index) => (
                     <tr key={attendee.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">{attendee.firstName} {attendee.lastName}</div>
-                            <div className="text-sm text-gray-500">{attendee.registrationNumber}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{attendee.email}</div>
-                        <div className="text-sm text-gray-500">{attendee.phone}</div>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {(pagination.page - 1) * pagination.limit + index + 1}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {formatDate(attendee.createdAt)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={getPaymentStatusBadge(attendee.paymentStatus)}>
-                          {attendee.paymentStatus}
-                        </span>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {attendee.firstName} {attendee.lastName}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={getRegistrationTypeBadge(attendee.registrationType)}>
-                          {attendee.registrationType}
-                        </span>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {attendee.email}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button className="text-blue-600 hover:text-blue-900">
-                          View
-                        </button>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">
+                        {attendee.registrationType}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">
+                        {attendee.breakoutSessionChoice}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {attendee.registrationNumber}
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6" className="text-center py-12">
+                    <td colSpan="7" className="text-center py-12">
                       <p className="text-gray-500 text-lg">No attendees found</p>
                     </td>
                   </tr>

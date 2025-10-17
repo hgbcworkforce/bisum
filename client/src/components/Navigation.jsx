@@ -37,10 +37,9 @@ const Navigation = ({ onNavigate }) => {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex-shrink-0">
-            <h1 className="text-2xl font-bold text-blue-600">BISUM</h1>
-            <p className="text-xs text-gray-600 -mt-1">Conference 2025</p>
-          </div>
+          <a href="/" className="flex-shrink-0">
+            <img src="https://bhxxyjgpzozcvuyxzfyn.supabase.co/storage/v1/object/public/Bisum%20Pictures/BISUM%20logo.png" alt="BISUM Conference" className="w-18 h-18" />
+          </a>
 
           {/* Desktop Navigation */}
           <div className="hidden md:block">

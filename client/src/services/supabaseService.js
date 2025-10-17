@@ -459,9 +459,9 @@ export const paymentAPI = {
             customizations: {
               title: 'BISUM Conference 2025',
               description: `Registration fee for ${registrationType}`,
-              logo: 'https://res.cloudinary.com/ddk9omr4r/image/upload/v1758730588/lewas-growth-oil-logo_l8gsjy.png' // QUICK FIX: Replace localhost URL with a public one.
+              logo: 'https://bhxxyjgpzozcvuyxzfyn.supabase.co/storage/v1/object/public/Bisum%20Pictures/BISUM%20logo.png' // QUICK FIX: Replace localhost URL with a public one.
             },
-            redirect_url: `https://www.google.com/`, // Dynamic redirect URL
+            redirect_url: `https://www.bisum.hgbcinfluencers.org/`, // Dynamic redirect URL
             meta: {
               // Pass all registration data to the webhook/verification
               registrationData: JSON.stringify(registrationData)

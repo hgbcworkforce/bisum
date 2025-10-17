@@ -6,7 +6,6 @@ import Registration from "./pages/Registration";
 import PaymentCallback from "./pages/PaymentCallback";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminAttendees from "./pages/admin/AdminAttendees";
-import AdminSettings from "./pages/admin/AdminSettings";
 import AdminPaymentSummary from "./pages/admin/AdminPaymentSummary";
 import PaymentSuccess from './pages/PaymentSuccess';
 import AdminAuth from "./pages/admin/AdminAuth";
@@ -26,7 +25,6 @@ function App() {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/auth" element={<AdminAuth />} />
           <Route path="/admin/attendees" element={<AdminAttendees />} />
-          <Route path="/admin/settings" element={<AdminSettings />} />
           <Route path="/admin/payments" element={<AdminPaymentSummary />} />
         </Routes>
       </div>

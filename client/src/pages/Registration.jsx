@@ -7,6 +7,7 @@ import {
   registrationTypes,
   formatCurrency,
 } from "../services/supabaseService";
+import { Check, XCircle, ArrowRight } from "lucide-react";
 
 const Registration = () => {
   const [formData, setFormData] = useState({
@@ -220,19 +221,7 @@ const Registration = () => {
           <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-lg text-center">
             <div>
               <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
-                <svg
-                  className="h-8 w-8 text-green-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
+                <Check className="h-8 w-8 text-green-600" />
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
                 Registration Successful!
@@ -286,17 +275,17 @@ const Registration = () => {
       <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 pt-32">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-6xl font-extrabold mb-6">
-            Register for BISUM Conference 2024
+            Register for BISUM Conference 2025
           </h1>
           <p className="text-xl md:text-2xl text-blue-100 mb-8">
-            Join us for an inspiring day of innovation, learning, and networking
+            Join us for an inspiring experience of innovation, learning, and networking
           </p>
           <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 inline-block">
             <p className="text-lg font-semibold mb-2">
-              November 15, 2025 • Lagos, Nigeria
+              November 13-15, 2025 • Higher Ground Baptist Church, Ogbomoso, Nigeria.
             </p>
             <p className="text-blue-200">
-              Secure your spot at Nigeria's premier tech conference
+              Secure your spot at BISUM'25
             </p>
           </div>
         </div>
@@ -320,17 +309,7 @@ const Registration = () => {
               {errors.general && (
                 <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
                   <div className="flex">
-                    <svg
-                      className="h-5 w-5 text-red-400"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                    <XCircle className="h-5 w-5 text-red-400" />
                     <div className="ml-3">
                       <p className="text-sm text-red-600">{errors.general}</p>
                     </div>
@@ -341,17 +320,7 @@ const Registration = () => {
               {errors.payment && (
                 <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
                   <div className="flex">
-                    <svg
-                      className="h-5 w-5 text-red-400"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                    <XCircle className="h-5 w-5 text-red-400" />
                     <div className="ml-3">
                       <p className="text-sm text-red-600">{errors.payment}</p>
                     </div>
@@ -665,19 +634,7 @@ const Registration = () => {
                         {currentPrice > 0
                           ? "Register & Pay Now"
                           : "Complete Registration"}
-                        <svg
-                          className="ml-2 -mr-1 h-5 w-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
+                        <ArrowRight className="ml-2 -mr-1 h-5 w-5" />
                       </>
                     )}
                   </button>

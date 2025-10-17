@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Navigation, Footer } from "../components";
 import { paymentAPI, registrationAPI, handleApiError } from "../services/supabaseService";
+import { Check, AlertCircle } from "lucide-react";
 
 const PaymentCallback = () => {
   const [status, setStatus] = useState("processing"); // processing, success, error
@@ -88,37 +89,13 @@ const PaymentCallback = () => {
       case "success":
         return (
           <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
-            <svg
-              className="h-8 w-8 text-green-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
+            <Check className="h-8 w-8 text-green-600" />
           </div>
         );
       case "error":
         return (
           <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
-            <svg
-              className="h-8 w-8 text-red-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+            <AlertCircle className="h-8 w-8 text-red-600" />
           </div>
         );
       default:

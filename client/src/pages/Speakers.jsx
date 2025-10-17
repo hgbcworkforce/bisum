@@ -5,6 +5,7 @@ import {
   speakerCategories,
   filterAndSearchSpeakers,
 } from "../data/speakersData";
+import { Users, Globe, Search } from "lucide-react";
 
 const Speakers = () => {
   const [selectedSpeaker, setSelectedSpeaker] = useState(null);
@@ -55,35 +56,11 @@ const Speakers = () => {
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-8 text-lg">
                 <div className="flex items-center space-x-2">
-                  <svg
-                    className="w-6 h-6 text-blue-200"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"
-                    />
-                  </svg>
+                  <Users className="w-6 h-6 text-blue-200" />
                   <span>{speakers.length} Expert Speakers</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <svg
-                    className="w-6 h-6 text-blue-200"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9m0 9c-5 0-9-4-9-9s4-9 9-9"
-                    />
-                  </svg>
+                  <Globe className="w-6 h-6 text-blue-200" />
                   <span>Global Industry Leaders</span>
                 </div>
               </div>
@@ -133,19 +110,7 @@ const Speakers = () => {
               {/* Search Bar */}
               <div className="relative w-full lg:w-80">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg
-                    className="h-5 w-5 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
+                  <Search className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
                   type="text"
@@ -179,19 +144,7 @@ const Speakers = () => {
             ) : (
               /* Empty State */
               <div className="text-center py-20">
-                <svg
-                  className="w-20 h-20 text-gray-300 mx-auto mb-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
+                <Search className="w-20 h-20 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-2xl font-semibold text-gray-900 mb-2">
                   No speakers found
                 </h3>

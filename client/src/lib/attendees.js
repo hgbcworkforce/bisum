@@ -303,51 +303,44 @@ export const deleteAttendee = async (id) => {
 // Get registration statistics
 export const getRegistrationStats = async () => {
   try {
-    // Get all necessary fields
-    const { data: allAttendees, error: allError } = await supabase
-      .from(TABLES.ATTENDEES)
-      .select('registration_type, payment_status, status, breakout_session_choice');
+    const { data, error } = await supabase
+      .from('registration_stats')
+      .select('*')
+      .single();
 
-    if (allError) throw allError;
+    if (error) throw error;
 
-    // Calculate breakout session popularity
-    const sessionCounts = allAttendees.reduce((acc, attendee) => {
-      const choice = attendee.breakout_session_choice;
-      if (choice) {
-        acc[choice] = (acc[choice] || 0) + 1;
-      }
-      return acc;
-    }, {});
-
-    let popularSession = { name: 'N/A', count: 0 };
-    if (Object.keys(sessionCounts).length > 0) {
-      const mostPopular = Object.entries(sessionCounts).sort((a, b) => b[1] - a[1])[0];
-      popularSession = {
-        name: mostPopular[0],
-        count: mostPopular[1],
-      };
-    }
-
-    // Calculate other statistics
-    const stats = {
-      totalRegistrations: allAttendees.length,
-      activeRegistrations: allAttendees.filter(a => a.status === ATTENDEE_STATUS.ACTIVE).length,
-      pendingPayments: allAttendees.filter(a => a.payment_status === 'pending').length,
-      completedPayments: allAttendees.filter(a => a.payment_status === 'completed').length,
-      failedPayments: allAttendees.filter(a => a.payment_status === 'failed').length,
-      byType: {
-        student: allAttendees.filter(a => a.registration_type === REGISTRATION_TYPES.STUDENT).length,
-        professional: allAttendees.filter(a => a.registration_type === REGISTRATION_TYPES.PROFESSIONAL).length,
-        speaker: allAttendees.filter(a => a.registration_type === REGISTRATION_TYPES.SPEAKER).length,
-        sponsor: allAttendees.filter(a => a.registration_type === REGISTRATION_TYPES.SPONSOR).length
-      },
-      popularSession: popularSession, // Add the new stat here
+    // Calculate breakout session popularity from the view data
+    const sessionCounts = {
+      investment: data.investment_session || 0,
+      tech: data.tech_session || 0,
+      fashion: data.fashion_session || 0,
+      agriculture: data.agriculture_session || 0,
+      foods: data.foods_session || 0,
     };
 
-    // Calculate conversion rate
-    stats.paymentCompletionRate = stats.totalRegistrations > 0
-      ? ((stats.completedPayments / stats.totalRegistrations) * 100).toFixed(2)
-      : 0;
+    const popularSession = Object.entries(sessionCounts).sort((a, b) => b[1] - a[1])[0];
+
+    const stats = {
+      totalRegistrations: data.total_registrations || 0,
+      activeRegistrations: data.total_registrations || 0, // Assuming view only counts active
+      pendingPayments: data.pending_payments || 0,
+      completedPayments: data.completed_payments || 0,
+      failedPayments: data.failed_payments || 0,
+      byType: {
+        student: data.student_count || 0,
+        professional: data.professional_count || 0,
+        speaker: data.speaker_count || 0,
+        sponsor: data.sponsor_count || 0,
+      },
+      popularSession: {
+        name: popularSession[0],
+        count: popularSession[1],
+      },
+      paymentCompletionRate: data.total_registrations > 0
+        ? ((data.completed_payments / data.total_registrations) * 100).toFixed(2)
+        : 0,
+    };
 
     return {
       success: true,

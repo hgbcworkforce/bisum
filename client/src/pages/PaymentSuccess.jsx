@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Navigation, Footer } from "../components";
 import { paymentAPI, formatCurrency } from "../services/supabaseService";
+import { X, Check, Download } from "lucide-react";
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
@@ -81,7 +82,7 @@ Payment Date: ${paymentData?.paid_at ? new Date(paymentData.paid_at).toLocaleDat
 Thank you for registering for BISUM Conference 2025!
 We look forward to seeing you at the event.
 
-For any inquiries, please contact: info@bisumconference.org
+For any inquiries, please contact: info@bisum.hgbcinfluencers.org
     `;
 
     const blob = new Blob([receiptContent], { type: 'text/plain' });
@@ -125,9 +126,7 @@ For any inquiries, please contact: info@bisumconference.org
           <div className="max-w-md mx-auto">
             <div className="bg-white rounded-xl shadow-md p-8 text-center">
               <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
-                <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <X className="w-8 h-8 text-red-600" />
               </div>
               <h2 className="text-xl font-semibold text-gray-900 mb-2">
                 Payment Processing Failed
@@ -167,9 +166,7 @@ For any inquiries, please contact: info@bisumconference.org
               {/* Success Header */}
               <div className="bg-green-50 border-b border-green-200 p-8 text-center">
                 <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                  <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
+                  <Check className="w-10 h-10 text-green-600" />
                 </div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">
                   Registration Successful! 🎉
@@ -245,9 +242,7 @@ For any inquiries, please contact: info@bisumconference.org
                     onClick={handleDownloadReceipt}
                     className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center"
                   >
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
+                    <Download className="w-5 h-5 mr-2" />
                     Download Receipt
                   </button>
                   <button

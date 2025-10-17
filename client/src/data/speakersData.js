@@ -79,43 +79,37 @@ export const speakersData = [
   },
   {
     id: 3,
-    name: "Mr. Sayi Ajamu",
-    title: "Environmental Tech Researcher",
-    company: "GreenTech Innovation Labs",
-    bio: "Dr. Jennifer Green specializes in developing sustainable technology solutions and has led multiple green tech initiatives. Her research focuses on renewable energy systems, sustainable manufacturing, and environmental impact assessment of emerging technologies.\n\nShe has been instrumental in developing policies for sustainable tech adoption across Africa and serves as an advisor to several governments on environmental technology.",
+    name: "Mr. Seyi Ajamu",
+    title: "Creative Visual Storyteller & Youth Leader",
+    company: "ThriveZone Africa",
+    bio: "Seyi Ajamu is a Creative Visual Storyteller and Personal Photographer to the Chief of Staff to the Governor of Oyo State. An alumnus of the Department of Performing Arts, University of Ilorin, he is also a passionate Teens Coach and catalyst for youth-driven communities. He leads ThriveZone Africa, a platform raising and nurturing teenagers, and is the convener of SaltHub, which equips and empowers youths across Oyo State. Currently serving as the Supervisory Councillor for Intergovernmental Relations in Ogbomoso North Local Government, Seyi is dedicated to inspiring and mentoring the next generation of African leaders and change-makers.",
     image:
-      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+    "https://bhxxyjgpzozcvuyxzfyn.supabase.co/storage/v1/object/public/Bisum%20Pictures/Seyi%20Ajamu.jpeg",
     expertise: [
-      "Sustainable Technology",
-      "Green Energy",
-      "Environmental Impact",
-      "Clean Tech",
-      "Renewable Systems",
+      "Creative Storytelling",
+      "Youth Mentorship",
+      "Community Leadership",
+      "Performing Arts",
+      "Capacity Building"
     ],
     category: "keynote",
-
-    experience:
-      "18+ years in environmental technology, former UN Environmental Programme advisor",
+    experience: "10+ years in youth empowerment, leadership, and creative storytelling",
     achievements: [
-      "Led development of solar systems powering 100k+ homes",
-      "Advised 15+ African governments on sustainable tech policies",
-      "Recipient of Global Green Tech Innovation Award",
-      "Founded non-profit providing clean tech to rural communities",
+      "Personal Photographer to the Chief of Staff, Oyo State",
+      "Team Lead of ThriveZone Africa, raising and mentoring teenagers",
+      "Convener of SaltHub, empowering youths in Oyo State",
+      "Supervisory Councillor for Intergovernmental Relations, Ogbomoso North LG",
+      "Recognized for impactful mentorship and community development across Nigeria"
     ],
     session: {
-      title: "Sustainable Technology: Green Solutions for Tomorrow",
+      title: "Keynote: Empowering the Next Generation of African Leaders",
       time: "4:15 PM - 5:00 PM",
-      venue: "Main Auditorium",
+      venue: "Main Auditorium"
     },
     social: {
-      linkedin: "https://linkedin.com/in/jennifer-green-greentech",
-      website: "https://jennifergreentech.org",
-      twitter: "https://twitter.com/jennifergreen",
-      instagram: "https://instagram.com/jennifergreen",
-      facebook: "https://facebook.com/jennifergreen",
-    },
-    quote:
-      "Technology without sustainability is just sophisticated destruction. We must build for the planet we want to leave behind.",
+      instagram: "https://www.instagram.com/seyiajamu/",
+      facebook: "https://web.facebook.com/seyiajamu16/"
+    }
   },
   {
     id: 4,
@@ -154,37 +148,37 @@ export const speakersData = [
   },
   {
     id: 5,
-    name: "David Okonkwo",
-    title: "Fintech Innovation Director",
-    company: "AfriPay Solutions",
-    bio: "David is a fintech pioneer who has revolutionized mobile payments across West Africa. His work has enabled millions of people to access financial services for the first time. He has deep expertise in mobile money, digital banking, and financial inclusion technologies.\n\nUnder his leadership, AfriPay has processed over $2 billion in transactions and serves 10+ million users across 8 African countries.",
-    image:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+    name: "Mr. Ifeoluwa Alade",
+    title: "Photographer, Cinematographer & Media Entrepreneur",
+    company: "Love It Studios",
+    bio: "Ifeoluwa Alade is a passionate photographer, cinematographer, and media entrepreneur. He is the Founder and CEO of Love It Studios, an independent media enterprise offering premium media and branding services to clients across all levels — from small businesses to large corporations. With a strong background in visual storytelling, content creation, and digital communication, Ifeoluwa has successfully executed numerous projects spanning event coverage, brand storytelling, and creative production. Formerly the official photographer to the Student Union Government during his university days, his experience honed his creative vision and fueled his passion for impactful storytelling through imagery. His work continues to embody excellence, authenticity, and innovation, inspiring creativity and empowering others through the art of media.",
+    image: "https://bhxxyjgpzozcvuyxzfyn.supabase.co/storage/v1/object/public/Bisum%20Pictures/Loveit%20Headshot.jpg",
     expertise: [
-      "Fintech",
-      "Mobile Payments",
-      "Digital Banking",
-      "Financial Inclusion",
-      "API Development",
+      "Photography",
+      "Cinematography",
+      "Visual Storytelling",
+      "Brand Communication",
+      "Creative Direction"
     ],
-    category: "panel",
-    experience:
-      "10+ years in fintech, former Goldman Sachs technology division",
+    category: "breakout",
+    experience: "7+ years in photography, cinematography, and digital media production",
     achievements: [
-      "Built payment platform processing $2B+ annually",
-      "Enabled financial access for 10M+ previously unbanked users",
-      "Winner of African Fintech Innovation Award 2022",
-      "Advisor to Central Bank of Nigeria on digital currency",
+      "Founder & CEO of Love It Studios",
+      "Executed diverse visual storytelling and branding projects",
+      "Served as official photographer to the Student Union Government",
+      "Empowered young creatives through visual media mentorship",
+      "Recognized for excellence and innovation in creative media production"
     ],
     session: {
-      title: "Panel: The Future of Digital Payments in Africa",
-      time: "3:15 PM - 4:00 PM",
-      venue: "Panel Hall",
+      title: "Breakout: Telling Impactful Stories Through Visual Media",
+      time: "2:00 PM - 3:30 PM",
+      venue: "Breakout Room B"
     },
     social: {
-      linkedin: "https://linkedin.com/in/david-okonkwo-fintech",
-      twitter: "https://twitter.com/davidfintech",
-    },
+      linkedin: "",
+      instagram: "",
+      facebook: ""
+    }
   },
   {
     id: 6,
