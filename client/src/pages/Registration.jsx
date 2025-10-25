@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
 import { Navigation, Footer } from "../components";
 import {
   registrationAPI,
@@ -7,7 +7,7 @@ import {
   registrationTypes,
   formatCurrency,
 } from "../services/supabaseService";
-import { Check, XCircle, ArrowRight } from "lucide-react";
+import { Check, XCircle, ArrowRight, AlertCircle } from "lucide-react";
 
 const Registration = () => {
   const [formData, setFormData] = useState({
@@ -27,8 +27,10 @@ const Registration = () => {
   const [registrationComplete, setRegistrationComplete] = useState(false);
   const [attendeeData, setAttendeeData] = useState(null);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [currentTransactionRef, setCurrentTransactionRef] = useState(null);
 
-  // Registration types are now imported from supabaseService
+  // Prevent double submissions
+  const isProcessingRef = useRef(false);
 
   const sessionOptions = [
     "Artificial Intelligence & Machine Learning",
@@ -107,7 +109,6 @@ const Registration = () => {
     if (!formData.phoneNumber.trim()) {
       newErrors.phoneNumber = "Phone number is required";
     } else {
-      // Remove all non-digit characters for validation
       const digitsOnly = formData.phoneNumber.replace(/\D/g, "");
       if (digitsOnly.length < 10 || digitsOnly.length > 15) {
         newErrors.phoneNumber = "Please enter a valid phone number (10-15 digits)";
@@ -130,86 +131,196 @@ const Registration = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const showSuccessMessage = (message) => {
+    alert(message);
+  };
 
-    if (!validateForm()) {
-      const firstErrorField = Object.keys(errors)[0];
-      if (firstErrorField) {
-        const element = document.querySelector(`[name="${firstErrorField}"]`);
-        element?.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
+  const showErrorMessage = (message) => {
+    alert(message);
+  };
+
+  // Improved payment handler with timeout and better error handling
+  const handlePaystackPayment = useCallback(async (response) => {
+    console.log("Paystack payment successful", response);
+
+    // Prevent duplicate processing
+    if (isProcessingRef.current) {
+      console.log("Payment already being processed");
       return;
     }
 
-    setIsSubmitting(true);
-    setErrors({});
+    isProcessingRef.current = true;
+    setIsProcessingPayment(true);
 
     try {
-      // Save form data to session storage
+      // Add timeout for verification (30 seconds)
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Payment verification timeout. Please contact support with your transaction reference.')), 30000)
+      );
+
+      const verificationPromise = paymentAPI.verifyPayment({
+        transaction_ref: response.reference,
+      });
+
+      const verificationResult = await Promise.race([verificationPromise, timeoutPromise]);
+
+      if (verificationResult.success) {
+        setAttendeeData(verificationResult.data);
+        setSubmitSuccess(true);
+        setRegistrationComplete(true);
+        sessionStorage.removeItem("registrationData");
+        sessionStorage.removeItem("lastPaymentRef");
+        showSuccessMessage("Registration completed successfully! Welcome to BISUM Conference 2025.");
+      } else {
+        throw new Error(verificationResult.error || "Payment verification failed.");
+      }
+    } catch (error) {
+      console.error("Error verifying payment:", error);
+      const errorMessage = error.message || "Payment verification failed. Please contact support.";
+      setErrors({ payment: errorMessage });
+      showErrorMessage(`${errorMessage}\n\nTransaction Reference: ${response.reference}\nPlease save this reference for support.`);
+      sessionStorage.setItem("failedPaymentRef", response.reference);
+    } finally {
+      setIsSubmitting(false);
+      setIsProcessingPayment(false);
+      isProcessingRef.current = false;
+    }
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Prevent double submissions
+    if (isProcessingRef.current) {
+      console.log("Form already being processed");
+      return;
+    }
+
+    try {
+      // Validate form
+      if (!validateForm()) {
+        const firstErrorField = Object.keys(errors)[0];
+        if (firstErrorField) {
+          const element = document.querySelector(`[name="${firstErrorField}"]`);
+          element?.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+        return;
+      }
+
+      // Prepare submission
+      setIsSubmitting(true);
+      setErrors({});
+      isProcessingRef.current = true;
       sessionStorage.setItem("registrationData", JSON.stringify(formData));
 
-      // If payment is required, proceed to payment
+      // If payment is required
       if (currentPrice > 0) {
-        const paymentResult = await paymentAPI._initializeFlutterwavePayment({
-          amount: currentPrice,
-          registrationData: formData,
-        });
+        const paystackPublicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
+        console.log("Paystack Public Key:", paystackPublicKey, typeof paystackPublicKey);
 
-        if (paymentResult.success && paymentResult.data.flutterwaveConfig) {
-          const config = paymentResult.data.flutterwaveConfig;
+        if (!paystackPublicKey) {
+          throw new Error("Payment configuration error. Please contact support.");
+        }
 
-          const form = document.createElement("form");
-          form.method = "POST";
-          form.action = "https://checkout.flutterwave.com/v3/hosted/pay";
-          form.style.display = "none";
+        if (typeof PaystackPop === "undefined") {
+          throw new Error("Payment system not loaded. Please refresh the page and try again.");
+        }
 
-          Object.keys(config).forEach((key) => {
-            if (typeof config[key] === "object") {
-              Object.keys(config[key]).forEach((subKey) => {
-                const input = document.createElement("input");
-                input.name = `${key}[${subKey}]`;
-                input.value = config[key][subKey];
-                form.appendChild(input);
-              });
-            } else {
-              const input = document.createElement("input");
-              input.name = key;
-              input.value = config[key];
-              form.appendChild(input);
-            }
+        const email = formData.email;
+        const amount = currentPrice * 100;
+        const reference = `BISUM-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+
+        setCurrentTransactionRef(reference);
+        sessionStorage.setItem("lastPaymentRef", reference);
+
+        console.log("Initializing Paystack with:", { email, amount, reference });
+
+        try {
+          const handler = PaystackPop.setup({
+            key: paystackPublicKey,
+            email: email,
+            amount: amount,
+            currency: "NGN",
+            ref: reference,
+            metadata: {
+              custom_fields: [
+                {
+                  display_name: "Full Name",
+                  variable_name: "full_name",
+                  value: `${formData.firstName} ${formData.lastName}`,
+                },
+                {
+                  display_name: "Phone",
+                  variable_name: "phone",
+                  value: formData.phoneNumber,
+                },
+                {
+                  display_name: "Registration Type",
+                  variable_name: "registration_type",
+                  value: formData.registrationType,
+                },
+              ],
+              registration_type: formData.registrationType,
+              breakout_session: formData.breakoutSessionChoice,
+              referral_source: formData.referralSource,
+            },
+            callback: function(response) {
+              handlePaystackPayment(response);
+            },
+            onClose: function() {
+              setIsSubmitting(false);
+              isProcessingRef.current = false;
+              console.log("Payment window closed by user");
+              const message = "Payment window was closed. If you completed the payment, please wait for confirmation or contact support.\n\nTransaction Reference: " + reference;
+              console.log(message);
+            },
           });
 
-          document.body.appendChild(form);
-          form.submit();
-        } else {
-          throw new Error("Payment initialization failed");
+          handler.openIframe();
+        } catch (paystackError) {
+          console.error("Paystack initialization error:", paystackError);
+          isProcessingRef.current = false;
+          throw new Error("Failed to initialize payment. Please try again.");
         }
+
       } else {
-        // Free registration (speakers) - This flow needs to be re-evaluated.
-        // For now, we can just redirect to a success page with the data.
-        // Or we can register them directly here. Let's do that.
-        const registrationResult = await registrationAPI.register(formData);
-        if (registrationResult.success) {
-          setAttendeeData(registrationResult.data);
-          setSubmitSuccess(true);
-          setRegistrationComplete(true);
-          showSuccessMessage(
-            "Registration completed successfully! Welcome to BISUM Conference 2025.",
-          );
+        // Free registration (no payment)
+        try {
+          const registrationResult = await registrationAPI.registerAttendee(formData);
+
+          if (registrationResult.success) {
+            setAttendeeData(registrationResult.data);
+            setSubmitSuccess(true);
+            setRegistrationComplete(true);
+            sessionStorage.removeItem("registrationData");
+            showSuccessMessage(
+              "Registration completed successfully! Welcome to BISUM Conference 2025."
+            );
+          } else {
+            throw new Error(registrationResult.error || "Registration failed. Please try again.");
+          }
+        } catch (regError) {
+          console.error("Registration error:", regError);
+          throw regError;
+        } finally {
+          isProcessingRef.current = false;
         }
       }
     } catch (error) {
       const errorInfo = handleApiError(error);
       console.error("Registration error:", error);
       setErrors({ general: errorInfo.message });
-    } finally {
+      showErrorMessage(errorInfo.message);
       setIsSubmitting(false);
+      isProcessingRef.current = false;
     }
   };
 
-  const showSuccessMessage = (message) => {
-    alert(message); // You can replace this with a more elegant modal/toast
+  // Retry payment function
+  const retryPayment = () => {
+    setErrors({});
+    setIsSubmitting(false);
+    isProcessingRef.current = false;
   };
 
   // Show success page after registration completion
@@ -227,7 +338,7 @@ const Registration = () => {
                 Registration Successful!
               </h2>
               <p className="text-gray-600 mb-4">
-                Thank you for registering for BISUM Conference 2024.
+                Thank you for registering for BISUM Conference 2025.
                 {attendeeData && (
                   <>
                     {" "}
@@ -239,13 +350,12 @@ const Registration = () => {
               {isProcessingPayment ? (
                 <div className="text-blue-600">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                  <p>Redirecting to payment...</p>
+                  <p>Processing payment verification...</p>
                 </div>
               ) : currentPrice > 0 ? (
-                <div className="bg-yellow-50 p-4 rounded-lg mb-4">
-                  <p className="text-yellow-800">
-                    Complete your registration by making payment of{" "}
-                    <strong>{formatCurrency(currentPrice)}</strong>
+                <div className="bg-green-50 p-4 rounded-lg mb-4">
+                  <p className="text-green-800">
+                    Payment of <strong>{formatCurrency(currentPrice)}</strong> has been completed successfully!
                   </p>
                 </div>
               ) : (
@@ -268,10 +378,8 @@ const Registration = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
       <Navigation onNavigate={scrollToSection} />
 
-      {/* Page Header */}
       <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 pt-32">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-6xl font-extrabold mb-6">
@@ -291,7 +399,6 @@ const Registration = () => {
         </div>
       </section>
 
-      {/* Registration Form */}
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
@@ -305,7 +412,6 @@ const Registration = () => {
                 </p>
               </div>
 
-              {/* General Error Message */}
               {errors.general && (
                 <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
                   <div className="flex">
@@ -319,23 +425,45 @@ const Registration = () => {
 
               {errors.payment && (
                 <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
+                  <div className="flex items-start">
+                    <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
+                    <div className="ml-3 flex-1">
+                      <p className="text-sm text-red-600 mb-2">{errors.payment}</p>
+                      {currentTransactionRef && (
+                        <p className="text-xs text-red-500 mb-2">
+                          Reference: {currentTransactionRef}
+                        </p>
+                      )}
+                      <button
+                        onClick={retryPayment}
+                        className="text-sm font-medium text-red-600 hover:text-red-500 underline"
+                      >
+                        Clear and Try Again
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {typeof PaystackPop === "undefined" && currentPrice > 0 && (
+                <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-md p-4">
                   <div className="flex">
-                    <XCircle className="h-5 w-5 text-red-400" />
+                    <AlertCircle className="h-5 w-5 text-yellow-400" />
                     <div className="ml-3">
-                      <p className="text-sm text-red-600">{errors.payment}</p>
+                      <p className="text-sm text-yellow-700">
+                        Payment system is loading... If this message persists, please refresh the page.
+                      </p>
                     </div>
                   </div>
                 </div>
               )}
 
               <form onSubmit={handleSubmit} className="space-y-8">
-                {/* Personal Information */}
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-4">
                     Personal Information
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {/* First Name */}
                     <div>
                       <label
                         htmlFor="firstName"
@@ -364,7 +492,6 @@ const Registration = () => {
                       )}
                     </div>
 
-                    {/* Last Name */}
                     <div>
                       <label
                         htmlFor="lastName"
@@ -393,7 +520,6 @@ const Registration = () => {
                       )}
                     </div>
 
-                    {/* Email */}
                     <div>
                       <label
                         htmlFor="email"
@@ -421,7 +547,6 @@ const Registration = () => {
                       )}
                     </div>
 
-                    {/* Phone Number */}
                     <div>
                       <label
                         htmlFor="phoneNumber"
@@ -454,7 +579,6 @@ const Registration = () => {
                   </div>
                 </div>
 
-                {/* Registration Type */}
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-4">
                     Registration Type
@@ -487,7 +611,6 @@ const Registration = () => {
                   </div>
                 </div>
 
-                {/* Referral Source */}
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-4">
                     How did you hear about us? *
@@ -498,10 +621,11 @@ const Registration = () => {
                       name="referralSource"
                       value={formData.referralSource}
                       onChange={handleInputChange}
-                      className={`block w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.referralSource
-                        ? "border-red-300 bg-red-50"
-                        : "border-gray-300"
-                        }`}
+                      className={`block w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                        errors.referralSource
+                          ? "border-red-300 bg-red-50"
+                          : "border-gray-300"
+                      }`}
                     >
                       <option value="">Select an option</option>
                       <option value="church">Church</option>
@@ -519,7 +643,6 @@ const Registration = () => {
                   </div>
                 </div>
 
-                {/* Breakout Session Choice */}
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-4">
                     Breakout Session Choice *
@@ -530,10 +653,11 @@ const Registration = () => {
                       name="breakoutSessionChoice"
                       value={formData.breakoutSessionChoice}
                       onChange={handleInputChange}
-                      className={`block w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.breakoutSessionChoice
-                        ? "border-red-300 bg-red-50"
-                        : "border-gray-300"
-                        }`}
+                      className={`block w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                        errors.breakoutSessionChoice
+                          ? "border-red-300 bg-red-50"
+                          : "border-gray-300"
+                      }`}
                     >
                       <option value="">Select an option</option>
                       <option value="investment">Investment</option>
@@ -550,7 +674,6 @@ const Registration = () => {
                   </div>
                 </div>
 
-                {/* Expectations */}
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-4">
                     Expectations (Optional)
@@ -568,7 +691,6 @@ const Registration = () => {
                   </div>
                 </div>
 
-                {/* Pricing Summary */}
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
                     Registration Summary
@@ -589,18 +711,17 @@ const Registration = () => {
                   </div>
                   {currentPrice > 0 && (
                     <p className="text-sm text-gray-600 mt-2">
-                      Payment will be processed securely via Flutterwave
+                      Payment will be processed securely via Paystack
                     </p>
                   )}
                 </div>
 
-                {/* Submit Button */}
                 <div className="pt-6">
                   <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || (typeof PaystackPop === "undefined" && currentPrice > 0)}
                     className={`w-full flex justify-center items-center px-8 py-4 border border-transparent text-lg font-semibold rounded-lg text-white transition-all duration-200 ${
-                      isSubmitting
+                      isSubmitting || (typeof PaystackPop === "undefined" && currentPrice > 0)
                         ? "bg-gray-400 cursor-not-allowed"
                         : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform cursor-pointer shadow-lg hover:shadow-xl"
                     }`}
@@ -627,8 +748,10 @@ const Registration = () => {
                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                           ></path>
                         </svg>
-                        Processing...
+                        {isProcessingPayment ? "Verifying Payment..." : "Processing..."}
                       </>
+                    ) : typeof PaystackPop === "undefined" && currentPrice > 0 ? (
+                      <>Loading Payment System...</>
                     ) : (
                       <>
                         {currentPrice > 0
@@ -640,7 +763,6 @@ const Registration = () => {
                   </button>
                 </div>
 
-                {/* Security Notice */}
                 <div className="text-center text-sm text-gray-500 mt-4">
                   <p>
                     🔒 Your information is encrypted and secure. We never store
@@ -653,7 +775,6 @@ const Registration = () => {
         </div>
       </section>
 
-      {/* Footer */}
       <Footer />
     </div>
   );

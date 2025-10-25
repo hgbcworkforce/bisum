@@ -415,6 +415,44 @@ export const registrationAPI = {
       throw new ApiError(error.message || "Failed to export attendees", 500);
     }
   },
+
+  // Verify payment
+  verifyPayment: async (data) => {
+    try {
+      const { transaction_ref } = data;
+
+      if (!transaction_ref) {
+        throw new ApiError("Transaction reference is required", 400);
+      }
+
+      const { data: response, error } = await supabase.functions.
+        //https://paystack.com/docs/api/transaction/#verify
+        invoke('verify-payment', {
+          queryParams: {
+            transaction_ref: transaction_ref
+          }
+        })
+
+      if (error) {
+        throw new ApiError(error.message, error.status);
+      }
+
+      console.log("Payment verification response:", response);
+
+      return {
+        success: true,
+        data: response,
+        message: "Payment verification successful"
+      };
+    } catch (error) {
+      console.error("Error verifying payment:", error);
+      return {
+        success: false,
+        error: handleApiError(error),
+        message: "Failed to verify payment"
+      };
+    }
+  },
 };
 
 // Payment API methods (updated to use Supabase)
