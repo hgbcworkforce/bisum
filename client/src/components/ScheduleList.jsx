@@ -127,23 +127,6 @@ const ScheduleList = ({ sessions, groupByDay = true }) => {
               Timeline
             </button>
           </div>
-
-          {/* Expand/Collapse All */}
-          <div className="flex space-x-2">
-            <button
-              onClick={expandAll}
-              className="px-3 py-1 text-sm text-blue-600 hover:text-blue-800 font-medium"
-            >
-              Expand All
-            </button>
-            <span className="text-gray-300">|</span>
-            <button
-              onClick={collapseAll}
-              className="px-3 py-1 text-sm text-blue-600 hover:text-blue-800 font-medium"
-            >
-              Collapse All
-            </button>
-          </div>
         </div>
       </div>
 

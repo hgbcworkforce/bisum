@@ -35,7 +35,7 @@ const Schedule = () => {
                 </div>
                 <div className="flex items-center space-x-2">
                   <MapPin className="w-6 h-6 text-blue-200" />
-                  <span className="text-lg">Ogbomoso, Nigeria</span>
+                  <span className="text-lg">Higher Ground Baptist Church,Ogbomoso, Nigeria</span>
                 </div>
               </div>
             </div>
@@ -60,50 +60,6 @@ const Schedule = () => {
         {/* Schedule Content */}
         <section className="py-20">
           <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Quick Info Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-              <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <ClipboardList className="w-8 h-8 text-blue-600" />
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-2xl font-bold text-gray-900">
-                      {sessions.length}
-                    </p>
-                    <p className="text-gray-600">Total Sessions</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <Users className="w-8 h-8 text-green-600" />
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-2xl font-bold text-gray-900">
-                      {sessions.filter((s) => s.type === "keynote").length}
-                    </p>
-                    <p className="text-gray-600">Keynote Speakers</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-purple-500">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <Lightbulb className="w-8 h-8 text-purple-600" />
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-2xl font-bold text-gray-900">
-                      {sessions.filter((s) => s.type === "workshop").length}
-                    </p>
-                    <p className="text-gray-600">Hands-on Workshops</p>
-                  </div>
-                </div>
-              </div>
-            </div>
 
             {/* Main Schedule */}
             <ScheduleList sessions={sessions} groupByDay={true} />

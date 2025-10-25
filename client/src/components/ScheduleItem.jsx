@@ -17,7 +17,7 @@ const ScheduleItem = ({ session, isExpanded, onToggle }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="p-4 lg:p-6 cursor-pointer flex-1" onClick={onToggle}>
+      <div className="p-4 lg:p-6  flex-1">
         <div className="flex flex-col h-full">
           <div className="flex-1">
             {/* Time Badge */}
@@ -77,25 +77,6 @@ const ScheduleItem = ({ session, isExpanded, onToggle }) => {
               </div>
             </div>
           </div>
-
-          {/* Expand/Collapse Icon */}
-          <div
-            className={`mt-4 flex justify-center transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
-          >
-            <svg
-              className="w-5 h-5 lg:w-6 lg:h-6 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </div>
         </div>
 
         {/* Venue Info */}
@@ -125,98 +106,6 @@ const ScheduleItem = ({ session, isExpanded, onToggle }) => {
         )}
       </div>
 
-      {/* Expanded Content */}
-      <div
-        className={`transition-all duration-300 overflow-hidden ${
-          isExpanded ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-        }`}
-      >
-        <div className="px-6 pb-6 border-t border-gray-100">
-          <div className="pt-3 lg:pt-4">
-            {/* Session Description */}
-            {session.description && (
-              <div className="mb-4">
-                <h4 className="text-sm font-semibold text-gray-900 mb-2">
-                  Description
-                </h4>
-                <p className="text-gray-700 leading-relaxed text-sm lg:text-base">
-                  {session.description}
-                </p>
-              </div>
-            )}
-
-            {/* Key Topics */}
-            {session.topics && session.topics.length > 0 && (
-              <div className="mb-4">
-                <h4 className="text-sm font-semibold text-gray-900 mb-2">
-                  Key Topics
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {session.topics.map((topic, index) => (
-                    <span
-                      key={index}
-                      className="inline-block px-2 py-1 bg-blue-50 text-blue-700 text-xs lg:text-sm rounded-md"
-                    >
-                      {topic}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Speaker Bio (if expanded) */}
-            {session.speaker.bio && (
-              <div className="mb-4">
-                <h4 className="text-sm font-semibold text-gray-900 mb-2">
-                  About the Speaker
-                </h4>
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  {session.speaker.bio}
-                </p>
-              </div>
-            )}
-
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-2 lg:gap-3 mt-4">
-              <button className="inline-flex items-center justify-center px-3 lg:px-4 py-2 bg-blue-600 text-white text-xs lg:text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
-                <svg
-                  className="w-4 h-4 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  />
-                </svg>
-                Add to Favorites
-              </button>
-
-              {session.hasReminder && (
-                <button className="inline-flex items-center justify-center px-3 lg:px-4 py-2 bg-gray-100 text-gray-700 text-xs lg:text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors duration-200">
-                  <svg
-                    className="w-4 h-4 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 17h5l-5 5v-5zM4 17h5v5l-5-5zM12 8a4 4 0 100-8 4 4 0 000 8z"
-                    />
-                  </svg>
-                  Set Reminder
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
