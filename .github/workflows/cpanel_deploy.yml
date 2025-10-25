@@ -3,7 +3,7 @@ name: Deploy to cPanel
 on:
   push:
     branches:
-      - main  # Trigger on pushes to the main branch
+      - main # Trigger on pushes to the main branch
 
 jobs:
   deploy:
@@ -17,19 +17,18 @@ jobs:
       - name: Setup Node (if your project needs a build)
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Install dependencies and build
-        working-directory: ./client 
+        working-directory: ./client
         run: |
-          echo "VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}" >> .env
-          echo "VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}" >> .env
-          echo "VITE_PAYSTACK_SECRET_KEY=${{ secrets.VITE_PAYSTACK_SECRET_KEY }}" >> .env
-          echo "VITE_PAYSTACK_PUBLIC_KEY=${{ secrets.VITE_PAYSTACK_PUBLIC_KEY }}" >> .env
-          cd client
           npm ci
           npm run build
-
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_PAYSTACK_SECRET_KEY: ${{ secrets.VITE_PAYSTACK_SECRET_KEY }}
+          VITE_PAYSTACK_PUBLIC_KEY: ${{ secrets.VITE_PAYSTACK_PUBLIC_KEY }}
 
       - name: 📂 Upload files to cPanel via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -39,8 +38,8 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
           protocol: ftp
-          server-dir: /public_html/bisum.hgbcinfluencers.org/  # Adjust this to your cPanel directory
-          local-dir: ./client/dist/          # Adjust this to your project’s build folder
+          server-dir: /public_html/bisum.hgbcinfluencers.org/ # Adjust this to your cPanel directory
+          local-dir: ./client/dist/ # Adjust this to your project’s build folder
           exclude: |
             **/.git*
             **/.github*
