@@ -17,9 +17,10 @@ jobs:
       - name: Setup Node (if your project needs a build)
         uses: actions/setup-node@v4
         with:
-          node-version: '19'
+          node-version: '18'
 
       - name: Install dependencies and build
+        working-directory: ./client 
         run: |
           echo "VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}" >> .env
           echo "VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}" >> .env
@@ -38,7 +39,7 @@ jobs:
           port: 21
           protocol: ftp
           server-dir: /public_html/bisum.hgbcinfluencers.org/  # Adjust this to your cPanel directory
-          local-dir: /client/dist/          # Adjust this to your project’s build folder
+          local-dir: ./client/dist/          # Adjust this to your project’s build folder
           exclude: |
             **/.git*
             **/.github*
