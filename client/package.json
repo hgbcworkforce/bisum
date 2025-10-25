@@ -8,6 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
+    "setup": "npm install && npm run build"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.58.0",
