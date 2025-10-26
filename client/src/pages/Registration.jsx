@@ -43,10 +43,32 @@ const Registration = () => {
     "Data Science & Analytics",
   ];
 
+  // Calculate Paystack charges
+  const calculatePaystackCharge = (amount) => {
+    if (amount === 0) return 0;
+
+    // 1.5% of amount
+    let paystackCharge = 0.015 * amount;
+
+    // Add ₦100 if amount >= 2500
+    if (amount >= 2500) {
+      paystackCharge += 100;
+    }
+
+    // Cap at ₦2000
+    paystackCharge = Math.min(paystackCharge, 2000);
+
+    return Math.round(paystackCharge); // Round to nearest naira
+  };
+
   // Get current registration type pricing
   const currentPrice =
     registrationTypes.find((type) => type.value === formData.registrationType)
       ?.price || 0;
+
+  // Calculate total price with Paystack charges
+  const paystackFee = calculatePaystackCharge(currentPrice);
+  const chargedPrice = currentPrice + paystackFee;
 
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
@@ -227,7 +249,7 @@ const Registration = () => {
         }
 
         const email = formData.email;
-        const amount = currentPrice * 100;
+        const amount = chargedPrice * 100; // Convert to kobo
         const reference = `BISUM-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
 
         setCurrentTransactionRef(reference);
@@ -355,7 +377,7 @@ const Registration = () => {
               ) : currentPrice > 0 ? (
                 <div className="bg-green-50 p-4 rounded-lg mb-4">
                   <p className="text-green-800">
-                    Payment of <strong>{formatCurrency(currentPrice)}</strong> has been completed successfully!
+                    Payment of <strong>{formatCurrency(chargedPrice)}</strong> has been completed successfully!
                   </p>
                 </div>
               ) : (
@@ -695,24 +717,47 @@ const Registration = () => {
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
                     Registration Summary
                   </h3>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-700">
-                      {
-                        registrationTypes.find(
+
+                  {currentPrice > 0 ? (
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center text-gray-700">
+                        <span>
+                          {registrationTypes.find(
+                            (type) => type.value === formData.registrationType,
+                          )?.label}
+                        </span>
+                        <span className="font-semibold">
+                          {formatCurrency(currentPrice)}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between items-center text-sm text-gray-600">
+                        <span>Payment processing fee</span>
+                        <span>{formatCurrency(paystackFee)}</span>
+                      </div>
+
+                      <div className="border-t border-blue-200 pt-2 mt-2">
+                        <div className="flex justify-between items-center">
+                          <span className="font-semibold text-gray-900">Total Amount</span>
+                          <span className="text-2xl font-bold text-blue-600">
+                            {formatCurrency(chargedPrice)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <p className="text-sm text-gray-600 mt-2">
+                        Payment will be processed securely via Paystack
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-700">
+                        {registrationTypes.find(
                           (type) => type.value === formData.registrationType,
-                        )?.label
-                      }
-                    </span>
-                    <span className="text-2xl font-bold text-blue-600">
-                      {currentPrice === 0
-                        ? "Free"
-                        : `₦${currentPrice.toLocaleString()}`}
-                    </span>
-                  </div>
-                  {currentPrice > 0 && (
-                    <p className="text-sm text-gray-600 mt-2">
-                      Payment will be processed securely via Paystack
-                    </p>
+                        )?.label}
+                      </span>
+                      <span className="text-2xl font-bold text-blue-600">Free</span>
+                    </div>
                   )}
                 </div>
 

@@ -475,18 +475,29 @@ export const paymentAPI = {
       // Generate transaction reference
       const transactionRef = `BISUM_${Date.now()}_${String(Math.random()).substring(2, 8)}`;
 
+      // Calculate Paystack charges
+      let paystackCharge = 0;
+      const percentageCharge = 0.015 * amount; // 1.5%
+      paystackCharge = percentageCharge + 100;
+
+      // Cap the charge at 1000 for amounts <= 1000, and at 2000 otherwise
+      const chargeCap = amount <= 1000 ? 1000 : 2000;
+      paystackCharge = Math.min(paystackCharge, chargeCap);
+
+      const amountWithCharges = amount + paystackCharge;
+
       // Return Flutterwave initialization data
       return {
         success: true,
         data: {
           transactionRef,
-          amount,
+          amount: amountWithCharges,
           currency: 'NGN',
           // Flutterwave specific data for frontend
           flutterwaveConfig: {
             public_key: import.meta.env.VITE_FLUTTERWAVE_PUBLIC_KEY,
             tx_ref: transactionRef,
-            amount,
+            amount: amountWithCharges,
             currency: 'NGN',
             payment_options: 'card,mobilemoney,ussd',
             customer: {
