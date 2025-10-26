@@ -38,7 +38,7 @@ const Navigation = ({ onNavigate }) => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <a href="/" className="flex-shrink-0">
-            <img src="https://bhxxyjgpzozcvuyxzfyn.supabase.co/storage/v1/object/public/Bisum%20Pictures/BISUM%20logo.png" alt="BISUM Conference" className="w-18 h-18" />
+            <img src="https://media.hgbcinfluencers.org/bisum/BISUM logo.png" alt="BISUM Conference" className="w-18 h-18" />
           </a>
 
           {/* Desktop Navigation */}
