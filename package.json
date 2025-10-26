@@ -9,7 +9,6 @@
     "preview": "cd client && npm run preview",
     "lint": "cd client && npm run lint",
     "install-client": "cd client && npm install",
-    "setup": "npm run install-client",
     "test-supabase": "node migrate-to-supabase.js test-connection",
     "test-schema": "node migrate-to-supabase.js test-schema",
     "create-sample-data": "node migrate-to-supabase.js create-sample-data",
