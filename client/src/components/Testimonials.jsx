@@ -8,51 +8,39 @@ const Testimonials = () => {
       id: 1,
       name: "Sarah Johnson",
       role: "Tech Lead at Microsoft",
-      image:
-        "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
       testimonial:
         "BISUM Conference 2024 was absolutely transformative. The insights I gained have revolutionized how we approach innovation in our team.",
-      rating: 5,
+
     },
     {
       id: 2,
       name: "Dr. Michael Chen",
       role: "Research Director",
-      image:
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
       testimonial:
         "The networking opportunities were unparalleled. I connected with industry leaders who became valuable collaborators for our research projects.",
-      rating: 5,
+
     },
     {
       id: 3,
       name: "Amanda Rodriguez",
       role: "Startup Founder",
-      image:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
       testimonial:
         "The keynote speeches were inspiring and the workshops provided actionable strategies that I immediately implemented in my startup.",
-      rating: 5,
+
     },
     {
       id: 4,
       name: "David Lee",
       role: "Software Engineer at Google",
-      image:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
       testimonial:
         "A fantastic event! The quality of the sessions and the expertise of the speakers were top-notch. I'll definitely be back next year.",
-      rating: 5,
     },
     {
       id: 5,
       name: "Emily White",
       role: "UX Designer",
-      image:
-        "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
       testimonial:
         "I loved the focus on user-centric design. The workshops were practical, and I left with a notebook full of new ideas and techniques.",
-      rating: 5,
     },
   ];
 
@@ -109,17 +97,7 @@ const Testimonials = () => {
                   style={{ "--slides-to-show": "1" }}
                 >
                   <div className="bg-white rounded-2xl shadow-xl p-8 h-full flex flex-col">
-                    <div className="flex-shrink-0 mb-6 text-center">
-                      <img
-                        src={testimonial.image}
-                        alt={testimonial.name}
-                        className="w-24 h-24 rounded-full object-cover shadow-lg mx-auto"
-                      />
-                    </div>
                     <div className="flex-1 text-center">
-                      <div className="flex justify-center mb-4">
-                        {renderStars(testimonial.rating)}
-                      </div>
                       <blockquote className="text-lg text-gray-700 mb-6 leading-relaxed">
                         "{testimonial.testimonial}"
                       </blockquote>

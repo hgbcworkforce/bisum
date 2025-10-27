@@ -17,8 +17,8 @@ const Hero = () => {
       className="relative min-h-screen flex items-center justify-center text-white text-center"
       style={{
         backgroundImage:
-          "url('https://images.unsplash.com/photo-1505373877841-8d25f7d46678?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')",
-        backgroundSize: "cover",
+          "url('https://media.hgbcinfluencers.org/bisum/hero.jpg')",
+        backgroundSize: "85%",
         backgroundPosition: "center",
       }}
     >
