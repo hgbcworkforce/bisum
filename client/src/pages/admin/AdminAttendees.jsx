@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
 import DashboardLayout from '../../components/admin/DashboardLayout';
 import { registrationAPI, handleApiError } from '../../services/supabaseService';
 import jsPDF from 'jspdf';
@@ -13,9 +15,17 @@ const AdminAttendees = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('registration_date-desc');
   const [isExporting, setIsExporting] = useState(false);
+  const navigate = useNavigate();
 
   const fetchAttendees = useCallback(async () => {
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        navigate("/admin/auth");
+        return;
+      }
+
       setLoading(true);
       setError(null);
 
@@ -23,7 +33,8 @@ const AdminAttendees = () => {
         page: pagination.page,
         limit: pagination.limit,
         search: searchTerm,
-        sortBy: sortBy,
+        sortBy: sortBy.split('-')[0],
+        sortOrder: sortBy.split('-')[1],
       };
 
       const result = await registrationAPI.getAllAttendees(options);
@@ -40,7 +51,7 @@ const AdminAttendees = () => {
     } finally {
       setLoading(false);
     }
-  }, [pagination.page, pagination.limit, searchTerm, sortBy]);
+  }, [pagination.page, pagination.limit, searchTerm, sortBy, navigate]);
 
   useEffect(() => {
     fetchAttendees();
@@ -50,7 +61,7 @@ const AdminAttendees = () => {
     setPagination(prev => ({ ...prev, page: newPage }));
   };
 
-  const handleCsvExport = async () => {
+  const handleCsvExport = useCallback(async () => {
     setIsExporting(true);
     try {
       const result = await registrationAPI.exportAttendees();
@@ -98,9 +109,9 @@ const AdminAttendees = () => {
     } finally {
       setIsExporting(false);
     }
-  };
+  }, []);
 
-  const handlePdfExport = async () => {
+  const handlePdfExport = useCallback(async () => {
     setIsExporting(true);
     try {
       const result = await registrationAPI.exportAttendees();
@@ -128,7 +139,7 @@ const AdminAttendees = () => {
     } finally {
       setIsExporting(false);
     }
-  };
+  }, []);
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';

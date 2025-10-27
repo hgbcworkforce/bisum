@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from '../../lib/supabase';
 import DashboardLayout from "../../components/admin/DashboardLayout";
 import {
   registrationAPI,
@@ -18,6 +20,7 @@ const AdminDashboard = () => {
   const [recentRegistrations, setRecentRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   // Real-time updates
   const { stats: realTimeStats, isConnected } = useDashboardRealtime();
@@ -26,6 +29,12 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
+        const { data: { session } } = await supabase.auth.getSession()
+
+        if (!session) {
+          navigate("/admin/auth");
+          return;
+        }
         setLoading(true);
         setError(null);
 
@@ -68,7 +77,7 @@ const AdminDashboard = () => {
     };
 
     fetchDashboardData();
-  }, []);
+  }, [navigate]);
 
   // Combine initial stats with real-time updates
   const stats = realTimeStats.totalAttendees > 0 ? realTimeStats : initialStats;
@@ -172,24 +181,8 @@ const AdminDashboard = () => {
               </div>
             </div>
           </div>
-
-          {/* Most Popular Session */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center">
-              <div className="p-3 bg-purple-100 rounded-lg">
-                <Lightbulb className="w-6 h-6 text-purple-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">
-                  Popular Session
-                </p>
-                <p className="text-lg font-bold text-gray-900 capitalize">
-                  {stats.popularSession.name} ({stats.popularSession.count})
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
+
 
         {/* Recent Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">

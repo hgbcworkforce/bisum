@@ -9,6 +9,8 @@ import AdminAttendees from "./pages/admin/AdminAttendees";
 import AdminPaymentSummary from "./pages/admin/AdminPaymentSummary";
 import PaymentSuccess from './pages/PaymentSuccess';
 import AdminAuth from "./pages/admin/AdminAuth";
+import AdminRegister from "./pages/admin/AdminRegister";
+import AdminSignIn from "./pages/admin/AdminSignIn";
 import "./App.css";
 
 function App() {
@@ -24,6 +26,8 @@ function App() {
           <Route path="/payment/callback" element={<PaymentCallback />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/auth" element={<AdminAuth />} />
+          <Route path="/admin/register" element={<AdminRegister />} />
+          <Route path="/admin/signin" element={<AdminSignIn />} />
           <Route path="/admin/attendees" element={<AdminAttendees />} />
           <Route path="/admin/payments" element={<AdminPaymentSummary />} />
         </Routes>
