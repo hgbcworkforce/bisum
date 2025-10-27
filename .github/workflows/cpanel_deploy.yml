@@ -1,24 +1,23 @@
 name: Deploy to cPanel
-
 on:
   push:
     branches:
-      - main # Trigger on pushes to the main branch
-
+      - main
 jobs:
   deploy:
     name: 🚀 Deploy via FTP to cPanel
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout latest code
         uses: actions/checkout@v4
-
-      - name: Setup Node (if your project needs a build)
+      
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "18"
-
+          cache: 'npm'
+          cache-dependency-path: './client/package-lock.json'
+      
       - name: Install dependencies and build
         working-directory: ./client
         run: |
@@ -29,7 +28,7 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_PAYSTACK_SECRET_KEY: ${{ secrets.VITE_PAYSTACK_SECRET_KEY }}
           VITE_PAYSTACK_PUBLIC_KEY: ${{ secrets.VITE_PAYSTACK_PUBLIC_KEY }}
-
+      
       - name: 📂 Upload files to cPanel via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -37,11 +36,14 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
-          protocol: ftp
-          server-dir: /public_html/bisum.hgbcinfluencers.org/ # Adjust this to your cPanel directory
-          local-dir: ./client/dist/ # Adjust this to your project’s build folder
+          protocol: ftps  # Try ftps instead of ftp (more secure)
+          security: loose  # Add this for cPanel compatibility
+          server-dir: /public_html/bisum.hgbcinfluencers.org/
+          local-dir: ./client/dist/
+          dangerous-clean-slate: false  # Safety: don't delete all files first
           exclude: |
             **/.git*
-            **/.github*
+            **/.git*/**
+            **/.github*/**
             **/node_modules/**
             **/README.md
