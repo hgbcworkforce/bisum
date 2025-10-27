@@ -59,7 +59,7 @@ const Homepage = () => {
       <SpeakersSection />
 
       {/* Testimonials and Sponsors Section */}
-      <Testimonials />
+      {/* <Testimonials />*/}
 
       {/* Footer */}
       <Footer />

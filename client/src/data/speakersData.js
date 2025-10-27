@@ -3,7 +3,7 @@
 
 export const speakersData = [
   {
-    id: 7,
+    id: 1,
     name: "Pastor Samson Ayangoke",
     title: "Lead Pastor",
     company: "Higher Ground Baptist Church",
@@ -16,7 +16,7 @@ export const speakersData = [
       "Entrepreneurship",
       "Technology & Innovation"
     ],
-    category: "keynote",
+    category: ["keynote"],
     experience: "Former FCMB staff, now full-time missionary and entrepreneur with strong leadership and ministry experience.",
     achievements: [
       "Served in leadership roles across BSF, NCCF, and Youth Fellowship.",
@@ -31,7 +31,8 @@ export const speakersData = [
     },
     social: {
       linkedin: "https://linkedin.com/in/samson-ayangoke",
-      facebook: "https://facebook.com/samson.ayangoke"
+      facebook: "https://facebook.com/samson.ayangoke",
+      instagram: "https://instagram.com/samsonayangoke"
     },
     quote: "I believe in raising a generation that will march with power for the Lord in every sphere of influence and will not break rank."
   },
@@ -121,7 +122,7 @@ export const speakersData = [
       "Agricultural Marketing",
       "Rural Empowerment"
     ],
-    category: "keynote",
+    category: ["keynote", "breakout"],
     experience: "10+ years leading agri-tech innovations, managing 400+ acres of farmland",
     achievements: [
       "Founder of Farmfixers, a pioneering agri-tech company",
@@ -153,8 +154,7 @@ export const speakersData = [
       "Photography",
       "Cinematography",
       "Visual Storytelling",
-      "Brand Communication",
-      "Creative Direction"
+      "Brand Communication"
     ],
     category: "story",
     experience: "7+ years in photography, cinematography, and digital media production",
@@ -229,7 +229,12 @@ export const getFeaturedSpeakers = () => {
 // Helper function to get speakers by category
 export const getSpeakersByCategory = (category) => {
   if (category === "all") return speakersData;
-  return speakersData.filter((speaker) => speaker.category === category);
+  return speakersData.filter((speaker) => {
+    if (Array.isArray(speaker.category)) {
+      return speaker.category.includes(category);
+    }
+    return speaker.category === category;
+  });
 };
 
 // Helper function to search speakers
