@@ -15,8 +15,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: 'npm'
-          cache-dependency-path: './client/package-lock.json'
+          # Remove or fix the cache-dependency-path
+          # Option 1: Remove cache entirely (simplest)
+          # Option 2: Fix the path (see below)
       
       - name: Install dependencies and build
         working-directory: ./client
@@ -36,11 +37,10 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
-          protocol: ftps  # Try ftps instead of ftp (more secure)
-          security: loose  # Add this for cPanel compatibility
+          protocol: ftps
+          security: loose
           server-dir: /public_html/bisum.hgbcinfluencers.org/
           local-dir: ./client/dist/
-          dangerous-clean-slate: false  # Safety: don't delete all files first
           exclude: |
             **/.git*
             **/.git*/**
