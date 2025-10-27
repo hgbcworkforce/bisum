@@ -40,7 +40,7 @@ jobs:
           protocol: ftps
           security: loose
           server-dir: bisum.hgbcinfluencers.org/
-          local-dir: ./client/dist
+          local-dir: ./client/dist/
           exclude: |
             **/.git*
             **/.git*/**
