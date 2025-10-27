@@ -13,7 +13,7 @@
     "test-schema": "node migrate-to-supabase.js test-schema",
     "create-sample-data": "node migrate-to-supabase.js create-sample-data",
     "verify-setup": "node migrate-to-supabase.js verify-setup",
-    "clean": "cd client && rm -rf node_modules dist",
+    "clean": "cd client && rm -rf node_modules dist"
   },
   "keywords": [
     "conference",
