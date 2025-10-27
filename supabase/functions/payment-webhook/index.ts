@@ -156,10 +156,84 @@ serve(async (req) => {
         return new Response("Failed to create payment record", { status: 500 });
       }
 
+      // 7. Send a confirmation email using Resend
+      try {
+        const resendApiKey = Deno.env.get("RESEND_API_KEY");
+        if (!resendApiKey) {
+          console.error("RESEND_API_KEY is not set in environment variables.");
+          // Don't block the webhook for email failure
+        } else {
+          const emailHtml = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                .container { width: 90%; max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+                .header { background-color: #007bff; color: white; padding: 10px; text-align: center; border-radius: 8px 8px 0 0; }
+                .content { padding: 20px; }
+                .footer { margin-top: 20px; text-align: center; font-size: 0.8em; color: #888; }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="header">
+                  <h1>BISUM Conference 2025</h1>
+                </div>
+                <div class="content">
+                  <h2>Registration Confirmed!</h2>
+                  <p>Dear ${newAttendee.first_name},</p>
+                  <p>Thank you for registering for the BISUM Conference 2025! Your payment has been successfully processed and your spot is confirmed.</p>
+                  <p><strong>Registration Number:</strong> ${newAttendee.registration_number}</p>
+                  <p>We are thrilled to have you join us for this transformative event. Please keep this email for your records.</p>
+                  <p>Further details and conference updates will be sent to you closer to the event date.</p>
+                  <p>Best regards,<br>The BISUM Conference Team</p>
+                </div>
+                <div class="footer">
+                  <p>&copy; 2025 BISUM Conference. All rights reserved.</p>
+                </div>
+              </div>
+            </body>
+            </html>
+          `;
+
+          const res = await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${resendApiKey}`,
+            },
+            body: JSON.stringify({
+              from: "BISUM Conference <noreply@yourdomain.com>", // IMPORTANT: Replace with your verified Resend domain
+              to: [newAttendee.email],
+              subject: "Registration Confirmed for BISUM Conference 2025",
+              html: emailHtml,
+            }),
+          });
+
+          if (!res.ok) {
+            const errorBody = await res.json();
+            console.error(
+              "Failed to send confirmation email:",
+              res.status,
+              errorBody,
+            );
+          } else {
+            console.log(
+              "Successfully sent confirmation email to:",
+              newAttendee.email,
+            );
+          }
+        }
+      } catch (emailError) {
+        console.error("Error sending email:", emailError);
+        // Do not block the webhook response for email errors
+      }
+
       console.log("Successfully processed payment for:", newAttendee.email);
     }
 
-    // 7. Acknowledge receipt of the webhook
+    // 8. Acknowledge receipt of the webhook
     return new Response("Webhook received", { status: 200 });
   } catch (error) {
     console.error("Webhook processing error:", error);
