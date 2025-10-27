@@ -19,7 +19,7 @@ Modern React application for the BISUM Technology Conference built with React.js
 - **Vite** - Fast build tool and dev server
 - **Supabase** - Backend-as-a-Service (PostgreSQL + Real-time + Auth)
 - **Flutterwave** - Payment processing
-- **React Router** - Client-side routing
+- **React Router** - Client-side routing 
 
 ## Project Structure
 
