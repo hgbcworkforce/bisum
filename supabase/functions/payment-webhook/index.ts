@@ -12,8 +12,8 @@ import { crypto } from "https://deno.land/std@0.185.0/crypto/mod.ts";
 // 3. PAYSTACK_SECRET_KEY: Your Paystack secret key.
 
 const supabase = createClient(
-  Deno.env.get("SUPABASE_URL") ?? "",
-  Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+  Deno.env.get("VITE_SUPABASE_URL") ?? "",
+  Deno.env.get("VITE_SUPABASE_ANON_KEY") ?? "",
 );
 
 const PAYSTACK_SECRET_KEY = Deno.env.get("PAYSTACK_SECRET_KEY") ?? "";
@@ -204,7 +204,7 @@ serve(async (req) => {
               Authorization: `Bearer ${resendApiKey}`,
             },
             body: JSON.stringify({
-              from: "BISUM Conference <noreply@yourdomain.com>", // IMPORTANT: Replace with your verified Resend domain
+              from: "BISUM Conference <bisum@hgbcinfluencers.org>", // IMPORTANT: Replace with your verified Resend domain
               to: [newAttendee.email],
               subject: "Registration Confirmed for BISUM Conference 2025",
               html: emailHtml,

@@ -24,11 +24,11 @@ export const speakersData = [
       "Founder of faith-driven initiatives combining technology and missions.",
       "Actively training to advance global missions through theological education."
     ],
-    session: {
-      title: "Impact Story: From Corporate Banking to Kingdom Purpose",
-      time: "11:30 AM - 12:00 PM",
-      venue: "Main Auditorium"
-    },
+    // session: {
+    //   title: "Impact Story: From Corporate Banking to Kingdom Purpose",
+    //   time: "11:30 AM - 12:00 PM",
+    //   venue: "Main Auditorium"
+    // },
     social: {
       linkedin: "https://linkedin.com/in/samson-ayangoke",
       facebook: "https://facebook.com/samson.ayangoke",
@@ -62,11 +62,11 @@ export const speakersData = [
       "Over 40 professional and community awards, including Leadership Award by the Office of the Wife of the Vice President of Nigeria",
       "Founder of Adebayo Dream Humanitarian Foundation (ADHF), impacting 5,000+ people"
     ],
-    session: {
-      title: "Keynote: Leadership, Health, and Entrepreneurship for Community Impact",
-      time: "11:30 AM - 12:15 PM",
-      venue: "Main Auditorium"
-    },
+    // session: {
+    //   title: "Keynote: Leadership, Health, and Entrepreneurship for Community Impact",
+    //   time: "11:30 AM - 12:15 PM",
+    //   venue: "Main Auditorium"
+    // },
     social: {
       linkedin: "https://www.linkedin.com/in/thedradebayo1/",
       twitter: "https://x.com/thedradebayo",
@@ -76,7 +76,41 @@ export const speakersData = [
   },
   {
     id: 3,
-    name: "Mr. Seyi Ajamu",
+    name: "Temilola Okedigba",
+    title: "Product Manager & CEO of Mannara Foods",
+    company: "Mannara Foods",
+    bio: "Temilola Okedigba is a dynamic Product Manager with a strong background in technology, strategy, and innovation.\n\nHer journey into tech began while lecturing at Bowen University, where she led the transition from manual processes to automated systems — an experience that sparked her passion for building impactful digital products.\n\nShe has managed and contributed to products across academia, fintech, AI, healthtech, and lifestyle — driving user-centered solutions that deliver real value.\n\nShe is also the CEO of Mannara Foods, a brand committed to making groceries affordable and accessible to everyone.\n\nBeyond tech and business, she is a drama minister who loves the stage more than the screen.\n\nShe holds degrees in Computer Science from Bowen University (B.Sc) and Coventry University (M.Sc), and is currently pursuing her PhD at LAUTECH.\n\nShe is happily married with two children, and continues to blend innovation, leadership, and purpose — inspiring others as a woman thriving at the intersection of faith, technology, and impact.",
+    image: "https://media.hgbcinfluencers.org/bisum/Temilola Okedigba.jpg",
+    expertise: [
+      "Product Management",
+      "Digital Innovation",
+      "Leadership",
+      "Technology Strategy",
+      "Business Growth"
+    ],
+    category: "breakout",
+    experience: "Over a decade of experience spanning technology, academia, and entrepreneurship; currently pursuing a PhD in Computer Science.",
+    achievements: [
+      "Led digital transformation projects at Bowen University.",
+      "Built and managed tech products across multiple industries including fintech and healthtech.",
+      "Founded Mannara Foods, making groceries affordable and accessible.",
+      "Mentored aspiring women in tech and entrepreneurship.",
+      "Speaker at leadership and business events."
+    ],
+    // session: {
+    //   title: "Impact Story: Thriving at the Intersection of Faith, Technology & Purpose",
+    //   time: "11:00 AM - 11:30 AM",
+    //   venue: "Main Auditorium"
+    // },
+    social: {
+      linkedin: "https://www.linkedin.com/in/temilola-okedigba-a869b573/",
+      facebook: "https://web.facebook.com/temilolao"
+    },
+    quote: "Purpose drives innovation. When faith meets technology, impact becomes inevitable."
+  },
+  {
+    id: 4,
+    name: "Seyi Ajamu",
     title: "Creative Visual Storyteller & Youth Leader",
     company: "ThriveZone Africa",
     bio: "Seyi Ajamu is a Creative Visual Storyteller and Personal Photographer to the Chief of Staff to the Governor of Oyo State. An alumnus of the Department of Performing Arts, University of Ilorin, he is also a passionate Teens Coach and catalyst for youth-driven communities. He leads ThriveZone Africa, a platform raising and nurturing teenagers, and is the convener of SaltHub, which equips and empowers youths across Oyo State. Currently serving as the Supervisory Councillor for Intergovernmental Relations in Ogbomoso North Local Government, Seyi is dedicated to inspiring and mentoring the next generation of African leaders and change-makers.",
@@ -98,19 +132,53 @@ export const speakersData = [
       "Supervisory Councillor for Intergovernmental Relations, Ogbomoso North LG",
       "Recognized for impactful mentorship and community development across Nigeria"
     ],
-    session: {
-      title: "Keynote: Empowering the Next Generation of African Leaders",
-      time: "4:15 PM - 5:00 PM",
-      venue: "Main Auditorium"
-    },
+    // session: {
+    //   title: "Keynote: Empowering the Next Generation of African Leaders",
+    //   time: "4:15 PM - 5:00 PM",
+    //   venue: "Main Auditorium"
+    // },
     social: {
       instagram: "https://www.instagram.com/seyiajamu/",
       facebook: "https://web.facebook.com/seyiajamu16/"
     }
   },
   {
-    id: 4,
-    name: "Mr Taiwo Olaonipekun",
+    id: 5,
+    name: "Oloyade Comfort",
+    title: "Researcher & Entrepreneur",
+    // company: "Bowen Teaching Hospital",
+    bio: "Comfort Opeyemi Oloyade is a young professional with a Bachelor’s degree in Human Anatomy and a passion for innovation in Orthopedic Research. She gained hands-on experience at Bowen Teaching Hospital, Ogbomoso, where her interest in musculoskeletal health was deepened.\n\nBeyond academics, Comfort is an entrepreneur who has successfully run ventures in jewelry and snack production while honing her leadership skills through programs like The Global Leadership Summit and the Business and Investment Summit. Driven by integrity, creativity, and purpose, she continues to inspire young people to pursue excellence, merge knowledge with enterprise, and make a positive impact in society.",
+    image: "https://media.hgbcinfluencers.org/bisum/oloyade comfort.jpg",
+    expertise: [
+      "Orthopedic Research",
+      "Entrepreneurship",
+      "Leadership Development",
+      // "Public Speaking",
+      "Health Innovation"
+    ],
+    category: "story",
+    experience: "Background in Human Anatomy with entrepreneurial experience in jewelry and snack production; active participant in leadership and business programs.",
+    achievements: [
+      "Conducted orthopedic research during her academic and hospital training.",
+      "Founded small-scale ventures in jewelry and snack production.",
+      "Participated in The Global Leadership Summit and BISUM programs.",
+      "Mentored and inspired young professionals toward purpose-driven innovation."
+    ],
+    // session: {
+    //   title: "Impact Story: Merging Knowledge with Enterprise",
+    //   time: "12:00 PM - 12:30 PM",
+    //   venue: "Main Auditorium"
+    // },
+    // social: {
+    //   linkedin: "https://linkedin.com/in/oloyade-comfort",
+    //   instagram: "https://instagram.com/oloyade_comfort"
+    // },
+    quote: "Purpose and creativity can turn knowledge into impact when we choose to lead with integrity and excellence."
+  },
+
+  {
+    id: 6,
+    name: "Taiwo Olaonipekun",
     title: "Founder & CEO",
     company: "Farmfixers",
     bio: "Taiwo Olaonipekun is the visionary force behind Farmfixers, an agri-tech enterprise he founded in 2014 to revolutionise farming practices through absentee farming and farm management. Under his leadership, Farmfixers has successfully managed over 400 acres of farmland, empowering local farmers and youth with essential farm inputs, modern training, and strategic marketing channels. His initiatives have boosted productivity, enhanced profitability, and provided a platform for farmers to showcase their creativity. Taiwo is deeply committed to eradicating hunger and poverty by improving the livelihoods of rural communities while delivering strong returns to investors. Beyond his professional pursuits, he is a passionate believer in God, happily married to Oluwabusayomi Olaonipekun, and blessed with a son.",
@@ -131,11 +199,11 @@ export const speakersData = [
       "Empowered rural farmers and youth with modern agricultural training",
       "Delivered consistent returns to investors while improving community livelihoods"
     ],
-    session: {
-      title: "Keynote: Innovating Agriculture through Absentee Farming",
-      time: "10:00 AM - 11:30 AM",
-      venue: "Main Hall"
-    },
+    // session: {
+    //   title: "Keynote: Innovating Agriculture through Absentee Farming",
+    //   time: "10:00 AM - 11:30 AM",
+    //   venue: "Main Hall"
+    // },
     social: {
       linkedin: "https://www.linkedin.com/in/taiwo-olaonipekun-33b455120",
       twitter: "https://x.com/taiwothefarmer",
@@ -144,8 +212,8 @@ export const speakersData = [
     }
   },
   {
-    id: 5,
-    name: "Mr. Ifeoluwa Alade",
+    id: 7,
+    name: "Ifeoluwa Alade",
     title: "Photographer, Cinematographer & Media Entrepreneur",
     company: "Love It Studios",
     bio: "Ifeoluwa Alade is a passionate photographer, cinematographer, and media entrepreneur. He is the Founder and CEO of Love It Studios, an independent media enterprise offering premium media and branding services to clients across all levels — from small businesses to large corporations. With a strong background in visual storytelling, content creation, and digital communication, Ifeoluwa has successfully executed numerous projects spanning event coverage, brand storytelling, and creative production. Formerly the official photographer to the Student Union Government during his university days, his experience honed his creative vision and fueled his passion for impactful storytelling through imagery. His work continues to embody excellence, authenticity, and innovation, inspiring creativity and empowering others through the art of media.",
@@ -165,50 +233,18 @@ export const speakersData = [
       "Empowered young creatives through visual media mentorship",
       "Recognized for excellence and innovation in creative media production"
     ],
-    session: {
-      title: "Breakout: Telling Impactful Stories Through Visual Media",
-      time: "2:00 PM - 3:30 PM",
-      venue: "Breakout Room B"
-    },
-    social: {
-      linkedin: "",
-      instagram: "",
-      facebook: ""
-    }
+    // session: {
+    //   title: "Breakout: Telling Impactful Stories Through Visual Media",
+    //   time: "2:00 PM - 3:30 PM",
+    //   venue: "Breakout Room B"
+    // },
+    // social: {
+    //   linkedin: "",
+    //   instagram: "https://www.instagram.com/alade_ife/",
+    //   facebook: ""
+    // }
   },
-  {
-    id: 8,
-    name: "Miss Oloyade Comfort",
-    title: "Researcher & Entrepreneur",
-    // company: "Bowen Teaching Hospital",
-    bio: "Comfort Opeyemi Oloyade is a young professional with a Bachelor’s degree in Human Anatomy and a passion for innovation in Orthopedic Research. She gained hands-on experience at Bowen Teaching Hospital, Ogbomoso, where her interest in musculoskeletal health was deepened.\n\nBeyond academics, Comfort is an entrepreneur who has successfully run ventures in jewelry and snack production while honing her leadership skills through programs like The Global Leadership Summit and the Business and Investment Summit. Driven by integrity, creativity, and purpose, she continues to inspire young people to pursue excellence, merge knowledge with enterprise, and make a positive impact in society.",
-    image: "https://media.hgbcinfluencers.org/bisum/oloyade comfort.jpg",
-    expertise: [
-      "Orthopedic Research",
-      "Entrepreneurship",
-      "Leadership Development",
-      // "Public Speaking",
-      "Health Innovation"
-    ],
-    category: "story",
-    experience: "Background in Human Anatomy with entrepreneurial experience in jewelry and snack production; active participant in leadership and business programs.",
-    achievements: [
-      "Conducted orthopedic research during her academic and hospital training.",
-      "Founded small-scale ventures in jewelry and snack production.",
-      "Participated in The Global Leadership Summit and BISUM programs.",
-      "Mentored and inspired young professionals toward purpose-driven innovation."
-    ],
-    session: {
-      title: "Impact Story: Merging Knowledge with Enterprise",
-      time: "12:00 PM - 12:30 PM",
-      venue: "Main Auditorium"
-    },
-    social: {
-      linkedin: "https://linkedin.com/in/oloyade-comfort",
-      instagram: "https://instagram.com/oloyade_comfort"
-    },
-    quote: "Purpose and creativity can turn knowledge into impact when we choose to lead with integrity and excellence."
-  }
+
 
 ];
 

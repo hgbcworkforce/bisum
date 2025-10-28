@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { User, Linkedin, Twitter, Eye } from 'lucide-react';
+import { User, Linkedin, Twitter, Instagram, Facebook, Eye } from 'lucide-react';
 
 const SpeakerCard = ({ speaker, onSpeakerClick }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -119,6 +119,28 @@ const SpeakerCard = ({ speaker, onSpeakerClick }) => {
                 onClick={(e) => e.stopPropagation()}
               >
                 <Twitter className="w-5 h-5" />
+              </a>
+            )}
+            {speaker.social.instagram && (
+              <a
+                href={speaker.social.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-blue-400 transition-colors duration-200"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Instagram className="w-5 h-5" />
+              </a>
+            )}
+            {speaker.social.facebook && (
+              <a
+                href={speaker.social.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-blue-400 transition-colors duration-200"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Facebook className="w-5 h-5" />
               </a>
             )}
           </div>
