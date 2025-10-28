@@ -18,8 +18,9 @@ const Hero = () => {
       style={{
         backgroundImage:
           "url('https://media.hgbcinfluencers.org/bisum/hero.jpg')",
-        backgroundSize: "85%",
+        backgroundSize: "cover",
         backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
       <div className="absolute inset-0 bg-black opacity-60"></div>

@@ -3,7 +3,7 @@ const AboutSection = () => {
   return (
     <section id="about" className="py-20 bg-white">
       <div className="container mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Text Content */}
           <div className="text-gray-800">
             <h2 className="text-4xl font-bold mb-6">About BISUM Conference</h2>

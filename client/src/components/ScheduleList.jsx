@@ -144,6 +144,12 @@ const ScheduleList = ({ sessions, groupByDay = true }) => {
                   <div className="flex-1 h-px bg-gray-300"></div>
                 </div>
                 {day === "Day 1" && (
+                  <p className="text-gray-600 mt-2">November 13, 2025</p>
+                )}
+                {day === "Day 2" && (
+                  <p className="text-gray-600 mt-2">November 14, 2025</p>
+                )}
+                {day === "Day 3" && (
                   <p className="text-gray-600 mt-2">November 15, 2025</p>
                 )}
               </div>
@@ -211,36 +217,6 @@ const ScheduleList = ({ sessions, groupByDay = true }) => {
           </div>
         ))}
       </div>
-
-      {/* Session Statistics */}
-      {/* <div className="mt-12 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">
-              {sessions.length}
-            </div>
-            <div className="text-sm text-gray-600">Total Sessions</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">
-              {sessions.filter(s => s.type === 'keynote').length}
-            </div>
-            <div className="text-sm text-gray-600">Keynotes</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-orange-600">
-              {sessions.filter(s => s.type === 'workshop').length}
-            </div>
-            <div className="text-sm text-gray-600">Workshops</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-purple-600">
-              {sessions.filter(s => s.type === 'panel').length}
-            </div>
-            <div className="text-sm text-gray-600">Panel Discussions</div>
-          </div>
-        </div>
-      </div>*/}
     </div>
   );
 };
