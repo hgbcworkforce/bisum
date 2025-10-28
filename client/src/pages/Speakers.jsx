@@ -57,7 +57,7 @@ const Speakers = () => {
               <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-8 text-lg">
                 <div className="flex items-center space-x-2">
                   <Users className="w-6 h-6 text-blue-200" />
-                  <span>{speakers.length} Expert Speakers</span>
+                  <span>Expert Speakers</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Globe className="w-6 h-6 text-blue-200" />

@@ -145,7 +145,6 @@ const AdminRegister = () => {
             onChange={handleInputChange}
             className={`w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.name ? "border-red-300" : "border-gray-300"}`}
             placeholder="Enter your full name"
-            required
           />
           {errors.name && (
             <p className="mt-1 text-xs text-red-600">{errors.name}</p>
