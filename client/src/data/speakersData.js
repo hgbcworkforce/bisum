@@ -24,11 +24,6 @@ export const speakersData = [
       "Founder of faith-driven initiatives combining technology and missions.",
       "Actively training to advance global missions through theological education."
     ],
-    // session: {
-    //   title: "Impact Story: From Corporate Banking to Kingdom Purpose",
-    //   time: "11:30 AM - 12:00 PM",
-    //   venue: "Main Auditorium"
-    // },
     social: {
       linkedin: "https://linkedin.com/in/samson-ayangoke",
       facebook: "https://facebook.com/samson.ayangoke",
@@ -62,11 +57,6 @@ export const speakersData = [
       "Over 40 professional and community awards, including Leadership Award by the Office of the Wife of the Vice President of Nigeria",
       "Founder of Adebayo Dream Humanitarian Foundation (ADHF), impacting 5,000+ people"
     ],
-    // session: {
-    //   title: "Keynote: Leadership, Health, and Entrepreneurship for Community Impact",
-    //   time: "11:30 AM - 12:15 PM",
-    //   venue: "Main Auditorium"
-    // },
     social: {
       linkedin: "https://www.linkedin.com/in/thedradebayo1/",
       twitter: "https://x.com/thedradebayo",
@@ -97,11 +87,6 @@ export const speakersData = [
       "Mentored aspiring women in tech and entrepreneurship.",
       "Speaker at leadership and business events."
     ],
-    // session: {
-    //   title: "Impact Story: Thriving at the Intersection of Faith, Technology & Purpose",
-    //   time: "11:00 AM - 11:30 AM",
-    //   venue: "Main Auditorium"
-    // },
     social: {
       linkedin: "https://www.linkedin.com/in/temilola-okedigba-a869b573/",
       facebook: "https://web.facebook.com/temilolao"
@@ -132,11 +117,6 @@ export const speakersData = [
       "Supervisory Councillor for Intergovernmental Relations, Ogbomoso North LG",
       "Recognized for impactful mentorship and community development across Nigeria"
     ],
-    // session: {
-    //   title: "Keynote: Empowering the Next Generation of African Leaders",
-    //   time: "4:15 PM - 5:00 PM",
-    //   venue: "Main Auditorium"
-    // },
     social: {
       instagram: "https://www.instagram.com/seyiajamu/",
       facebook: "https://web.facebook.com/seyiajamu16/"
@@ -164,20 +144,44 @@ export const speakersData = [
       "Participated in The Global Leadership Summit and BISUM programs.",
       "Mentored and inspired young professionals toward purpose-driven innovation."
     ],
-    // session: {
-    //   title: "Impact Story: Merging Knowledge with Enterprise",
-    //   time: "12:00 PM - 12:30 PM",
-    //   venue: "Main Auditorium"
-    // },
     // social: {
     //   linkedin: "https://linkedin.com/in/oloyade-comfort",
     //   instagram: "https://instagram.com/oloyade_comfort"
     // },
     quote: "Purpose and creativity can turn knowledge into impact when we choose to lead with integrity and excellence."
   },
-
   {
     id: 6,
+    name: "Pastor Tunde Ebidero",
+    title: "Chief Executive Officer",
+    company: "Olatunde Prestige Limited",
+    bio: "Tunde Ebidero is a serial entrepreneur, visionary leader, and kingdom influencer with over 45 years of practical business experience. He is the Chief Executive Officer of Olatunde Prestige Limited, Bezaleel Manufacturing Company Limited, and Harvest Field Farm.\n\nA versatile and creative thinker, Pastor Tunde has made significant impact in the field of manufacturing and continues to inspire others with his belief that business is ministry when done God’s way. He is the founder of The Bereans Christian Library, a free online resource platform promoting Christian learning, and the convener of Chariot of Light Christian Superbikers Association of Nigeria (COLCSAN), which uses motorcycling as a platform for evangelism and service to God.\n\nHe also founded the Kingdom Entrepreneurs Nexus (KEN), a movement that brings together faith-driven business leaders committed to ethical enterprise and nation building. Through the Tunde Ebidero Initiative, he mentors men and women toward purpose, excellence, and self-discovery, driven by his passion to see Africa become not just resource-filled but resourceful.\n\nPastor T, as he is fondly called, is a member of 'Unashamedly Ethical' and a firm believer that integrity, diligence, and service to God must define business. His leadership in the home, workplace, and ministry exemplifies a life of purpose, influence, and unwavering faith.",
+    image: "https://media.hgbcinfluencers.org/bisum/Tunde Ebidero.jpg",
+    expertise: [
+      "Entrepreneurship",
+      "Manufacturing",
+      "Leadership Development",
+      "Faith and Work",
+      "Ethical Business"
+    ],
+    category: "keynote",
+    experience: "Over 45 years of business leadership and entrepreneurship across multiple industries.",
+    achievements: [
+      "Founded Olatunde Prestige Limited and Bezaleel Manufacturing Company.",
+      "Established The Bereans Christian Library and Kingdom Entrepreneurs Nexus (KEN).",
+      "Founder of Chariot of Light Christian Superbikers Association of Nigeria (COLCSAN).",
+      "Mentored hundreds through the Tunde Ebidero Initiative on purpose and leadership.",
+      "Advocate for ethical and God-centered business practices in Africa."
+    ],
+    // social: {
+    //   linkedin: "https://linkedin.com/in/tundeebidero",
+    //   facebook: "https://facebook.com/tunde.ebidero"
+    // },
+    quote: "Work is not just a means of survival — it is ministry, and every business must serve God and humanity."
+  },
+
+  {
+    id: 7,
     name: "Taiwo Olaonipekun",
     title: "Founder & CEO",
     company: "Farmfixers",
@@ -199,11 +203,6 @@ export const speakersData = [
       "Empowered rural farmers and youth with modern agricultural training",
       "Delivered consistent returns to investors while improving community livelihoods"
     ],
-    // session: {
-    //   title: "Keynote: Innovating Agriculture through Absentee Farming",
-    //   time: "10:00 AM - 11:30 AM",
-    //   venue: "Main Hall"
-    // },
     social: {
       linkedin: "https://www.linkedin.com/in/taiwo-olaonipekun-33b455120",
       twitter: "https://x.com/taiwothefarmer",
@@ -212,7 +211,7 @@ export const speakersData = [
     }
   },
   {
-    id: 7,
+    id: 8,
     name: "Ifeoluwa Alade",
     title: "Photographer, Cinematographer & Media Entrepreneur",
     company: "Love It Studios",
@@ -233,19 +232,70 @@ export const speakersData = [
       "Empowered young creatives through visual media mentorship",
       "Recognized for excellence and innovation in creative media production"
     ],
-    // session: {
-    //   title: "Breakout: Telling Impactful Stories Through Visual Media",
-    //   time: "2:00 PM - 3:30 PM",
-    //   venue: "Breakout Room B"
-    // },
     // social: {
     //   linkedin: "",
     //   instagram: "https://www.instagram.com/alade_ife/",
     //   facebook: ""
     // }
   },
+  {
+    id: 9,
+    name: "Christianah Ajamu",
+    title: "CEO, Temmy Cakes ’n’ More",
+    company: "Temmy Cakes ’n’ More",
+    bio: "Christianah Ajamu is the CEO of Temmy Cakes ’n’ More, a duly registered confectionery brand with the Corporate Affairs Commission (CAC), headquartered in Ogbomoso, Oyo State, Nigeria.\n\nTemmy Cakes ’n’ More specializes in crafting premium cakes, pastries, and desserts tailored for weddings, birthdays, corporate events, and other special occasions.\n\nRenowned for its creativity, quality, and exceptional customer service, the brand has earned a strong reputation for excellence within and beyond Oyo State—blending artistry with the finest ingredients to create confections that are both visually stunning and delicious.\n\nIn addition to providing top-tier confectionery services, Temmy Cakes ’n’ More offers professional training programs that equip aspiring bakers with hands-on skills for personal and entrepreneurial development.\n\nTemitayo has had the honor of baking for several distinguished individuals, including the wife of the Executive Governor of Oyo State, among others.",
+    image: "https://media.hgbcinfluencers.org/bisum/temmy cakes.jpg",
+    expertise: [
+      "Cake Design",
+      "Pastry Making",
+      "Dessert Crafting",
+      "Entrepreneurship",
+      "Baking Training"
+    ],
+    category: "breakout",
+    experience: "Over a decade in premium confectionery and training",
+    achievements: [
+      "Baked for the wife of the Executive Governor of Oyo State",
+      "Trained 100+ aspiring bakers through professional programs",
+      "Built one of Oyo State’s most recognized confectionery brands",
+      "Expanded operations beyond Ogbomoso through exceptional service"
+    ],
+    // social: {
+    //   instagram: "https://www.instagram.com/temmycakesnmore/",
+    //   facebook: "https://web.facebook.com/temmycakesnmore"
+    // },
+    quote: "Excellence is the secret ingredient that turns passion into purpose."
+  },
 
-
+  {
+    id: 10,
+    name: "Iyanuoluwa Nelson Ojekanmi",
+    title: "Image and Style Coach",
+    company: "Nelmac",
+    bio: "Iyanuoluwa Nelson Ojekanmi is an Image and Style Coach who began his fashion journey in 2013 as a student at LAUTECH. His passion for creativity quickly earned him recognition as Student CEO of the Year (2014) and Icon’s Fashion Stylist of the Year (2019 & 2020). Through his travels, Nelson developed a deep appreciation for art, culture, and style—elements that continue to define his distinctive fashion perspective.\n\nHe currently leads as the Fashion Stylist at Nelmac, and has worked with top fashion platforms such as GTBank Fashion Weekend, Lagos Fashion Week, Ibadan Fashion Week, and HCC Fashion Weekend. Beyond fashion, Nelson is a businessman and investor, as well as the author of Improved Perception, a men’s fashion book that explores how style enhances confidence and self-image.",
+    image: "https://media.hgbcinfluencers.org/bisum/Nelson.jpg",
+    expertise: [
+      "Image Consulting",
+      "Fashion Styling",
+      "Personal Branding",
+      "Men’s Fashion",
+      "Confidence Coaching"
+    ],
+    category: "breakout",
+    experience: "Over a decade in fashion, styling, and image coaching",
+    achievements: [
+      "Student CEO of the Year (2014)",
+      "Icon’s Fashion Stylist of the Year (2019 & 2020)",
+      "Worked with GTBank Fashion Weekend, Lagos Fashion Week, and more",
+      "Author of 'Improved Perception' – a men’s fashion book"
+    ],
+    // social: {
+    //   instagram: "https://www.instagram.com/nelmac_/",
+    //   twitter: "https://x.com/nelmac_official",
+    //   linkedin: "https://www.linkedin.com/in/iyanuoluwa-nelson-ojekanmi"
+    // },
+    quote: "Style is more than clothing — it’s the language your confidence speaks."
+  }
 ];
 
 // Available speaker categories for filtering
