@@ -303,7 +303,6 @@ export const speakerCategories = [
   "all",
   "keynote",
   "breakout",
-  "panel",
   "story",
 ];
 

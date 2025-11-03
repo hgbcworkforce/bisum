@@ -2,6 +2,7 @@ export { default as Navigation } from "./Navigation";
 export { default as CountdownTimer } from "./CountdownTimer";
 export { default as AboutSection } from "./AboutSection";
 export { default as SpeakersSection } from "./SpeakersSection";
+export { default as MerchandiseSection } from "./MerchandiseSection";
 export { default as Hero } from "./Hero";
 export { default as Testimonials } from "./Testimonials";
 export { default as Footer } from "./Footer";

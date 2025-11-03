@@ -9,6 +9,7 @@ const Navigation = ({ onNavigate }) => {
     { id: "home", label: "Home", path: "/", isRoute: true },
     { id: "schedule", label: "Schedule", path: "/schedule", isRoute: true },
     { id: "speakers", label: "Speakers", path: "/speakers", isRoute: true },
+    { id: "merchandise", label: "Merchandise", isRoute: false },
     {
       id: "register",
       label: "Register",
@@ -19,8 +20,16 @@ const Navigation = ({ onNavigate }) => {
   ];
 
   const handleNavigation = (item) => {
-    if (!item.isRoute && onNavigate) {
-      onNavigate(item.id);
+    if (!item.isRoute) { // For non-route items (like 'merchandise')
+      if (location.pathname !== "/") {
+        // If not on homepage, navigate to homepage first
+        window.location.href = `/#${item.id}`; // This will reload the page and scroll
+      } else if (onNavigate) {
+        // If already on homepage, just scroll
+        onNavigate(item.id);
+      }
+    } else { // For route items (like 'schedule', 'speakers')
+      // No change needed here, Link component handles it
     }
     setIsMobileMenuOpen(false);
   };

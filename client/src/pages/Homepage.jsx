@@ -6,6 +6,7 @@ import {
   Testimonials,
   Footer,
   ScheduleList,
+  MerchandiseSection,
 } from "../components";
 import { sessions } from "../data/scheduleData";
 import { Link } from "react-router-dom";
@@ -57,6 +58,9 @@ const Homepage = () => {
 
       {/* Speakers Section */}
       <SpeakersSection />
+
+      {/* Merchandise Section */}
+      <MerchandiseSection />
 
       {/* Testimonials and Sponsors Section */}
       {/* <Testimonials />*/}

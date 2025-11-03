@@ -11,6 +11,7 @@ import PaymentSuccess from './pages/PaymentSuccess';
 import AdminAuth from "./pages/admin/AdminAuth";
 import AdminRegister from "./pages/admin/AdminRegister";
 import AdminSignIn from "./pages/admin/AdminSignIn";
+import MerchandisePage from "./pages/MerchandisePage";
 import "./App.css";
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
           <Route path="/register" element={<Registration />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment/callback" element={<PaymentCallback />} />
+          <Route path="/merchandise/:id" element={<MerchandisePage />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/auth" element={<AdminAuth />} />
           <Route path="/admin/register" element={<AdminRegister />} />
