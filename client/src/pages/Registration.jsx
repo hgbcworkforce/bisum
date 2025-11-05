@@ -402,8 +402,12 @@ const Registration = () => {
     <div className="min-h-screen bg-gray-50">
       <Navigation onNavigate={scrollToSection} />
 
-      <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 pt-32">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section
+        className="relative bg-cover bg-center text-white py-20 pt-32"
+        style={{ backgroundImage: "url('https://media.hgbcinfluencers.org/bisum/section_banner.jpg')" }}
+      >
+        <div className="absolute inset-0 bg-black/20 opacity-75"></div> {/* Overlay */}
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-6xl font-extrabold mb-6">
             Register for BISUM Conference 2025
           </h1>

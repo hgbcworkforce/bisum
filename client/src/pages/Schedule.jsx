@@ -19,7 +19,11 @@ const Schedule = () => {
         <Navigation onNavigate={scrollToSection} />
 
         {/* Page Header */}
-        <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 pt-32">
+        <section
+          className="relative bg-cover bg-center text-white py-20 pt-32"
+          style={{ backgroundImage: "url('https://media.hgbcinfluencers.org/bisum/section_banner.jpg')" }}
+        >
+          <div className="absolute inset-0 bg-black/20 opacity-75"></div> {/* Overlay */}
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div className="max-w-3xl mx-auto">
               <h1 className="text-4xl md:text-6xl font-extrabold mb-6">
@@ -28,7 +32,7 @@ const Schedule = () => {
               <p className="text-xl md:text-2xl text-blue-100 mb-8">
                 Explore our comprehensive agenda featuring every sessions of the conference.
               </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-8">
+              <div className="flex flex-col sm:flex-row bg-white/10 backdrop-blur-sm rounded-lg p-6 items-center justify-center space-y-4 sm:space-y-0 sm:space-x-8">
                 <div className="flex items-center space-x-2">
                   <Calendar className="w-6 h-6 text-blue-200" />
                   <span className="text-lg">November 13 - 15, 2025</span>
