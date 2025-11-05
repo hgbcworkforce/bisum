@@ -48,7 +48,7 @@ const ScheduleItem = ({ session, isExpanded, onToggle }) => {
               className={`inline-block px-2 py-1 text-xs font-semibold rounded-full mb-3 ${
                 session.type === "keynote"
                   ? "bg-purple-100 text-purple-800"
-                  : session.type === "workshop"
+                  : session.type === "story"
                     ? "bg-green-100 text-green-800"
                     : session.type === "panel"
                       ? "bg-orange-100 text-orange-800"
