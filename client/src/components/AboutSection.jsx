@@ -20,11 +20,11 @@ const AboutSection = () => {
 
           {/* Image/Graphic */}
           <div className="relative">
-            {/* <img
-              src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1932&q=80"
-              alt="Professional networking at a conference"
+            <img
+              src="https://media.hgbcinfluencers.org/bisum/about_image.jpg"
+              alt="Bisum'25 banner"
               className="rounded-lg shadow-2xl w-full h-auto"
-            />*/}
+            />
             <div className="absolute -top-4 -left-4 w-32 h-32 bg-blue-200 rounded-full opacity-50"></div>
             <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-purple-200 rounded-full opacity-50"></div>
           </div>
