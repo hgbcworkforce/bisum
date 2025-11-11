@@ -42,7 +42,7 @@ const Footer = () => {
     },
     {
       icon: <Mail className="w-5 h-5" />,
-      text: "info@bisum.hgbcinfluencers.org",
+      text: "bisum@hgbcinfluencers.org",
     },
     {
       icon: <Phone className="w-5 h-5" />,
