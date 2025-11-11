@@ -31,17 +31,17 @@ const MerchandiseCard = ({ item }) => {
       <img
         src={currentImage}
         alt={item.name}
-        className="w-full h-48 object-cover"
+        className="w-full h-90 object-cover"
       />
       <div className="p-6">
         <h3 className="text-xl font-bold text-gray-900 mb-2">{item.name}</h3>
         <p className="text-gray-600 text-sm mb-4">{item.description}</p>
         <div className="flex justify-between items-center mb-4">
           <span className="text-2xl font-bold text-blue-600">{item.price}</span>
-          <span className="text-sm text-red-500">{item.timeFrame}</span>
+          <span className="bg-red-500 rounded-full px-6 py-2 text-sm text-white font-bold">{item.timeFrame}</span>
         </div>
         <Link
-          to={`/merchandise/${item.id}`} // Link to the detailed merchandise page
+          to={`/merchandisedetails/${item.id}`} // Link to the detailed merchandise page
           className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300 block text-center"
         >
           Order Now

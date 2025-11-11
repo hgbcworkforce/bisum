@@ -1,13 +1,11 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import {
-  Navigation,
-  Footer,
-} from "../components";
-
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import Navigation from '../components/Navigation';
+import Footer from '../components/Footer';
 import { merchandiseItems } from '../data/merchandiseData';
+import { formatCurrency } from '../services/supabaseService'; // Assuming this function is available
 
-// Placeholder for an API call to verify payment on the backend
+// Simulated merchandisePaymentAPI - This needs to be replaced with a real backend API
 const merchandisePaymentAPI = {
   verifyPayment: async ({ transaction_ref, merchandiseId, color, size, quantity, fullName, email, phoneNumber, amount }) => {
     return new Promise((resolve) => {
@@ -24,14 +22,16 @@ const merchandisePaymentAPI = {
   }
 };
 
+// Define the charge percentage
+const CHARGE_PERCENTAGE = 0.02; // 2%
+
 const MerchandiseDetails = () => {
   const { id } = useParams();
-
-  // ALL HOOKS MUST BE DECLARED UNCONDITIONALLY AT THE TOP LEVEL
+  const navigate = useNavigate();
   const [merchandiseItem, setMerchandiseItem] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [currentImage, setCurrentImage] = useState('');
-  const [timeLeft, setTimeLeft] = useState(null);
+  const [timeLeft, setTimeLeft] = useState({});
 
   // Form states
   const [fullName, setFullName] = useState('');
@@ -42,15 +42,15 @@ const MerchandiseDetails = () => {
   const [errors, setErrors] = useState({});
   const [orderSummary, setOrderSummary] = useState(null);
 
-  // Paystack related states
+  // Payment processing states
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [currentTransactionRef, setCurrentTransactionRef] = useState('');
-  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false); // State to control success modal visibility
   const isProcessingRef = useRef(false);
 
-  // Helper function for countdown calculation
-  const calculateTimeLeft = (targetDateString) => {
-    const difference = +new Date(targetDateString) - +new Date();
+  // Helper to calculate time left for sales
+  const calculateTimeLeft = (targetDate) => {
+    const difference = +new Date(targetDate) - +new Date();
     let timeLeft = {};
 
     if (difference > 0) {
@@ -61,141 +61,123 @@ const MerchandiseDetails = () => {
         seconds: Math.floor((difference / 1000) % 60),
       };
     }
-
-    if (Object.keys(timeLeft).length === 0) {
-      return "Order deadline passed";
-    }
-
-    const parts = [];
-    if (timeLeft.days > 0) parts.push(`${timeLeft.days} day${timeLeft.days !== 1 ? 's' : ''}`);
-    if (timeLeft.hours > 0) parts.push(`${timeLeft.hours} hour${timeLeft.hours !== 1 ? 's' : ''}`);
-    if (timeLeft.minutes > 0) parts.push(`${timeLeft.minutes} minute${timeLeft.minutes !== 1 ? 's' : ''}`);
-    if (timeLeft.seconds > 0 && parts.length < 3) parts.push(`${timeLeft.seconds} second${timeLeft.seconds !== 1 ? 's' : ''}`);
-
-    return parts.join(' ') || "Order closes soon!";
+    return timeLeft;
   };
 
-  // Effect to load merchandise item based on URL ID
+  // Effect to load merchandise item and set initial states
   useEffect(() => {
-    const item = merchandiseItems.find((item) => item.id === id);
+    const item = merchandiseItems.find((p) => p.id === id);
     if (item) {
       setMerchandiseItem(item);
       setSelectedColor(item.colors[0]);
       setCurrentImage(item.colors[0].image);
-      setSelectedSize(item.sizes[0] || '');
-    }
-  }, [id]);
+      setSelectedSize(item.sizes[0]); // Default to first size
+      setTimeLeft(calculateTimeLeft(item.timeFrame));
 
-  // Effect to recalculate order summary
+      // Set up initial order summary
+      const pricePerItem = parseFloat(item.price.replace(/[^0-9.-]+/g, ''));
+      const subtotal = pricePerItem * quantity;
+      const charges = subtotal * CHARGE_PERCENTAGE;
+      const totalAmountWithCharges = subtotal + charges;
+
+      setOrderSummary({
+        itemName: item.name,
+        color: item.colors[0].name,
+        size: item.sizes[0],
+        quantity: quantity,
+        unitPrice: pricePerItem,
+        subtotal: subtotal,
+        charges: charges,
+        totalAmount: totalAmountWithCharges,
+      });
+
+      const timer = setInterval(() => {
+        setTimeLeft(calculateTimeLeft(item.timeFrame));
+      }, 1000);
+
+      return () => clearInterval(timer);
+    } else {
+      navigate('/merchandise'); // Redirect if item not found
+    }
+  }, [id, navigate, quantity]); // Re-calculate order summary on quantity change
+
+  // Effect to update order summary when relevant states change
   useEffect(() => {
-    if (merchandiseItem && selectedColor && selectedSize && quantity > 0 && fullName && email && phoneNumber) {
-      const pricePerItem = parseFloat(merchandiseItem.price.replace(/[^0-9.-]+/g,""));
-      const totalAmount = pricePerItem * quantity;
+    if (merchandiseItem && selectedColor && selectedSize && quantity > 0) {
+      const pricePerItem = parseFloat(merchandiseItem.price.replace(/[^0-9.-]+/g, ''));
+      const subtotal = pricePerItem * quantity;
+      const charges = subtotal * CHARGE_PERCENTAGE;
+      const totalAmountWithCharges = subtotal + charges;
+
       setOrderSummary({
         itemName: merchandiseItem.name,
         color: selectedColor.name,
         size: selectedSize,
         quantity: quantity,
-        unitPrice: pricePerItem.toFixed(2),
-        totalAmount: totalAmount.toFixed(2),
+        unitPrice: pricePerItem,
+        subtotal: subtotal,
+        charges: charges,
+        totalAmount: totalAmountWithCharges,
       });
-    } else {
-      setOrderSummary(null);
     }
-  }, [merchandiseItem, selectedColor, selectedSize, quantity, fullName, email, phoneNumber]);
+  }, [selectedColor, selectedSize, quantity, merchandiseItem]);
 
-  // Effect for countdown timer
-  useEffect(() => {
-    if (!merchandiseItem || !merchandiseItem.timeFrame) {
-      setTimeLeft("Loading deadline...");
-      return;
-    }
 
-    const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft(merchandiseItem.timeFrame));
-    }, 1000);
-
-    setTimeLeft(calculateTimeLeft(merchandiseItem.timeFrame));
-
-    return () => clearInterval(timer);
-  }, [merchandiseItem]);
-
-  // Handle color selection
   const handleColorSelect = (color) => {
     setSelectedColor(color);
     setCurrentImage(color.image);
   };
 
-  // Form validation logic
   const validateForm = () => {
     const newErrors = {};
-    if (!fullName.trim()) newErrors.fullName = 'Full Name is required.';
-    if (!email.trim()) {
-      newErrors.email = 'Email is required.';
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = 'Email is invalid.';
-    }
-    if (!phoneNumber.trim()) {
-      newErrors.phoneNumber = 'Phone Number is required.';
-    } else if (!/^\+?[\d\s-]{10,15}$/.test(phoneNumber.replace(/\s|-/g, ''))) {
-      newErrors.phoneNumber = 'Phone Number is invalid (10-15 digits, optional + prefix).';
-    }
-    if (!selectedSize) newErrors.selectedSize = 'Size is required.';
-    if (!selectedColor) newErrors.selectedColor = 'Color is required.';
-    if (quantity < 1) newErrors.quantity = 'Quantity must be at least 1.';
+    if (!fullName.trim()) newErrors.fullName = 'Full name is required.';
+    if (!email.trim()) newErrors.email = 'Email is required.';
+    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Email address is invalid.';
+    if (!phoneNumber.trim()) newErrors.phoneNumber = 'Phone number is required.';
+    if (!selectedSize) newErrors.selectedSize = 'Please select a size.';
+    if (quantity <= 0) newErrors.quantity = 'Quantity must be at least 1.';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // Callback function for Paystack payment verification
-  const handlePaystackPaymentVerification = useCallback(async (response) => {
-    console.log("Paystack payment successful", response);
-
-    if (isProcessingRef.current) {
-      console.log("Payment verification already being processed");
-      return;
-    }
-
-    isProcessingRef.current = true;
+  const handlePaystackPaymentVerification = async (response) => {
     setIsProcessingPayment(true);
-
     try {
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Payment verification timeout. Please contact support with your transaction reference.')), 30000)
-      );
-
-      const verificationPromise = merchandisePaymentAPI.verifyPayment({
+      // Here you would typically call your backend API to verify the payment
+      // For now, we use the simulated API
+      const verificationResult = await merchandisePaymentAPI.verifyPayment({
         transaction_ref: response.reference,
         merchandiseId: merchandiseItem.id,
         color: selectedColor.name,
         size: selectedSize,
         quantity: quantity,
-        fullName,
-        email,
-        phoneNumber,
-        amount: orderSummary.totalAmount,
+        amount: parseFloat(orderSummary.totalAmount), // Use the total amount including charges
+        fullName: fullName,
+        email: email,
+        phoneNumber: phoneNumber,
       });
 
-      const verificationResult = await Promise.race([verificationPromise, timeoutPromise]);
-
       if (verificationResult.success) {
-        setSubmitSuccess(true);
+        setSubmitSuccess(true); // Show success modal
+        setOrderSummary(null); // Clear order summary
+        // Optionally navigate or show a success modal
       } else {
-        throw new Error(verificationResult.error || "Payment verification failed.");
+        const errorMessage = verificationResult.error || "Payment verification failed. Please contact support.";
+        setErrors({ general: errorMessage });
+        alert(errorMessage);
       }
     } catch (error) {
-      console.error("Error verifying payment:", error);
-      const errorMessage = error.message || "Payment verification failed. Please contact support.";
-      setErrors({ payment: errorMessage });
-      alert(`${errorMessage}\n\nTransaction Reference: ${response.reference}\nPlease save this reference for support.`);
+      console.error("Payment verification error:", error);
+      setErrors({ general: error.message || "An error occurred during payment verification." });
+      alert(error.message || "An error occurred during payment verification.");
     } finally {
       setIsProcessingPayment(false);
       isProcessingRef.current = false;
     }
-  }, [merchandiseItem, selectedColor, selectedSize, quantity, fullName, email, phoneNumber, orderSummary]);
+  };
 
-  // Handle Buy Now button click and Paystack initialization
+
   const handleBuyNow = async (e) => {
     e.preventDefault();
 
@@ -227,6 +209,7 @@ const MerchandiseDetails = () => {
         throw new Error("Payment system not loaded. Please refresh the page and try again. (PaystackPop not found)");
       }
 
+      // Use the total amount from orderSummary which now includes charges
       if (!orderSummary || parseFloat(orderSummary.totalAmount) <= 0) {
         setErrors({ general: "Order summary could not be calculated or total is zero. Please check your selections." });
         isProcessingRef.current = false;
@@ -275,12 +258,19 @@ const MerchandiseDetails = () => {
               variable_name: "merchandise_quantity",
               value: quantity,
             },
+            { // Added custom field for charges
+              display_name: "Processing Charges (2%)",
+              variable_name: "processing_charges",
+              value: formatCurrency(orderSummary.charges),
+            },
           ],
           merchandise_id: merchandiseItem.id,
           selected_color: selectedColor.name,
           selected_size: selectedSize,
           order_quantity: quantity,
-          order_total_amount: orderSummary.totalAmount,
+          order_subtotal_amount: orderSummary.subtotal, // Added subtotal
+          order_charges_amount: orderSummary.charges,     // Added charges
+          order_total_amount: orderSummary.totalAmount,   // Total with charges
         },
         callback: function(response) {
           handlePaystackPaymentVerification(response);
@@ -302,243 +292,241 @@ const MerchandiseDetails = () => {
     }
   };
 
-  // Render success message if order is placed
-  if (submitSuccess) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 text-center">
-        <h2 className="text-5xl font-extrabold text-green-600 mb-6">Order Placed Successfully!</h2>
-        <p className="text-xl text-gray-700 mb-4">Thank you for your purchase.</p>
-        <p className="text-lg text-gray-600 mb-8">
-          Your transaction reference is: <span className="font-mono text-blue-700">{currentTransactionRef}</span>
-        </p>
-        <Link
-          to="/"
-          className="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors duration-300 text-lg"
-        >
-          Back to Homepage
-        </Link>
-      </div>
-    );
-  }
+  const closeModalAndReset = () => {
+    setSubmitSuccess(false);
+    setFullName('');
+    setEmail('');
+    setPhoneNumber('');
+    setSelectedSize(merchandiseItem?.sizes[0] || ''); // Reset to default or empty
+    setQuantity(1);
+    setCurrentTransactionRef('');
+    navigate('/merchandise'); // Optionally navigate back to the merchandise list
+  };
 
-  // Handle case where merchandise item is not found
   if (!merchandiseItem) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-xl text-gray-700">Merchandise item not found.</p>
+        <p className="text-xl text-gray-700">Loading merchandise details...</p>
       </div>
     );
   }
 
-  // Main merchandise page content
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
-      <div className="container max-w-7xl mx-auto mt-20 px-4 py-20">
-        <div className="flex flex-col lg:flex-row gap-12">
-          {/* Image Gallery & Product Details */}
-          <div className="lg:w-1/2">
-            <img
-              src={currentImage}
-              alt={merchandiseItem.name}
-              className="w-full h-96 object-contain rounded-lg shadow-md"
-            />
-            <div className="flex gap-4 mt-6 flex-wrap">
-              {merchandiseItem.colors.map((color) => (
-                <img
-                  key={color.name}
-                  src={color.image}
-                  alt={color.name}
-                  className={`w-24 h-24 object-cover rounded-md cursor-pointer border-2 ${
-                    selectedColor && selectedColor.name === color.name ? 'border-blue-600' : 'border-transparent'
-                  }`}
-                  onClick={() => handleColorSelect(color)}
-                />
-              ))}
+
+      <section className="py-20 pt-32 min-h-screen flex">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex">
+          <div className="md:flex md:items-start md:space-x-8 w-full">
+            <div className="md:w-1/2 lg:w-2/5 md:sticky md:top-28 self-start mr-8">
+              <img
+                src={currentImage}
+                alt={merchandiseItem.name}
+                className="w-full h-auto object-cover rounded-lg shadow-lg"
+              />
+              <div className="flex space-x-2 mt-4 overflow-x-auto">
+                {merchandiseItem.colors.map((color) => (
+                  <img
+                    key={color.name}
+                    src={color.image}
+                    alt={color.name}
+                    className={`w-20 h-20 object-cover rounded-md cursor-pointer border-2 ${
+                      selectedColor?.name === color.name ? 'border-blue-500' : 'border-transparent'
+                    }`}
+                    onClick={() => handleColorSelect(color)}
+                  />
+                ))}
+              </div>
             </div>
 
-            {/* Product description and price */}
-            <div className="mt-8 p-6 bg-white rounded-lg shadow-md">
-              <div className="flex justify-between items-center mb-4">
-                  <h1 className="text-4xl font-bold text-gray-900 mb-4">{merchandiseItem.name}</h1>
-                  <span className="bg-red-500 rounded-full px-6 py-2 text-sm text-white font-bold">{merchandiseItem.timeFrame}</span>
-               </div>
-               <p className="text-3xl font-bold text-blue-600 mb-2">{merchandiseItem.price}</p>
-              <p className="text-gray-600 text-lg mb-6">{merchandiseItem.fullDescription}</p>
-            </div>
-          </div>
+            <div className="md:w-1/2 lg:w-3/5 mt-8 md:mt-0 md:h-[calc(100vh-140px)] md:overflow-y-auto md:pr-4">
+              {/* Breadcrumb */}
+              <nav className="text-sm mb-8">
+                <ol className="flex items-center space-x-2 text-gray-500">
+                  <li>
+                    <Link to="/" className="hover:text-blue-600">Home</Link>
+                  </li>
+                  <li>/</li>
+                  <li>
+                    <Link to="/merchandise" className="hover:text-blue-600">Merchandise</Link>
+                  </li>
+                  <li>/</li>
+                  <li className="text-gray-900 font-medium">{merchandiseItem.name}</li>
+                </ol>
+              </nav>
 
-          {/* Order Form and Summary */}
-          <div className="lg:w-1/2">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Place Your Order</h2>
-            <form onSubmit={handleBuyNow} className="bg-white p-8 rounded-lg shadow-md mb-8">
-              {/* Full Name */}
-              <div className="mb-4">
-                <label htmlFor="fullName" className="block text-gray-700 text-sm font-bold mb-2">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  id="fullName"
-                  name="fullName"
-                  className={`shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.fullName ? 'border-red-500' : ''}`}
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Your Full Name"
-                />
-                {errors.fullName && <p className="text-red-500 text-xs italic mt-1">{errors.fullName}</p>}
-              </div>
+              <h1 className="text-4xl font-extrabold text-gray-900 mb-4">{merchandiseItem.name}</h1>
+              <p className="text-2xl font-bold text-blue-700 mb-6">{merchandiseItem.price}</p>
+              <p className="text-gray-700 mb-6">{merchandiseItem.fullDescription}</p>
 
-              {/* Email */}
-              <div className="mb-4">
-                <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  className={`shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.email ? 'border-red-500' : ''}`}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@example.com"
-                />
-                {errors.email && <p className="text-red-500 text-xs italic mt-1">{errors.email}</p>}
-              </div>
-
-              {/* Phone Number */}
-              <div className="mb-4">
-                <label htmlFor="phoneNumber" className="block text-gray-700 text-sm font-bold mb-2">
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  id="phoneNumber"
-                  name="phoneNumber"
-                  className={`shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.phoneNumber ? 'border-red-500' : ''}`}
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder="e.g., +2348012345678"
-                />
-                {errors.phoneNumber && <p className="text-red-500 text-xs italic mt-1">{errors.phoneNumber}</p>}
-              </div>
-
-              {/* Color Selection */}
-              <div className="mb-4">
-                <h3 className="text-xl font-semibold text-gray-800 mb-3">Colors:</h3>
-                <div className="flex gap-3 flex-wrap">
-                  {merchandiseItem.colors.map((color) => (
-                    <button
-                      key={color.name}
-                      type="button"
-                      className={`px-4 py-2 rounded-lg border-2 ${
-                        selectedColor && selectedColor.name === color.name
-                          ? 'border-blue-600 bg-blue-100 text-blue-800'
-                          : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-                      } transition-colors duration-200`}
-                      onClick={() => handleColorSelect(color)}
-                    >
-                      {color.name}
-                    </button>
-                  ))}
-                </div>
-                {errors.selectedColor && <p className="text-red-500 text-xs italic mt-1">{errors.selectedColor}</p>}
-              </div>
-
-              {/* Size Selection */}
-              {merchandiseItem.sizes && merchandiseItem.sizes.length > 0 && (
-                <div className="mb-4">
-                  <label htmlFor="size" className="block text-gray-700 text-sm font-bold mb-2">
-                    Size
-                  </label>
-                  <select
-                    id="size"
-                    name="selectedSize"
-                    className={`shadow border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.selectedSize ? 'border-red-500' : ''}`}
-                    value={selectedSize}
-                    onChange={(e) => setSelectedSize(e.target.value)}
-                  >
-                    {merchandiseItem.sizes.map((sizeOption) => (
-                      <option key={sizeOption} value={sizeOption}>
-                        {sizeOption}
-                      </option>
+              {/* Color selection */}
+              {merchandiseItem.colors && merchandiseItem.colors.length > 0 && (
+                <div className="mb-6">
+                  <span className="text-gray-800 font-medium mr-2">Color:</span>
+                  <div className="flex items-center space-x-2">
+                    {merchandiseItem.colors.map((color) => (
+                      <button
+                        key={color.name}
+                        className={`w-8 h-8 rounded-full border-2 ${
+                          selectedColor?.name === color.name
+                            ? 'border-blue-500 ring-2 ring-blue-500 ring-offset-2'
+                            : 'border-gray-300'
+                        } focus:outline-none`}
+                        style={{ backgroundColor: color.name.toLowerCase().replace(' ', '') }}
+                        title={color.name}
+                        onClick={() => handleColorSelect(color)}
+                      ></button>
                     ))}
-                  </select>
-                  {errors.selectedSize && <p className="text-red-500 text-xs italic mt-1">{errors.selectedSize}</p>}
+                  </div>
                 </div>
               )}
 
-              {/* Quantity */}
+              {/* Size selection */}
+              {merchandiseItem.sizes && merchandiseItem.sizes.length > 0 && (
+                <div className="mb-6">
+                  <label htmlFor="size" className="block text-gray-800 font-medium mb-2">Size:</label>
+                  <select
+                    id="size"
+                    name="selectedSize"
+                    className="w-full md:w-1/2 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    value={selectedSize}
+                    onChange={(e) => setSelectedSize(e.target.value)}
+                  >
+                    {merchandiseItem.sizes.map((size) => (
+                      <option key={size} value={size}>{size}</option>
+                    ))}
+                  </select>
+                  {errors.selectedSize && <p className="text-red-500 text-sm mt-1">{errors.selectedSize}</p>}
+                </div>
+              )}
+
+              {/* Quantity input */}
               <div className="mb-6">
-                <label htmlFor="quantity" className="block text-gray-700 text-sm font-bold mb-2">
-                  Quantity
-                </label>
+                <label htmlFor="quantity" className="block text-gray-800 font-medium mb-2">Quantity:</label>
                 <input
                   type="number"
                   id="quantity"
                   name="quantity"
                   min="1"
-                  className={`shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.quantity ? 'border-red-500' : ''}`}
+                  className="w-24 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                   value={quantity}
                   onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
                 />
-                {errors.quantity && <p className="text-red-500 text-xs italic mt-1">{errors.quantity}</p>}
+                {errors.quantity && <p className="text-red-500 text-sm mt-1">{errors.quantity}</p>}
               </div>
 
-              {/* Order Summary */}
-              {orderSummary && (
-                <div className="bg-blue-50 p-6 rounded-lg shadow-inner mb-6">
-                  <h3 className="text-xl font-bold text-blue-800 mb-4">Order Summary</h3>
-                  <div className="flex justify-between py-1 border-b border-blue-200">
-                    <span className="text-gray-700">Item:</span>
-                    <span className="font-semibold">{orderSummary.itemName}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-blue-200">
-                    <span className="text-gray-700">Color:</span>
-                    <span className="font-semibold">{orderSummary.color}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-blue-200">
-                    <span className="text-gray-700">Size:</span>
-                    <span className="font-semibold">{orderSummary.size}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-blue-200">
-                    <span className="text-gray-700">Quantity:</span>
-                    <span className="font-semibold">{orderSummary.quantity}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-blue-200">
-                    <span className="text-gray-700">Unit Price:</span>
-                    <span className="font-semibold">₦ {orderSummary.unitPrice}</span>
-                  </div>
-                  <div className="flex justify-between py-2 mt-2 text-xl font-bold text-blue-700">
-                    <span>Total:</span>
-                    <span>₦ {orderSummary.totalAmount}</span>
-                  </div>
+              {/* Time Left */}
+              {timeLeft.days !== undefined && (
+                <div className="bg-blue-50 p-4 rounded-lg mb-6">
+                  <h4 className="font-semibold text-blue-800 mb-2">Order window closes in:</h4>
+                  <p className="text-lg text-blue-700 font-bold">
+                    {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m {timeLeft.seconds}s
+                  </p>
                 </div>
               )}
 
-              {/* Buy Now Button */}
-              <button
-                type="submit"
-                className="w-full bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors duration-300 text-lg flex items-center justify-center"
-                disabled={isProcessingPayment || isProcessingRef.current}
-              >
-                {(isProcessingPayment || isProcessingRef.current) ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Processing...
-                  </>
-                ) : (
-                  'Buy Now'
-                )}
-              </button>
-              {errors.general && <p className="text-red-500 text-xs italic mt-4 text-center">{errors.general}</p>}
-            </form>
+              {/* Order Summary */}
+              {orderSummary && (
+                <div className="bg-gray-100 p-6 rounded-lg mb-6">
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">Order Summary</h3>
+                  <p className="text-gray-700">Item: {orderSummary.itemName}</p>
+                  <p className="text-gray-700">Color: {orderSummary.color}</p>
+                  <p className="text-gray-700">Size: {orderSummary.size}</p>
+                  <p className="text-gray-700">Quantity: {orderSummary.quantity}</p>
+                  <p className="text-gray-700 mt-2">Subtotal: {formatCurrency(orderSummary.subtotal)}</p>
+                  <p className="text-gray-700">Processing Charges (2%): {formatCurrency(orderSummary.charges)}</p>
+                  <p className="text-lg font-bold text-blue-700 mt-4">Total: {formatCurrency(orderSummary.totalAmount)}</p>
+                </div>
+              )}
+
+              {/* Customer Details Form */}
+              <form onSubmit={handleBuyNow} className="bg-white p-6 rounded-lg shadow-md">
+                <h3 className="text-xl font-bold text-gray-800 mb-4">Your Details</h3>
+                <div className="mb-4">
+                  <label htmlFor="fullName" className="block text-gray-700 font-medium mb-2">Full Name:</label>
+                  <input
+                    type="text"
+                    id="fullName"
+                    name="fullName"
+                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                  />
+                  {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="email" className="block text-gray-700 font-medium mb-2">Email:</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                </div>
+                <div className="mb-6">
+                  <label htmlFor="phoneNumber" className="block text-gray-700 font-medium mb-2">Phone Number:</label>
+                  <input
+                    type="tel"
+                    id="phoneNumber"
+                    name="phoneNumber"
+                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                  />
+                  {errors.phoneNumber && <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>}
+                </div>
+
+                {errors.general && <p className="text-red-500 text-center mb-4">{errors.general}</p>}
+
+                <button
+                  type="submit"
+                  className={`w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition-colors duration-300 ${isProcessingPayment ? 'opacity-60 cursor-not-allowed' : ''}`}
+                  disabled={isProcessingPayment}
+                >
+                  {isProcessingPayment ? 'Processing Payment...' : 'Pay with Paystack'}
+                </button>
+              </form>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Success Modal */}
+      {submitSuccess && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 animate-fade-in">
+          <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full text-center transform scale-95 animate-zoom-in">
+            <div className="text-green-500 mb-4">
+              <svg className="mx-auto h-16 w-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">Purchase Successful!</h2>
+            <p className="text-gray-600 mb-4">
+              Thank you, <span className="font-semibold">{fullName}</span>, for your purchase of the
+              <span className="font-semibold"> {merchandiseItem.name}</span>.
+            </p>
+            {currentTransactionRef && (
+              <p className="text-gray-600 mb-2">
+                Your transaction reference is: <span className="font-mono font-semibold text-blue-700">{currentTransactionRef}</span>
+              </p>
+            )}
+            <p className="text-gray-600 mb-6">
+              A confirmation email has been sent to <span className="font-semibold">{email}</span> with your order details.
+              If you have any questions, please contact support.
+            </p>
+            <button
+              onClick={closeModalAndReset}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </div>
   );

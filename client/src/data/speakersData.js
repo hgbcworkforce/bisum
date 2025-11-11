@@ -164,7 +164,7 @@ export const speakersData = [
       "Faith and Work",
       "Ethical Business"
     ],
-    category: "keynote",
+    category: ["keynote", "breakout"],
     experience: "Over 45 years of business leadership and entrepreneurship across multiple industries.",
     achievements: [
       "Founded Olatunde Prestige Limited and Bezaleel Manufacturing Company.",

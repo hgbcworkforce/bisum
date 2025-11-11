@@ -9,8 +9,7 @@ const Navigation = ({ onNavigate }) => {
     { id: "home", label: "Home", path: "/", isRoute: true },
     { id: "schedule", label: "Schedule", path: "/schedule", isRoute: true },
     { id: "speakers", label: "Speakers", path: "/speakers", isRoute: true },
-    { id: "merchandise", label: "Merchandise", isRoute: false },
-    {
+    { id: "merchandise", label: "Merchandise", path:"/merchandise", isRoute: true },    {
       id: "register",
       label: "Register",
       path: "/register",
