@@ -496,7 +496,7 @@ const MerchandiseDetails = () => {
 
       {/* Success Modal */}
       {submitSuccess && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 animate-fade-in">
+        <div className="fixed inset-0backdrop-blur-lg bg-opacity-10 flex items-center justify-center p-4 z-50 animate-fade-in">
           <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full text-center transform scale-95 animate-zoom-in">
             <div className="text-green-500 mb-4">
               <svg className="mx-auto h-16 w-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
