@@ -49,7 +49,7 @@ export const sessions = [
       name: "Pastor Samson Ayangoke",
       title: "Lead Pastor, Higher Ground Baptist Church",
       avatar:
-        "https://media.hgbcinfluencers.org/bisum/samson ayangoke.jpg",
+        "https://media.hgbcinfluencers.org/bisum/samson ayangoke.png",
     },
     venue: "Main Auditorium",
     description:
@@ -266,7 +266,7 @@ export const sessions = [
       name: "Pastor Samson Ayangoke",
       title: "Lead Pastor, Higher Ground Baptist Church",
       avatar:
-      "https://media.hgbcinfluencers.org/bisum/samson ayangoke.jpg"
+      "https://media.hgbcinfluencers.org/bisum/samson ayangoke.png"
     },
     venue: "Main Auditorium",
   },
@@ -337,7 +337,7 @@ export const sessions = [
       name: "Pastor Samson Ayangoke",
       title: "Lead Pastor, Higher Ground Baptist Church",
       avatar:
-      "https://media.hgbcinfluencers.org/bisum/samson ayangoke.jpg"
+      "https://media.hgbcinfluencers.org/bisum/samson ayangoke.png"
     },
     venue: "Main Auditorium",
   },

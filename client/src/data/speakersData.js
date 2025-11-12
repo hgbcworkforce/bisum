@@ -8,7 +8,7 @@ export const speakersData = [
     title: "Lead Pastor",
     company: "Higher Ground Baptist Church",
     bio: "Samson Oluwaseun Ayangoke was born to the family of Mr. & Mrs. Johnson Olufunke Ayangoke at Ilasamaja, Lagos State. He is the second born in a family of three, and the first of two males. He attended the University of Lagos, Akoka, from 2010–2015, where he obtained his B.Sc in Business Administration. He also holds a diploma in Computer Engineering and is a member of the Nigerian Institute of Management.\n\nHe gave his life to Christ in August 2008 during a BSF program at Surulere Baptist Church, Ojuelegba, and has remained steadfast in faith. Over the years, he has served in various ministry capacities within the R.A, BSF, Youth Fellowship, and NCCF. After his university education, he worked in the financial sector with FCMB for three years before answering the call into full-time ministry in May 2020.\n\nHe is married to his beautiful wife, Victory Tolulope Ayangoke, and their union is blessed with a lovely son, Judah Ireti-Ogo Ayangoke. Samson is currently a student at the Nigerian Baptist Theological Seminary, Ogbomoso, studying Missions in Theology. He is also an entrepreneur, and a technology and fashion enthusiast. A lover of God, prayer, and His Word, he is passionate about raising a generation that will advance God’s kingdom and walk in divine power in their spheres of influence.",
-    image: "https://media.hgbcinfluencers.org/bisum/samson ayangoke.jpg",
+    image: "https://media.hgbcinfluencers.org/bisum/samson ayangoke.png",
     expertise: [
       "Missions",
       "Leadership",

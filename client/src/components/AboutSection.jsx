@@ -21,9 +21,9 @@ const AboutSection = () => {
           {/* Image/Graphic */}
           <div className="relative">
             <img
-              src="https://media.hgbcinfluencers.org/bisum/about_image.jpg"
+              src="https://media.hgbcinfluencers.org/bisum/about_image-p.png"
               alt="Bisum'25 banner"
-              className="rounded-lg shadow-2xl w-full h-auto"
+              className="rounded-lg shadow-2xl w-full h-auto lg:h-[750px]"
             />
             <div className="absolute -top-4 -left-4 w-32 h-32 bg-blue-200 rounded-full opacity-50"></div>
             <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-purple-200 rounded-full opacity-50"></div>

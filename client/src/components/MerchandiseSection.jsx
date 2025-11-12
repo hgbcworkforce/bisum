@@ -36,7 +36,7 @@ const MerchandiseCard = ({ item }) => {
       <div className="p-6">
         <h3 className="text-xl font-bold text-gray-900 mb-2">{item.name}</h3>
         <p className="text-gray-600 text-sm mb-4">{item.description}</p>
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex lg:flex-row  flex-col justify-between items-start lg:items-center mb-4">
           <span className="text-2xl font-bold text-blue-600">{item.price}</span>
           <span className="bg-red-500 rounded-full px-6 py-2 text-sm text-white font-bold">{item.timeFrame}</span>
         </div>
