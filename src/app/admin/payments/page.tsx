@@ -15,11 +15,13 @@ import {
   RefreshCw,
   ChevronLeft,
   ChevronRight,
+  ShoppingBag,
 } from "lucide-react";
 
 export default function AdminPaymentsPage() {
   const router = useRouter();
   const [payments, setPayments] = useState<PaymentRecord[]>([]);
+  const [merchandiseCount, setMerchandiseCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,11 +67,19 @@ export default function AdminPaymentsPage() {
     setError(null);
 
     try {
-      const result = await paymentAPI.getAll({ limit: 1000 });
+      const [result, merchRes] = await Promise.all([
+        paymentAPI.getAll({ limit: 1000 }),
+        supabase.from("merchandise_orders").select("id", { count: "exact", head: true }),
+      ]);
+
       if (result.success && result.data) {
         setPayments(result.data);
       } else {
         throw new Error(result.message || "Failed to load payment records");
+      }
+
+      if (merchRes.count !== null && merchRes.count !== undefined) {
+        setMerchandiseCount(merchRes.count);
       }
     } catch (err: any) {
       const errInfo = handleApiError(err);
@@ -87,34 +97,37 @@ export default function AdminPaymentsPage() {
   const kpis = useMemo(() => {
     let totalRevenue = 0;
     let successfulCount = 0;
-    let pendingCount = 0;
     let failedCount = 0;
+    let merchTxCount = 0;
 
     payments.forEach((p) => {
       const st = (p.status || "").toLowerCase();
       const amt = Number(p.amount) || 0;
+      const ref = (p.transaction_reference || (p as any).reference || "");
+      if (ref.startsWith("BISUM-MERCH") || p.metadata?.type === "merchandise_order") {
+        merchTxCount++;
+      }
 
       if (st === "success" || st === "successful" || st === "paid") {
         totalRevenue += amt;
         successfulCount++;
-      } else if (st === "pending" || st === "processing") {
-        pendingCount++;
-      } else {
+      } else if (st === "failed" || st === "abandoned" || st === "cancelled") {
         failedCount++;
       }
     });
 
     const avgTicket = successfulCount > 0 ? totalRevenue / successfulCount : 0;
+    const finalMerchCount = merchandiseCount > 0 ? merchandiseCount : merchTxCount;
 
     return {
       totalRevenue,
       successfulCount,
-      pendingCount,
+      totalMerchandise: finalMerchCount,
       failedCount,
       avgTicket,
       totalCount: payments.length,
     };
-  }, [payments]);
+  }, [payments, merchandiseCount]);
 
   const filteredPayments = useMemo(() => {
     return payments
@@ -255,16 +268,16 @@ export default function AdminPaymentsPage() {
           <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Pending Checkout
+                Total Merchandise
               </span>
-              <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-                <Clock className="w-4 h-4" />
+              <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                <ShoppingBag className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-2xl font-extrabold text-slate-900 mt-3 tracking-tight">
-              {kpis.pendingCount}
+            <div className="text-2xl font-extrabold text-slate-900 mt-3 tracking-tight font-mono">
+              {kpis.totalMerchandise}
             </div>
-            <span className="text-xs text-slate-400 mt-1 block">Awaiting gateway confirmation</span>
+            <span className="text-xs text-slate-400 mt-1 block">Total store orders</span>
           </div>
 
           <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
