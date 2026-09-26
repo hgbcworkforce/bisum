@@ -133,21 +133,35 @@ function PaymentCallbackContent() {
               )}
 
               {transactionType === "registration" ? (
-                <Link
-                  href="/payment-success"
-                  className="flex items-center justify-center space-x-2 w-full py-3.5 px-4 bg-primary hover:bg-primary-hover text-white font-bold text-sm rounded-xl shadow-sm transition-colors"
-                >
-                  <span>View Official Pass & Receipt</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Link
+                    href="/"
+                    className="flex-1 flex items-center justify-center space-x-2 py-3 px-4 bg-primary hover:bg-primary-hover text-white font-bold text-xs rounded-xl shadow-xs transition-colors"
+                  >
+                    <span>Return to Home</span>
+                  </Link>
+                  <Link
+                    href="/schedule"
+                    className="flex-1 flex items-center justify-center space-x-2 py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl transition-colors"
+                  >
+                    <span>Browse Schedule</span>
+                  </Link>
+                </div>
               ) : (
-                <Link
-                  href="/merchandise"
-                  className="flex items-center justify-center space-x-2 w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-sm transition-colors"
-                >
-                  <span>Return to Merchandise Store</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Link
+                    href="/"
+                    className="flex-1 flex items-center justify-center space-x-2 py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl transition-colors"
+                  >
+                    <span>Return to Home</span>
+                  </Link>
+                  <Link
+                    href="/merchandise"
+                    className="flex-1 flex items-center justify-center space-x-2 py-3 px-4 bg-primary hover:bg-primary-hover text-white font-bold text-xs rounded-xl shadow-xs transition-colors"
+                  >
+                    <span>Return to Store</span>
+                  </Link>
+                </div>
               )}
             </div>
           )}
