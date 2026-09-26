@@ -1,58 +1,35 @@
 {
-  "name": "bisum-conference",
-  "version": "1.0.0",
-  "description": "BISUM Technology Conference - Modern conference management system built with React and Supabase",
+  "name": "bisum",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "cd client && npm run dev",
-    "build": "cd client && npm run build",
-    "preview": "cd client && npm run preview",
-    "lint": "cd client && npm run lint",
-    "install-client": "cd client && npm install",
-    "test-supabase": "node migrate-to-supabase.js test-connection",
-    "test-schema": "node migrate-to-supabase.js test-schema",
-    "create-sample-data": "node migrate-to-supabase.js create-sample-data",
-    "verify-setup": "node migrate-to-supabase.js verify-setup",
-    "clean": "cd client && rm -rf node_modules dist"
-  },
-  "keywords": [
-    "conference",
-    "registration",
-    "payment",
-    "supabase",
-    "react",
-    "flutterwave",
-    "real-time",
-    "management"
-  ],
-  "author": "BISUM Conference Team",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/your-username/bisum-conference.git"
-  },
-  "bugs": {
-    "url": "https://github.com/your-username/bisum-conference/issues"
-  },
-  "homepage": "https://github.com/your-username/bisum-conference#readme",
-  "workspaces": [
-    "client"
-  ],
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
-  },
-  "devDependencies": {
-    "supabase": "^2.48.3"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "server:dev": "npm --prefix server run dev",
+    "server:build": "npm --prefix server run build",
+    "server:start": "npm --prefix server start"
   },
   "dependencies": {
-    "@radix-ui/react-avatar": "^1.1.10",
-    "@supabase/auth-helpers-react": "^0.5.0",
-    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.117.2",
     "clsx": "^2.1.1",
-    "dayjs": "^1.11.18",
-    "jspdf": "^3.0.3",
-    "jspdf-autotable": "^5.0.2",
-    "tailwind-merge": "^3.3.1"
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
+    "lucide-react": "^1.48.0",
+    "next": "16.3.6",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "tailwind-merge": "^3.7.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^26.6.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.6",
+    "tailwindcss": "^4",
+    "typescript": "^6.0.3"
   }
 }

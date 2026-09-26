@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: bisum-api-backend
+    runtime: node
+    rootDir: server
+    region: frankfurt
+    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: PAYSTACK_SECRET_KEY
+        sync: false
+      - key: PAYSTACK_PUBLIC_KEY
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM_EMAIL
+        value: BISUM Conference <onboarding@resend.dev>
+      - key: FRONTEND_URL
+        value: https://bisum.org
+      - key: CONFERENCE_NAME
+        value: BISUM Conference 2025
+      - key: CONFERENCE_DATES
+        value: November 13 - 15, 2025
+      - key: CONFERENCE_VENUE
+        value: Higher Ground Baptist Church, Ogbomoso, Nigeria.
