@@ -273,24 +273,21 @@ export default function AdminAttendeesPage() {
 
   const stats = useMemo(() => {
     const total = attendees.length;
-    const regular = attendees.filter((a) => (a.registrationType || "").toLowerCase() === "regular" || (a.registrationType || "").toLowerCase() === "delegate").length;
-    const vip = attendees.filter((a) => (a.registrationType || "").toLowerCase() === "vip" || (a.registrationType || "").toLowerCase() === "executive").length;
-    const virtual = attendees.filter((a) => (a.registrationType || "").toLowerCase() === "virtual" || (a.registrationType || "").toLowerCase() === "student").length;
-    return { total, regular, vip, virtual };
+    const student = attendees.filter((a) => (a.registrationType || "").toLowerCase() === "student").length;
+    const professional = attendees.filter((a) => (a.registrationType || "").toLowerCase() === "professional").length;
+    const paid = attendees.filter((a) => (a.paymentStatus || "").toLowerCase() === "paid").length;
+    return { total, student, professional, paid };
   }, [attendees]);
 
   const getTypeBadge = (type?: string) => {
     const t = (type || "").toLowerCase();
-    if (t === "vip" || t === "executive") {
+    if (t === "professional") {
       return "bg-purple-50 text-purple-700 border-purple-200";
     }
-    if (t === "virtual") {
-      return "bg-amber-50 text-amber-700 border-amber-200";
-    }
     if (t === "student") {
-      return "bg-emerald-50 text-emerald-700 border-emerald-200";
+      return "bg-blue-50 text-blue-700 border-blue-200";
     }
-    return "bg-primary-50 text-primary border-primary-100";
+    return "bg-slate-50 text-slate-700 border-slate-200";
   };
 
   return (
@@ -359,40 +356,40 @@ export default function AdminAttendeesPage() {
           <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Regular / Delegate
+                Student Passes (₦1k)
               </span>
               <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
                 <Users className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-2xl font-extrabold text-slate-900 mt-2">{stats.regular}</div>
-            <span className="text-xs text-slate-400 mt-0.5 block">Standard in-person</span>
+            <div className="text-2xl font-extrabold text-slate-900 mt-2">{stats.student}</div>
+            <span className="text-xs text-slate-400 mt-0.5 block">Student admission</span>
           </div>
 
           <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                VIP / Executive
+                Professional Passes (₦2k)
               </span>
               <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
                 <Award className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-2xl font-extrabold text-slate-900 mt-2">{stats.vip}</div>
-            <span className="text-xs text-slate-400 mt-0.5 block">VIP access passes</span>
+            <div className="text-2xl font-extrabold text-slate-900 mt-2">{stats.professional}</div>
+            <span className="text-xs text-slate-400 mt-0.5 block">Professional admission</span>
           </div>
 
           <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Virtual / Other
+                Paid & Confirmed
               </span>
-              <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
-                <Laptop className="w-4 h-4" />
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <Check className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-2xl font-extrabold text-slate-900 mt-2">{stats.virtual}</div>
-            <span className="text-xs text-slate-400 mt-0.5 block">Online streaming</span>
+            <div className="text-2xl font-extrabold text-slate-900 mt-2">{stats.paid}</div>
+            <span className="text-xs text-slate-400 mt-0.5 block">Settled passes</span>
           </div>
         </div>
 
@@ -419,32 +416,30 @@ export default function AdminAttendeesPage() {
               )}
             </div>
 
-            <div className="md:col-span-2">
+            <div className="md:col-span-3">
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
                 className="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-colors cursor-pointer"
               >
-                <option value="all">All Pass Tiers</option>
-                <option value="regular">Regular</option>
-                <option value="vip">VIP Pass</option>
-                <option value="executive">Executive</option>
-                <option value="student">Student</option>
-                <option value="virtual">Virtual</option>
+                <option value="all">All Categories (Student & Professional)</option>
+                <option value="student">Student (₦1,000)</option>
+                <option value="professional">Professional (₦2,000)</option>
               </select>
             </div>
 
-            <div className="md:col-span-3">
+            <div className="md:col-span-4">
               <select
                 value={filterBreakout}
                 onChange={(e) => setFilterBreakout(e.target.value)}
                 className="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition-colors cursor-pointer"
               >
-                <option value="all">All Breakout Tracks</option>
-                <option value="ai">AI & Machine Learning</option>
-                <option value="fintech">Fintech & Payments</option>
-                <option value="cloud">Cloud Architecture</option>
-                <option value="leadership">Leadership & Scale</option>
+                <option value="all">All Breakout Sessions</option>
+                <option value="investment">Investment & Wealth Creation</option>
+                <option value="tech">Technology & Digital Skills</option>
+                <option value="fashion">Fashion, Styling & Branding</option>
+                <option value="agriculture">Agribusiness & Farming</option>
+                <option value="foods">Confectionery & Food Business</option>
               </select>
             </div>
 

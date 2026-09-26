@@ -128,34 +128,34 @@ export default function AdminDashboardPage() {
           <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                VIP Registrations
+                Student Passes (₦1k)
               </span>
-              <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-                <Award className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                <Users className="w-5 h-5" />
               </div>
             </div>
             <div className="text-3xl font-black text-slate-900 mt-3 font-mono">
-              {realtimeStats.vipCount}
+              {realtimeStats.studentCount}
             </div>
             <span className="text-xs text-slate-400 mt-1 block">
-              Executive access passes
+              Subsidized student tier
             </span>
           </div>
 
           <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Active Program Tracks
+                Professional Passes (₦2k)
               </span>
-              <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-                <Radio className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                <Award className="w-5 h-5" />
               </div>
             </div>
             <div className="text-3xl font-black text-slate-900 mt-3 font-mono">
-              {realtimeStats.activeSessions}
+              {realtimeStats.professionalCount}
             </div>
             <span className="text-xs text-slate-400 mt-1 block">
-              Live technical tracks
+              Professional tier
             </span>
           </div>
         </div>
