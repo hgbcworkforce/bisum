@@ -122,11 +122,11 @@ export const registrationAPI = {
         last_name: formData.lastName,
         email: formData.email,
         phone: formData.phone || '',
-        registration_type: formData.registrationType || 'regular',
+        registration_type: formData.registrationType || 'student',
         breakout_session_choice: formData.breakoutSessionChoice || 'General',
         registration_number: regNumber,
         payment_status: formData.paymentStatus || 'paid',
-        amount_paid: formData.amountPaid || 0,
+        amount_paid: formData.amountPaid || 1000,
       };
 
       const { data, error } = await supabase
