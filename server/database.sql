@@ -25,8 +25,27 @@ CREATE TABLE IF NOT EXISTS public.registrations (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- If you already created the table previously, run this to drop the unused columns:
--- ALTER TABLE public.registrations DROP COLUMN IF EXISTS institution, DROP COLUMN IF EXISTS church;
+-- Safe migration helper for existing tables (run if updating from previous version)
+DO $$ 
+BEGIN
+    -- Make legacy columns optional if they exist
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='registrations' AND column_name='institution') THEN
+        ALTER TABLE public.registrations ALTER COLUMN institution DROP NOT NULL;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='registrations' AND column_name='church') THEN
+        ALTER TABLE public.registrations ALTER COLUMN church DROP NOT NULL;
+    END IF;
+    -- Add any newly introduced columns safely
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='registrations' AND column_name='expectations') THEN
+        ALTER TABLE public.registrations ADD COLUMN expectations TEXT;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='registrations' AND column_name='payment_reference') THEN
+        ALTER TABLE public.registrations ADD COLUMN payment_reference VARCHAR(120);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='registrations' AND column_name='email_sent') THEN
+        ALTER TABLE public.registrations ADD COLUMN email_sent BOOLEAN DEFAULT false;
+    END IF;
+END $$;
 
 -- 2. Create Merchandise Orders Table
 CREATE TABLE IF NOT EXISTS public.merchandise_orders (
