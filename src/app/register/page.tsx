@@ -68,15 +68,30 @@ export default function RegistrationPage() {
     setErrorMessage("");
 
     try {
-      const result = await registrationAPI.register({
+      const payload = {
         ...formData,
-        amountPaid: chargedPrice,
-        paymentStatus: currentPrice > 0 ? "pending" : "free",
-      });
+        amount: chargedPrice,
+        callbackUrl: `${window.location.origin}/payment/callback`,
+      };
+
+      const result = await registrationAPI.initiate(payload);
 
       if (result.success && result.data) {
-        setRegistrationNumber(result.data.registrationNumber || "BISUM-2025-" + Math.floor(1000 + Math.random() * 9000));
-        setIsSuccess(true);
+        if (result.data.authorizationUrl) {
+          // Paid registration -> Redirect to Paystack Checkout
+          sessionStorage.setItem("lastRegistration", JSON.stringify(result.data));
+          window.location.href = result.data.authorizationUrl;
+        } else if (result.data.registration) {
+          // Free registration -> Show success screen
+          const regNum =
+            result.data.registration.registrationNumber ||
+            (result.data.registration as any).registration_number ||
+            "BISUM-2025-" + Math.floor(100000 + Math.random() * 900000);
+          setRegistrationNumber(regNum);
+          setIsSuccess(true);
+        } else {
+          setIsSuccess(true);
+        }
       } else {
         setErrorMessage(result.message || REGISTER_PAGE_CONTENT.defaultErrorMessage);
       }
