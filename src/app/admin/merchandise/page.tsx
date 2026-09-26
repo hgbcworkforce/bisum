@@ -26,6 +26,10 @@ import {
   Mail,
   MapPin,
   TrendingUp,
+  Pencil,
+  Trash2,
+  AlertTriangle,
+  Save,
 } from "lucide-react";
 
 export default function AdminMerchandisePage() {
@@ -41,6 +45,10 @@ export default function AdminMerchandisePage() {
   const [isExporting, setIsExporting] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<MerchandiseOrder | null>(null);
+  const [editingOrder, setEditingOrder] = useState<MerchandiseOrder | null>(null);
+  const [deletingOrder, setDeletingOrder] = useState<MerchandiseOrder | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [resendingEmailId, setResendingEmailId] = useState<string | null>(null);
   const [actionNotice, setActionNotice] = useState<{ id: string; msg: string; isError?: boolean } | null>(null);
@@ -150,6 +158,55 @@ export default function AdminMerchandisePage() {
     } finally {
       setResendingEmailId(null);
       setTimeout(() => setActionNotice(null), 4000);
+    }
+  };
+
+  const handleUpdateSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingOrder?.id) return;
+
+    setIsSaving(true);
+    try {
+      const res = await adminAPI.updateMerchandiseOrder(editingOrder.id, editingOrder);
+      if (res.success) {
+        setOrders((prev) =>
+          prev.map((o) => (o.id === editingOrder.id ? { ...o, ...editingOrder } : o))
+        );
+        if (selectedOrder?.id === editingOrder.id) {
+          setSelectedOrder(editingOrder);
+        }
+        setActionNotice({ id: editingOrder.id, msg: "Order updated successfully!" });
+        setEditingOrder(null);
+      } else {
+        alert(res.message || "Failed to update order");
+      }
+    } catch (err: any) {
+      alert(err.message || "Error updating order");
+    } finally {
+      setIsSaving(false);
+      setTimeout(() => setActionNotice(null), 3000);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingOrder?.id) return;
+
+    setIsDeleting(true);
+    try {
+      const res = await adminAPI.deleteMerchandiseOrder(deletingOrder.id);
+      if (res.success) {
+        setOrders((prev) => prev.filter((o) => o.id !== deletingOrder.id));
+        if (selectedOrder?.id === deletingOrder.id) {
+          setSelectedOrder(null);
+        }
+        setDeletingOrder(null);
+      } else {
+        alert(res.message || "Failed to delete order");
+      }
+    } catch (err: any) {
+      alert(err.message || "Error deleting order");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -682,6 +739,14 @@ export default function AdminMerchandisePage() {
                             </button>
 
                             <button
+                              onClick={() => setEditingOrder({ ...order })}
+                              className="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 transition-colors cursor-pointer"
+                              title="Edit Order"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
+
+                            <button
                               onClick={() => handleResendEmail(order)}
                               disabled={resendingEmailId === order.id}
                               className="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 transition-colors cursor-pointer disabled:opacity-50"
@@ -692,6 +757,14 @@ export default function AdminMerchandisePage() {
                                   resendingEmailId === order.id ? "animate-pulse" : ""
                                 }`}
                               />
+                            </button>
+
+                            <button
+                              onClick={() => setDeletingOrder(order)}
+                              className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 transition-colors cursor-pointer"
+                              title="Delete Order"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </div>
                           {actionNotice && actionNotice.id === order.id && (
@@ -829,20 +902,253 @@ export default function AdminMerchandisePage() {
                 )}
               </div>
 
-              <div className="mt-6 pt-4 border-t border-slate-100 flex space-x-3">
+              <div className="mt-6 pt-4 border-t border-slate-100 flex flex-wrap gap-2">
+                <button
+                  onClick={() => {
+                    setEditingOrder({ ...selectedOrder });
+                    setSelectedOrder(null);
+                  }}
+                  className="flex-1 py-2.5 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs flex items-center justify-center space-x-1.5 transition-colors cursor-pointer"
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                  <span>Edit</span>
+                </button>
                 <button
                   onClick={() => handleResendEmail(selectedOrder)}
                   disabled={resendingEmailId === selectedOrder.id}
-                  className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center space-x-2 transition-colors cursor-pointer"
+                  className="flex-1 py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center space-x-1.5 transition-colors cursor-pointer"
                 >
                   <Mail className="w-3.5 h-3.5" />
-                  <span>Resend Confirmation Email</span>
+                  <span>Resend Email</span>
                 </button>
                 <button
-                  onClick={() => setSelectedOrder(null)}
-                  className="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+                  onClick={() => {
+                    setDeletingOrder(selectedOrder);
+                    setSelectedOrder(null);
+                  }}
+                  className="py-2.5 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs flex items-center justify-center space-x-1.5 transition-colors cursor-pointer"
                 >
-                  Close
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Delete</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Merchandise Order Modal */}
+        {editingOrder && (
+          <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
+              <button
+                onClick={() => setEditingOrder(null)}
+                className="absolute top-5 right-5 p-2 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+                  <Pencil className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-extrabold text-slate-900">
+                    Edit Merchandise Order
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Order Number: <strong className="font-mono">{editingOrder.orderNumber}</strong>
+                  </p>
+                </div>
+              </div>
+
+              <form onSubmit={handleUpdateSubmit} className="space-y-4 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Customer Name
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={editingOrder.customerName || ""}
+                      onChange={(e) => setEditingOrder({ ...editingOrder, customerName: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      value={editingOrder.customerPhone || ""}
+                      onChange={(e) => setEditingOrder({ ...editingOrder, customerPhone: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={editingOrder.customerEmail || ""}
+                    onChange={(e) => setEditingOrder({ ...editingOrder, customerEmail: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Color
+                    </label>
+                    <input
+                      type="text"
+                      value={editingOrder.color || ""}
+                      onChange={(e) => setEditingOrder({ ...editingOrder, color: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Size
+                    </label>
+                    <input
+                      type="text"
+                      value={editingOrder.size || ""}
+                      onChange={(e) => setEditingOrder({ ...editingOrder, size: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Quantity
+                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={editingOrder.quantity || 1}
+                      onChange={(e) => {
+                        const qty = Math.max(1, parseInt(e.target.value) || 1);
+                        const unit = Number(editingOrder.unitPrice) || 0;
+                        setEditingOrder({ ...editingOrder, quantity: qty, totalAmount: qty * unit });
+                      }}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Payment Status
+                    </label>
+                    <select
+                      value={(editingOrder.paymentStatus || "pending").toLowerCase()}
+                      onChange={(e) =>
+                        setEditingOrder({
+                          ...editingOrder,
+                          paymentStatus: e.target.value as "pending" | "paid" | "failed",
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none cursor-pointer"
+                    >
+                      <option value="paid">Paid & Confirmed</option>
+                      <option value="pending">Pending Payment</option>
+                      <option value="failed">Failed / Cancelled</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Fulfillment Status
+                    </label>
+                    <select
+                      value={editingOrder.fulfillmentStatus || "unfulfilled"}
+                      onChange={(e) =>
+                        setEditingOrder({
+                          ...editingOrder,
+                          fulfillmentStatus: e.target.value as "unfulfilled" | "ready" | "picked_up",
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none cursor-pointer"
+                    >
+                      <option value="unfulfilled">Unfulfilled (Awaiting Pickup)</option>
+                      <option value="ready">Ready for Pickup</option>
+                      <option value="picked_up">Picked Up (Complete)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    Pickup Location / Option
+                  </label>
+                  <input
+                    type="text"
+                    value={editingOrder.pickupOption || "On-site Conference Pickup"}
+                    onChange={(e) => setEditingOrder({ ...editingOrder, pickupOption: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                  />
+                </div>
+
+                <div className="pt-4 border-t border-slate-100 flex justify-end space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => setEditingOrder(null)}
+                    className="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSaving}
+                    className="py-2.5 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center space-x-2 transition-colors cursor-pointer disabled:opacity-50"
+                  >
+                    <Save className="w-3.5 h-3.5" />
+                    <span>{isSaving ? "Saving..." : "Save Changes"}</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Merchandise Order Confirmation Modal */}
+        {deletingOrder && (
+          <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative animate-in fade-in zoom-in-95 duration-150">
+              <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-4">
+                <AlertTriangle className="w-6 h-6" />
+              </div>
+
+              <h3 className="text-center text-lg font-extrabold text-slate-900">
+                Delete Merchandise Order?
+              </h3>
+              <p className="text-center text-xs text-slate-500 mt-2">
+                Are you sure you want to permanently delete Order{" "}
+                <strong className="text-slate-900 font-mono">{deletingOrder.orderNumber}</strong> for{" "}
+                <strong className="text-slate-900">{deletingOrder.customerName}</strong> ({deletingOrder.itemName})? This action cannot be undone.
+              </p>
+
+              <div className="mt-6 pt-4 border-t border-slate-100 flex space-x-3">
+                <button
+                  onClick={() => setDeletingOrder(null)}
+                  disabled={isDeleting}
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmDelete}
+                  disabled={isDeleting}
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  {isDeleting ? "Deleting..." : "Confirm Delete"}
                 </button>
               </div>
             </div>

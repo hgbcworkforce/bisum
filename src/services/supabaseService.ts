@@ -253,11 +253,41 @@ export const adminAPI = {
         headers,
         body: JSON.stringify(updates),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to update attendee');
-      return data;
+      if (res.ok) {
+        const data = await res.json();
+        return data;
+      }
+      throw new Error(`API responded with ${res.status}`);
     } catch (err: any) {
-      return { success: false, message: err.message, error: err };
+      // Fallback directly to Supabase client
+      try {
+        const payload: Record<string, any> = {
+          updated_at: new Date().toISOString(),
+        };
+        if (updates.firstName !== undefined) payload.first_name = updates.firstName;
+        if (updates.lastName !== undefined) payload.last_name = updates.lastName;
+        if (updates.email !== undefined) payload.email = updates.email;
+        if (updates.phone !== undefined) payload.phone = updates.phone;
+        if (updates.gender !== undefined) payload.gender = updates.gender;
+        if (updates.ageRange !== undefined) payload.age_range = updates.ageRange;
+        if (updates.breakoutSessionChoice !== undefined) payload.breakout_session_choice = updates.breakoutSessionChoice;
+        if (updates.registrationType !== undefined) payload.registration_type = updates.registrationType;
+        if (updates.paymentStatus !== undefined) payload.payment_status = updates.paymentStatus;
+        if (updates.amountPaid !== undefined) payload.amount_paid = updates.amountPaid;
+        if (updates.expectations !== undefined) payload.expectations = updates.expectations;
+
+        const { data, error } = await supabase
+          .from('registrations')
+          .update(payload)
+          .eq('id', id)
+          .select()
+          .single();
+
+        if (error) throw error;
+        return { success: true, data, message: 'Attendee updated successfully' };
+      } catch (sbErr: any) {
+        return { success: false, message: sbErr.message, error: sbErr };
+      }
     }
   },
 
@@ -271,11 +301,20 @@ export const adminAPI = {
         method: 'DELETE',
         headers,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to delete attendee');
-      return data;
+      if (res.ok) {
+        const data = await res.json();
+        return data;
+      }
+      throw new Error(`API responded with ${res.status}`);
     } catch (err: any) {
-      return { success: false, message: err.message, error: err };
+      // Fallback directly to Supabase client
+      try {
+        const { error } = await supabase.from('registrations').delete().eq('id', id);
+        if (error) throw error;
+        return { success: true, message: 'Attendee deleted successfully' };
+      } catch (sbErr: any) {
+        return { success: false, message: sbErr.message, error: sbErr };
+      }
     }
   },
 
@@ -347,11 +386,42 @@ export const adminAPI = {
         headers,
         body: JSON.stringify(updates),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to update order');
-      return data;
+      if (res.ok) {
+        const data = await res.json();
+        return data;
+      }
+      throw new Error(`API responded with ${res.status}`);
     } catch (err: any) {
-      return { success: false, message: err.message, error: err };
+      // Fallback directly to Supabase client
+      try {
+        const payload: Record<string, any> = {
+          updated_at: new Date().toISOString(),
+        };
+        if (updates.customerName !== undefined) payload.customer_name = updates.customerName;
+        if (updates.customerEmail !== undefined) payload.customer_email = updates.customerEmail;
+        if (updates.customerPhone !== undefined) payload.customer_phone = updates.customerPhone;
+        if (updates.itemName !== undefined) payload.item_name = updates.itemName;
+        if (updates.color !== undefined) payload.color = updates.color;
+        if (updates.size !== undefined) payload.size = updates.size;
+        if (updates.quantity !== undefined) payload.quantity = updates.quantity;
+        if (updates.unitPrice !== undefined) payload.unit_price = updates.unitPrice;
+        if (updates.totalAmount !== undefined) payload.total_amount = updates.totalAmount;
+        if (updates.paymentStatus !== undefined) payload.payment_status = updates.paymentStatus;
+        if (updates.fulfillmentStatus !== undefined) payload.fulfillment_status = updates.fulfillmentStatus;
+        if (updates.pickupOption !== undefined) payload.pickup_option = updates.pickupOption;
+
+        const { data, error } = await supabase
+          .from('merchandise_orders')
+          .update(payload)
+          .eq('id', id)
+          .select()
+          .single();
+
+        if (error) throw error;
+        return { success: true, data, message: 'Merchandise order updated successfully' };
+      } catch (sbErr: any) {
+        return { success: false, message: sbErr.message, error: sbErr };
+      }
     }
   },
 
@@ -365,11 +435,20 @@ export const adminAPI = {
         method: 'DELETE',
         headers,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to delete order');
-      return data;
+      if (res.ok) {
+        const data = await res.json();
+        return data;
+      }
+      throw new Error(`API responded with ${res.status}`);
     } catch (err: any) {
-      return { success: false, message: err.message, error: err };
+      // Fallback directly to Supabase client
+      try {
+        const { error } = await supabase.from('merchandise_orders').delete().eq('id', id);
+        if (error) throw error;
+        return { success: true, message: 'Merchandise order deleted successfully' };
+      } catch (sbErr: any) {
+        return { success: false, message: sbErr.message, error: sbErr };
+      }
     }
   },
 

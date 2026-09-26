@@ -25,6 +25,10 @@ import {
   Calendar,
   Phone,
   Bookmark,
+  Pencil,
+  Trash2,
+  AlertTriangle,
+  Save,
 } from "lucide-react";
 
 export default function AdminRegistrationsPage() {
@@ -40,6 +44,10 @@ export default function AdminRegistrationsPage() {
   const [isExporting, setIsExporting] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [selectedAttendee, setSelectedAttendee] = useState<Attendee | null>(null);
+  const [editingAttendee, setEditingAttendee] = useState<Attendee | null>(null);
+  const [deletingAttendee, setDeletingAttendee] = useState<Attendee | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [resendingEmailId, setResendingEmailId] = useState<string | null>(null);
   const [emailStatusMsg, setEmailStatusMsg] = useState<{ id: string; msg: string; isError?: boolean } | null>(null);
 
@@ -116,6 +124,53 @@ export default function AdminRegistrationsPage() {
     } finally {
       setResendingEmailId(null);
       setTimeout(() => setEmailStatusMsg(null), 4000);
+    }
+  };
+
+  const handleUpdateSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingAttendee?.id) return;
+
+    setIsSaving(true);
+    try {
+      const res = await adminAPI.updateAttendee(editingAttendee.id, editingAttendee);
+      if (res.success) {
+        setAttendees((prev) =>
+          prev.map((a) => (a.id === editingAttendee.id ? { ...a, ...editingAttendee } : a))
+        );
+        if (selectedAttendee?.id === editingAttendee.id) {
+          setSelectedAttendee(editingAttendee);
+        }
+        setEditingAttendee(null);
+      } else {
+        alert(res.message || "Failed to update registration record");
+      }
+    } catch (err: any) {
+      alert(err.message || "Error updating registration");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingAttendee?.id) return;
+
+    setIsDeleting(true);
+    try {
+      const res = await adminAPI.deleteAttendee(deletingAttendee.id);
+      if (res.success) {
+        setAttendees((prev) => prev.filter((a) => a.id !== deletingAttendee.id));
+        if (selectedAttendee?.id === deletingAttendee.id) {
+          setSelectedAttendee(null);
+        }
+        setDeletingAttendee(null);
+      } else {
+        alert(res.message || "Failed to delete registration");
+      }
+    } catch (err: any) {
+      alert(err.message || "Error deleting registration");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -615,12 +670,28 @@ export default function AdminRegistrationsPage() {
                             </button>
 
                             <button
+                              onClick={() => setEditingAttendee({ ...attendee })}
+                              className="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 transition-colors cursor-pointer"
+                              title="Edit Registration"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
+
+                            <button
                               onClick={() => handleResendEmail(attendee)}
                               disabled={resendingEmailId === attendee.id}
                               className="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 transition-colors cursor-pointer disabled:opacity-50"
                               title="Resend Confirmation Email"
                             >
                               <Mail className={`w-3.5 h-3.5 ${resendingEmailId === attendee.id ? "animate-pulse" : ""}`} />
+                            </button>
+
+                            <button
+                              onClick={() => setDeletingAttendee(attendee)}
+                              className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 transition-colors cursor-pointer"
+                              title="Delete Registration"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </div>
                           {emailStatusMsg && emailStatusMsg.id === attendee.id && (
@@ -678,7 +749,7 @@ export default function AdminRegistrationsPage() {
 
               <div className="flex items-center space-x-3 mb-6">
                 <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-black text-xl">
-                  {selectedAttendee.firstName[0]}
+                  {selectedAttendee.firstName ? selectedAttendee.firstName[0] : "A"}
                 </div>
                 <div>
                   <h3 className="text-xl font-extrabold text-slate-900">
@@ -760,20 +831,233 @@ export default function AdminRegistrationsPage() {
                 )}
               </div>
 
-              <div className="mt-6 pt-4 border-t border-slate-100 flex space-x-3">
+              <div className="mt-6 pt-4 border-t border-slate-100 flex flex-wrap gap-2">
+                <button
+                  onClick={() => {
+                    setEditingAttendee({ ...selectedAttendee });
+                    setSelectedAttendee(null);
+                  }}
+                  className="flex-1 py-2.5 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs flex items-center justify-center space-x-1.5 transition-colors cursor-pointer"
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                  <span>Edit</span>
+                </button>
                 <button
                   onClick={() => handleResendEmail(selectedAttendee)}
                   disabled={resendingEmailId === selectedAttendee.id}
-                  className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center space-x-2 transition-colors cursor-pointer"
+                  className="flex-1 py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center space-x-1.5 transition-colors cursor-pointer"
                 >
                   <Mail className="w-3.5 h-3.5" />
-                  <span>Resend Confirmation Email</span>
+                  <span>Resend Email</span>
                 </button>
                 <button
-                  onClick={() => setSelectedAttendee(null)}
-                  className="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+                  onClick={() => {
+                    setDeletingAttendee(selectedAttendee);
+                    setSelectedAttendee(null);
+                  }}
+                  className="py-2.5 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs flex items-center justify-center space-x-1.5 transition-colors cursor-pointer"
                 >
-                  Close
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Delete</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Registration Modal */}
+        {editingAttendee && (
+          <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
+              <button
+                onClick={() => setEditingAttendee(null)}
+                className="absolute top-5 right-5 p-2 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+                  <Pencil className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-extrabold text-slate-900">
+                    Edit Registration
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Registration ID: <strong className="font-mono">{editingAttendee.registrationNumber || "0001"}</strong>
+                  </p>
+                </div>
+              </div>
+
+              <form onSubmit={handleUpdateSubmit} className="space-y-4 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      First Name
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={editingAttendee.firstName || ""}
+                      onChange={(e) => setEditingAttendee({ ...editingAttendee, firstName: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={editingAttendee.lastName || ""}
+                      onChange={(e) => setEditingAttendee({ ...editingAttendee, lastName: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={editingAttendee.email || ""}
+                      onChange={(e) => setEditingAttendee({ ...editingAttendee, email: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      value={editingAttendee.phone || ""}
+                      onChange={(e) => setEditingAttendee({ ...editingAttendee, phone: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Pass Category
+                    </label>
+                    <select
+                      value={(editingAttendee.registrationType || "student").toLowerCase()}
+                      onChange={(e) =>
+                        setEditingAttendee({
+                          ...editingAttendee,
+                          registrationType: e.target.value as "student" | "professional",
+                          amountPaid: e.target.value === "professional" ? 2000 : 1000,
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none cursor-pointer"
+                    >
+                      <option value="student">Student Pass (₦1,000)</option>
+                      <option value="professional">Professional Pass (₦2,000)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Payment Status
+                    </label>
+                    <select
+                      value={(editingAttendee.paymentStatus || "pending").toLowerCase()}
+                      onChange={(e) =>
+                        setEditingAttendee({
+                          ...editingAttendee,
+                          paymentStatus: e.target.value as "pending" | "paid" | "failed",
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none cursor-pointer"
+                    >
+                      <option value="paid">Paid & Confirmed</option>
+                      <option value="pending">Pending</option>
+                      <option value="failed">Failed</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    Breakout Masterclass
+                  </label>
+                  <select
+                    value={editingAttendee.breakoutSessionChoice || "Investment & Wealth Creation"}
+                    onChange={(e) => setEditingAttendee({ ...editingAttendee, breakoutSessionChoice: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none cursor-pointer"
+                  >
+                    <option value="Investment & Wealth Creation">Investment & Wealth Creation</option>
+                    <option value="Technology & Digital Skills">Technology & Digital Skills</option>
+                    <option value="Fashion, Styling & Branding">Fashion, Styling & Branding</option>
+                    <option value="Agribusiness & Farming">Agribusiness & Farming</option>
+                    <option value="Confectionery & Food Business">Confectionery & Food Business</option>
+                  </select>
+                </div>
+
+                <div className="pt-4 border-t border-slate-100 flex justify-end space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => setEditingAttendee(null)}
+                    className="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSaving}
+                    className="py-2.5 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center space-x-2 transition-colors cursor-pointer disabled:opacity-50"
+                  >
+                    <Save className="w-3.5 h-3.5" />
+                    <span>{isSaving ? "Saving..." : "Save Changes"}</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {deletingAttendee && (
+          <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative animate-in fade-in zoom-in-95 duration-150">
+              <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-4">
+                <AlertTriangle className="w-6 h-6" />
+              </div>
+
+              <h3 className="text-center text-lg font-extrabold text-slate-900">
+                Delete Registration?
+              </h3>
+              <p className="text-center text-xs text-slate-500 mt-2">
+                Are you sure you want to permanently delete registration for{" "}
+                <strong className="text-slate-900">
+                  {deletingAttendee.firstName} {deletingAttendee.lastName}
+                </strong>{" "}
+                (Reg ID: <strong className="font-mono">{deletingAttendee.registrationNumber || "0001"}</strong>)? This action cannot be undone.
+              </p>
+
+              <div className="mt-6 pt-4 border-t border-slate-100 flex space-x-3">
+                <button
+                  onClick={() => setDeletingAttendee(null)}
+                  disabled={isDeleting}
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmDelete}
+                  disabled={isDeleting}
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  {isDeleting ? "Deleting..." : "Confirm Delete"}
                 </button>
               </div>
             </div>
