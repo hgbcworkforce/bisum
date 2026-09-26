@@ -15,8 +15,6 @@ export default function RegistrationPage() {
     phone: "",
     gender: "",
     ageRange: "",
-    institution: "",
-    church: "",
     referralSource: "",
     breakoutSessionChoice: "",
     expectations: "",
@@ -55,8 +53,6 @@ export default function RegistrationPage() {
     if (!formData.phone.trim()) newErrors.phone = REGISTER_PAGE_CONTENT.validationMessages.phone;
     if (!formData.gender) newErrors.gender = REGISTER_PAGE_CONTENT.validationMessages.gender;
     if (!formData.ageRange) newErrors.ageRange = REGISTER_PAGE_CONTENT.validationMessages.ageRange;
-    if (!formData.institution.trim()) newErrors.institution = REGISTER_PAGE_CONTENT.validationMessages.institution;
-    if (!formData.church.trim()) newErrors.church = REGISTER_PAGE_CONTENT.validationMessages.church;
     if (!formData.referralSource) newErrors.referralSource = REGISTER_PAGE_CONTENT.validationMessages.referralSource;
     if (!formData.breakoutSessionChoice) newErrors.breakoutSessionChoice = REGISTER_PAGE_CONTENT.validationMessages.breakoutSessionChoice;
 
@@ -237,33 +233,6 @@ export default function RegistrationPage() {
                 </div>
               </div>
 
-              {/* Institution and Church */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">{REGISTER_PAGE_CONTENT.labels.institution}</label>
-                  <input
-                    type="text"
-                    name="institution"
-                    value={formData.institution}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm bg-white"
-                    placeholder={REGISTER_PAGE_CONTENT.placeholders.institution}
-                  />
-                  {errors.institution && <p className="text-red-500 text-xs mt-1">{errors.institution}</p>}
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">{REGISTER_PAGE_CONTENT.labels.church}</label>
-                  <input
-                    type="text"
-                    name="church"
-                    value={formData.church}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm bg-white"
-                    placeholder={REGISTER_PAGE_CONTENT.placeholders.church}
-                  />
-                  {errors.church && <p className="text-red-500 text-xs mt-1">{errors.church}</p>}
-                </div>
-              </div>
 
               {/* Referral Source & Breakout Session */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">

@@ -5,8 +5,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { Navigation, CountdownTimer, Footer } from "../../../components";
 import { merchandiseItems, getMerchandiseItemById } from "../../../data/merchandiseData";
-import { ShoppingCart, ArrowLeft, Check, ShieldCheck, Truck } from "lucide-react";
+import { ShoppingCart, ArrowLeft, Check, ShieldCheck, Truck, Loader2, X } from "lucide-react";
 import { MERCHANDISE_DETAILS_CONTENT } from "../../../data/REUSEABLE";
+import { merchandiseAPI, handleApiError, formatCurrency } from "../../../services/supabaseService";
 
 export default function MerchandiseDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -15,13 +16,87 @@ export default function MerchandiseDetailsPage({ params }: { params: Promise<{ i
   const [selectedColor, setSelectedColor] = useState(item.colors[0]);
   const [selectedSize, setSelectedSize] = useState(item.sizes[0]);
   const [quantity, setQuantity] = useState(1);
-  const [isOrdered, setIsOrdered] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const [customerData, setCustomerData] = useState({
+    customerName: "",
+    customerEmail: "",
+    customerPhone: "",
+    pickupOption: "On-site Conference Pickup",
+  });
+
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+
+  // Parse unit price
+  const numericPrice = Number(item.price.replace(/[^0-9.-]+/g, "")) || 0;
+  const totalPrice = numericPrice * quantity;
+  const paystackFee = Math.round(totalPrice * 0.015 + 100);
+  const totalWithFee = totalPrice + paystackFee;
 
   const orderDeadline = new Date(item.timeFrame).getTime();
 
-  const handleOrder = (e: React.FormEvent) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setCustomerData((prev) => ({ ...prev, [name]: value }));
+    if (formErrors[name]) {
+      setFormErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const validateCustomerForm = () => {
+    const errors: Record<string, string> = {};
+    if (!customerData.customerName.trim()) errors.customerName = "Please enter your full name";
+    if (!customerData.customerEmail.trim()) {
+      errors.customerEmail = "Please enter your email";
+    } else if (!/\S+@\S+\.\S+/.test(customerData.customerEmail)) {
+      errors.customerEmail = "Please enter a valid email address";
+    }
+    if (!customerData.customerPhone.trim()) errors.customerPhone = "Please enter your phone number";
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleProceedToPayment = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsOrdered(true);
+    if (!validateCustomerForm()) return;
+
+    setIsSubmitting(true);
+    setErrorMessage("");
+
+    try {
+      const payload = {
+        customerName: customerData.customerName,
+        customerEmail: customerData.customerEmail,
+        customerPhone: customerData.customerPhone,
+        itemId: item.id,
+        itemName: item.name,
+        color: selectedColor.name,
+        size: selectedSize,
+        quantity,
+        unitPrice: numericPrice,
+        pickupOption: customerData.pickupOption,
+        callbackUrl: `${window.location.origin}/payment/callback`,
+      };
+
+      const result = await merchandiseAPI.initiate(payload);
+
+      if (result.success && result.data?.authorizationUrl) {
+        // Save to session for fallback reference
+        sessionStorage.setItem("lastMerchOrder", JSON.stringify(result.data));
+        // Redirect to Paystack Checkout
+        window.location.href = result.data.authorizationUrl;
+      } else {
+        setErrorMessage(result.message || "Failed to initiate payment. Please try again.");
+      }
+    } catch (err: any) {
+      const errInfo = handleApiError(err);
+      setErrorMessage(errInfo.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -38,7 +113,7 @@ export default function MerchandiseDetailsPage({ params }: { params: Promise<{ i
           <span>{MERCHANDISE_DETAILS_CONTENT.backLinkText}</span>
         </Link>
 
-        <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden">
+        <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 p-6 sm:p-10 lg:p-12">
             {/* Product Image Column */}
             <div className="space-y-6">
@@ -148,38 +223,140 @@ export default function MerchandiseDetailsPage({ params }: { params: Promise<{ i
                 </div>
               </div>
 
-              {/* Order Submission Form */}
+              {/* Order Action Button */}
               <div>
-                {isOrdered ? (
-                  <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 text-center">
-                    <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <Check className="w-6 h-6 text-emerald-600" />
-                    </div>
-                    <h4 className="text-lg font-bold text-emerald-900 mb-1">{MERCHANDISE_DETAILS_CONTENT.successTitle}</h4>
-                    <p className="text-xs sm:text-sm text-emerald-700">
-                      {MERCHANDISE_DETAILS_CONTENT.successMessageTemplate(quantity, item.name, selectedColor.name, selectedSize)}
-                    </p>
-                  </div>
-                ) : (
-                  <form onSubmit={handleOrder} className="space-y-4">
-                    <button
-                      type="submit"
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-6 rounded-xl transition-colors flex items-center justify-center space-x-2 text-base"
-                    >
-                      <ShoppingCart className="w-4 h-4" />
-                      <span>{MERCHANDISE_DETAILS_CONTENT.submitButtonPrefix} ({item.price})</span>
-                    </button>
-                    <div className="flex items-center justify-center space-x-6 text-xs text-slate-500 pt-1">
-                      <span className="flex items-center"><ShieldCheck className="w-4 h-4 mr-1 text-emerald-600" /> {MERCHANDISE_DETAILS_CONTENT.trustBadge1}</span>
-                      <span className="flex items-center"><Truck className="w-4 h-4 mr-1 text-blue-600" /> {MERCHANDISE_DETAILS_CONTENT.trustBadge2}</span>
-                    </div>
-                  </form>
-                )}
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(true)}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2 text-base"
+                >
+                  <ShoppingCart className="w-5 h-5" />
+                  <span>Pre-Order & Checkout ({formatCurrency(totalPrice)})</span>
+                </button>
+                <div className="flex items-center justify-center space-x-6 text-xs text-slate-500 pt-3">
+                  <span className="flex items-center"><ShieldCheck className="w-4 h-4 mr-1 text-emerald-600" /> {MERCHANDISE_DETAILS_CONTENT.trustBadge1}</span>
+                  <span className="flex items-center"><Truck className="w-4 h-4 mr-1 text-blue-600" /> {MERCHANDISE_DETAILS_CONTENT.trustBadge2}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Customer Details Checkout Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white w-full max-w-lg rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 relative">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-5 right-5 text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <h3 className="text-xl font-extrabold text-slate-900 mb-1">Confirm Pre-Order Details</h3>
+            <p className="text-xs sm:text-sm text-slate-500 mb-5">
+              Enter your contact information for pickup accreditation and receipt delivery.
+            </p>
+
+            {/* Order Summary Pill */}
+            <div className="bg-slate-50 rounded-2xl p-4 mb-5 border border-slate-200 text-xs space-y-1">
+              <div className="flex justify-between font-bold text-slate-900">
+                <span>{item.name} ({quantity}x)</span>
+                <span>{formatCurrency(totalPrice)}</span>
+              </div>
+              <div className="text-slate-500">
+                Color: <span className="font-semibold text-slate-700">{selectedColor.name}</span> • Size: <span className="font-semibold text-slate-700">{selectedSize}</span>
+              </div>
+              <div className="flex justify-between text-slate-500 pt-1 border-t border-slate-200">
+                <span>Payment Processing Fee:</span>
+                <span>{formatCurrency(paystackFee)}</span>
+              </div>
+              <div className="flex justify-between font-extrabold text-blue-600 pt-1 text-sm">
+                <span>Total to Pay:</span>
+                <span>{formatCurrency(totalWithFee)}</span>
+              </div>
+            </div>
+
+            {errorMessage && (
+              <div className="bg-red-50 text-red-600 p-3 rounded-xl text-xs mb-4 border border-red-200">
+                {errorMessage}
+              </div>
+            )}
+
+            <form onSubmit={handleProceedToPayment} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Full Name *</label>
+                <input
+                  type="text"
+                  name="customerName"
+                  value={customerData.customerName}
+                  onChange={handleInputChange}
+                  placeholder="e.g. John Doe"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
+                />
+                {formErrors.customerName && <p className="text-red-500 text-xs mt-1">{formErrors.customerName}</p>}
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Email Address *</label>
+                <input
+                  type="email"
+                  name="customerEmail"
+                  value={customerData.customerEmail}
+                  onChange={handleInputChange}
+                  placeholder="john.doe@example.com"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
+                />
+                {formErrors.customerEmail && <p className="text-red-500 text-xs mt-1">{formErrors.customerEmail}</p>}
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Phone Number *</label>
+                <input
+                  type="tel"
+                  name="customerPhone"
+                  value={customerData.customerPhone}
+                  onChange={handleInputChange}
+                  placeholder="+234 800 000 0000"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
+                />
+                {formErrors.customerPhone && <p className="text-red-500 text-xs mt-1">{formErrors.customerPhone}</p>}
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Pickup Option</label>
+                <select
+                  name="pickupOption"
+                  value={customerData.pickupOption}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm bg-white"
+                >
+                  <option value="On-site Conference Pickup">On-site Conference Pickup (Higher Ground Baptist Church)</option>
+                </select>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold py-3.5 px-6 rounded-xl transition-all shadow-md flex items-center justify-center space-x-2 text-sm mt-6"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Redirecting to Paystack...</span>
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart className="w-4 h-4" />
+                    <span>Proceed to Pay {formatCurrency(totalWithFee)}</span>
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
