@@ -15,8 +15,10 @@ export const registrationSchema = z.object({
   referralSource: z.string().optional(),
   breakoutSessionChoice: z.string().optional(),
   expectations: z.string().optional(),
-  registrationType: z.string().default('regular'),
-  amount: z.number().nonnegative(),
+  registrationType: z.enum(['student', 'professional'], {
+    errorMap: () => ({ message: 'Registration type must be either Student or Professional' }),
+  }).default('student'),
+  amount: z.number().positive('Registration requires a valid paid amount (₦1,000 for Student, ₦2,000 for Professional)'),
   callbackUrl: z.string().url().optional(),
 });
 
@@ -29,53 +31,14 @@ export const registrationController = {
       const data = req.body;
       const paymentReference = `BISUM-TX-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
 
-      // 1. If amount is 0 (Free Registration)
-      if (data.amount <= 0) {
-        const attendee = await attendeeService.createFreeRegistration({
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
-          phone: data.phone,
-          gender: data.gender,
-          ageRange: data.ageRange,
-          referralSource: data.referralSource,
-          breakoutSessionChoice: data.breakoutSessionChoice,
-          expectations: data.expectations,
-          registrationType: data.registrationType || 'free',
-        });
-
-        // Send confirmation email via Resend
-        await emailService.sendRegistrationConfirmation({
-          firstName: attendee.first_name,
-          lastName: attendee.last_name,
-          email: attendee.email,
-          phone: attendee.phone,
-          registrationNumber: attendee.registration_number,
-          registrationType: attendee.registration_type,
-          breakoutSessionChoice: attendee.breakout_session_choice,
-          amountPaid: 0,
-        });
-
-        await attendeeService.markEmailSent(attendee.id);
-
-        return res.status(201).json({
-          success: true,
-          message: 'Free registration completed successfully.',
-          data: {
-            registration: attendee,
-            isFree: true,
-          },
-        });
-      }
-
-      // 2. Paid Registration: Create Pending Attendee Record
+      // 1. Create or update Pending Attendee Record
       const pendingAttendee = await attendeeService.createPendingRegistration({
         ...data,
         amountPaid: data.amount,
         paymentReference,
       });
 
-      // 3. Initialize Paystack Transaction
+      // 2. Initialize Paystack Checkout Transaction
       const paystackResponse = await paystackService.initializeTransaction({
         email: data.email,
         amount: data.amount,
@@ -91,7 +54,7 @@ export const registrationController = {
         },
       });
 
-      // 4. Record Pending Payment
+      // 3. Record Pending Payment in payments log
       await paymentService.recordPayment({
         reference: paymentReference,
         customerName: `${data.firstName} ${data.lastName}`,
@@ -101,6 +64,7 @@ export const registrationController = {
         status: 'pending',
         metadata: {
           registration_id: pendingAttendee.id,
+          registration_type: data.registrationType,
         },
       });
 

@@ -3,11 +3,43 @@ import { Attendee } from '../types';
 
 export const attendeeService = {
   /**
-   * Generates a unique conference registration code
+   * Generates sequential registration number like '0001', '0002', '0003'...
    */
-  generateRegistrationCode(): string {
-    const randomDigits = Math.floor(100000 + Math.random() * 900000);
-    return `BISUM-2025-${randomDigits}`;
+  async generateRegistrationCode(): Promise<string> {
+    try {
+      // 1. Try invoking PostgreSQL sequence function via RPC
+      const { data, error } = await supabaseAdmin.rpc('get_next_registration_number');
+      if (!error && data) {
+        return String(data).padStart(4, '0');
+      }
+    } catch (err) {
+      // fallback if RPC is not registered
+    }
+
+    // 2. Fallback: Query all confirmed registration numbers to calculate the next sequence number
+    const { data: attendees } = await supabaseAdmin
+      .from('registrations')
+      .select('registration_number')
+      .not('registration_number', 'is', null);
+
+    let maxNum = 0;
+    if (attendees && attendees.length > 0) {
+      for (const a of attendees) {
+        if (a.registration_number) {
+          const clean = a.registration_number.replace(/\D/g, '');
+          const num = parseInt(clean, 10);
+          if (!isNaN(num) && num > 0 && num < 100000) {
+            if (num > maxNum) maxNum = num;
+          }
+        }
+      }
+      if (maxNum === 0) {
+        maxNum = attendees.length;
+      }
+    }
+
+    const nextNumber = maxNum + 1;
+    return String(nextNumber).padStart(4, '0');
   },
 
   /**
@@ -23,7 +55,7 @@ export const attendeeService = {
     referralSource?: string;
     breakoutSessionChoice?: string;
     expectations?: string;
-    registrationType: string;
+    registrationType: 'student' | 'professional' | string;
     amountPaid: number;
     paymentReference: string;
   }) {
@@ -37,8 +69,8 @@ export const attendeeService = {
       .maybeSingle();
 
     if (existingUser) {
-      // If already paid or free, prevent double registration
-      if (existingUser.payment_status === 'paid' || existingUser.payment_status === 'free') {
+      // If already paid, prevent double registration
+      if (existingUser.payment_status === 'paid') {
         throw new Error(`This email (${cleanEmail}) is already registered with Pass ID ${existingUser.registration_number}.`);
       }
 
@@ -99,94 +131,7 @@ export const attendeeService = {
   },
 
   /**
-   * Registers a free pass attendee (no payment required) with duplicate prevention
-   */
-  async createFreeRegistration(payload: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-    gender?: string;
-    ageRange?: string;
-    referralSource?: string;
-    breakoutSessionChoice?: string;
-    expectations?: string;
-    registrationType: string;
-  }) {
-    const cleanEmail = payload.email.toLowerCase().trim();
-
-    // Check if already registered
-    const { data: existingUser } = await supabaseAdmin
-      .from('registrations')
-      .select('*')
-      .eq('email', cleanEmail)
-      .maybeSingle();
-
-    if (existingUser && (existingUser.payment_status === 'paid' || existingUser.payment_status === 'free')) {
-      return existingUser; // Return existing registration
-    }
-
-    const regNumber = this.generateRegistrationCode();
-
-    if (existingUser) {
-      // Convert existing pending record to confirmed free pass
-      const { data: updated, error } = await supabaseAdmin
-        .from('registrations')
-        .update({
-          registration_number: regNumber,
-          first_name: payload.firstName,
-          last_name: payload.lastName,
-          phone: payload.phone.trim(),
-          gender: payload.gender,
-          age_range: payload.ageRange,
-          referral_source: payload.referralSource,
-          breakout_session_choice: payload.breakoutSessionChoice,
-          expectations: payload.expectations,
-          registration_type: payload.registrationType || 'free',
-          amount_paid: 0,
-          payment_status: 'free',
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', existingUser.id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return updated;
-    }
-
-    const { data, error } = await supabaseAdmin
-      .from('registrations')
-      .insert([
-        {
-          registration_number: regNumber,
-          first_name: payload.firstName,
-          last_name: payload.lastName,
-          email: cleanEmail,
-          phone: payload.phone.trim(),
-          gender: payload.gender,
-          age_range: payload.ageRange,
-          referral_source: payload.referralSource,
-          breakout_session_choice: payload.breakoutSessionChoice,
-          expectations: payload.expectations,
-          registration_type: payload.registrationType || 'free',
-          amount_paid: 0,
-          payment_status: 'free',
-        },
-      ])
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error creating free registration:', error);
-      throw error;
-    }
-
-    return data;
-  },
-
-  /**
-   * Confirms payment and completes registration
+   * Confirms payment and completes registration with sequential Pass ID (0001, 0002, ...)
    */
   async confirmRegistrationByReference(reference: string, amountPaid?: number) {
     // 1. Fetch current registration
@@ -205,8 +150,8 @@ export const attendeeService = {
       return registration;
     }
 
-    // 2. Generate registration code if not present
-    const regNumber = registration.registration_number || this.generateRegistrationCode();
+    // 2. Generate sequential registration code if not present (0001, 0002, ...)
+    const regNumber = registration.registration_number || (await this.generateRegistrationCode());
 
     const { data: updated, error: updateErr } = await supabaseAdmin
       .from('registrations')
@@ -229,7 +174,7 @@ export const attendeeService = {
   },
 
   /**
-   * Confirms payment by ID (e.g. from Paystack metadata)
+   * Confirms payment by ID (e.g. from Paystack metadata) with sequential Pass ID (0001, 0002, ...)
    */
   async confirmRegistrationById(id: string, amountPaid: number) {
     const { data: registration, error: fetchErr } = await supabaseAdmin
@@ -246,7 +191,7 @@ export const attendeeService = {
       return registration;
     }
 
-    const regNumber = registration.registration_number || this.generateRegistrationCode();
+    const regNumber = registration.registration_number || (await this.generateRegistrationCode());
 
     const { data: updated, error: updateErr } = await supabaseAdmin
       .from('registrations')
@@ -399,7 +344,6 @@ export const attendeeService = {
 
     const totalRegistrations = attendees.length;
     const paidRegistrations = attendees.filter((a) => a.payment_status === 'paid').length;
-    const freeRegistrations = attendees.filter((a) => a.payment_status === 'free').length;
     const pendingRegistrations = attendees.filter((a) => a.payment_status === 'pending').length;
 
     const totalRevenue = attendees
@@ -416,15 +360,19 @@ export const attendeeService = {
     // Registration types breakdown
     const typesMap: Record<string, number> = {};
     attendees.forEach((a) => {
-      const type = a.registration_type || 'regular';
+      const type = a.registration_type || 'student';
       typesMap[type] = (typesMap[type] || 0) + 1;
     });
+
+    const studentCount = attendees.filter((a) => (a.registration_type || '').toLowerCase() === 'student').length;
+    const professionalCount = attendees.filter((a) => (a.registration_type || '').toLowerCase() === 'professional').length;
 
     return {
       totalRegistrations,
       paidRegistrations,
-      freeRegistrations,
       pendingRegistrations,
+      studentCount,
+      professionalCount,
       totalRevenue,
       sessionsBreakdown: sessionsMap,
       typesBreakdown: typesMap,
