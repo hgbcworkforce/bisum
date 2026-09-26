@@ -310,4 +310,3 @@ BEGIN
 
     RAISE NOTICE '✅ Superadmin created/updated successfully for % with User ID: %', admin_email, new_user_id;
 END $$;
-
