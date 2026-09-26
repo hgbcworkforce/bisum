@@ -166,12 +166,23 @@ export default function AdminDashboardPage() {
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Link
-              href="/admin/attendees"
+              href="/admin/registrations"
               className="p-4 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-between transition-colors"
             >
               <div className="flex items-center space-x-3">
                 <FileSpreadsheet className="w-5 h-5 text-primary" />
-                <span className="text-xs font-bold text-slate-800">Export Attendee CSV</span>
+                <span className="text-xs font-bold text-slate-800">Export Registrations CSV</span>
+              </div>
+              <ArrowRight className="w-4 h-4 text-slate-400" />
+            </Link>
+
+            <Link
+              href="/admin/merchandise"
+              className="p-4 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-between transition-colors"
+            >
+              <div className="flex items-center space-x-3">
+                <CreditCard className="w-5 h-5 text-purple-600" />
+                <span className="text-xs font-bold text-slate-800">Merchandise Orders</span>
               </div>
               <ArrowRight className="w-4 h-4 text-slate-400" />
             </Link>
@@ -186,18 +197,6 @@ export default function AdminDashboardPage() {
               </div>
               <ArrowRight className="w-4 h-4 text-slate-400" />
             </Link>
-
-            <Link
-              href="/register"
-              target="_blank"
-              className="p-4 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-between transition-colors"
-            >
-              <div className="flex items-center space-x-3">
-                <UserPlus className="w-5 h-5 text-purple-600" />
-                <span className="text-xs font-bold text-slate-800">Manual Registration</span>
-              </div>
-              <ArrowRight className="w-4 h-4 text-slate-400" />
-            </Link>
           </div>
         </div>
 
@@ -205,7 +204,7 @@ export default function AdminDashboardPage() {
           <div className="p-6 border-b border-slate-100 flex items-center justify-between">
             <div>
               <h3 className="text-base font-extrabold text-slate-900">
-                Recent Attendee Registrations
+                Recent Registrations
               </h3>
               <p className="text-xs text-slate-500">
                 Latest signups streaming into the platform
@@ -213,10 +212,10 @@ export default function AdminDashboardPage() {
             </div>
 
             <Link
-              href="/admin/attendees"
+              href="/admin/registrations"
               className="text-xs font-bold text-primary hover:underline flex items-center space-x-1"
             >
-              <span>View Full Directory</span>
+              <span>View All Registrations</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>

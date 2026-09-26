@@ -108,6 +108,8 @@ export interface PaymentRecord {
   currency?: string;
   status: string;
   channel?: string;
+  metadata?: any;
+  paid_at?: string;
   created_at: string;
 }
 

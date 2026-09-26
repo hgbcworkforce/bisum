@@ -298,6 +298,13 @@ export const adminAPI = {
   },
 
   /**
+   * Re-sends registration confirmation email (alias for attendee)
+   */
+  resendAttendeeEmail: async (id: string): Promise<ApiResponse<any>> => {
+    return adminAPI.resendEmail(id);
+  },
+
+  /**
    * Fetches payment logs
    */
   getPayments: async (params?: { search?: string; status?: string; page?: number; limit?: number }): Promise<ApiResponse<any>> => {
