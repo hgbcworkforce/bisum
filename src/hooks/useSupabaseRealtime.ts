@@ -5,7 +5,8 @@ export const useDashboardRealtime = () => {
   const [stats, setStats] = useState({
     totalAttendees: 0,
     totalRevenue: 0,
-    vipCount: 0,
+    studentCount: 0,
+    professionalCount: 0,
     activeSessions: 6,
     isLive: true,
   });
@@ -13,9 +14,9 @@ export const useDashboardRealtime = () => {
   useEffect(() => {
     const fetchCounts = async () => {
       try {
-        const { count: attendeeCount } = await supabase
+        const { data: attendees, count: attendeeCount } = await supabase
           .from('registrations')
-          .select('*', { count: 'exact', head: true });
+          .select('id, registration_type, payment_status', { count: 'exact' });
 
         const { data: payments } = await supabase
           .from('payments')
@@ -30,11 +31,22 @@ export const useDashboardRealtime = () => {
           });
         }
 
+        let studentCount = 0;
+        let profCount = 0;
+        if (attendees) {
+          attendees.forEach((a: any) => {
+            const t = (a.registration_type || '').toLowerCase();
+            if (t === 'student') studentCount++;
+            else if (t === 'professional') profCount++;
+          });
+        }
+
         setStats((prev) => ({
           ...prev,
-          totalAttendees: attendeeCount || 124,
-          totalRevenue: revenue || 1860000,
-          vipCount: Math.round((attendeeCount || 124) * 0.25),
+          totalAttendees: attendeeCount || (studentCount + profCount),
+          totalRevenue: revenue,
+          studentCount,
+          professionalCount: profCount,
         }));
       } catch (err) {
         console.warn('Realtime fetch fallback:', err);

@@ -141,9 +141,18 @@ export const REGISTER_PAGE_CONTENT = {
   defaultErrorMessage: "Registration failed. Please try again.",
 
   registrationTypes: [
-    { value: "regular", label: "Regular Attendee", price: 0, description: "Full access to all 3-day general sessions, keynotes, and breakout rooms." },
-    { value: "student", label: "Student Tier", price: 0, description: "Subsidized full conference admission with valid student ID verification." },
-    { value: "vip", label: "VIP Executive", price: 5000, description: "Priority front-row seating, executive lunch lounge, and speaker networking." },
+    {
+      value: "student",
+      label: "Student",
+      price: 1000,
+      description: "Full conference admission for students (₦1,000).",
+    },
+    {
+      value: "professional",
+      label: "Professional",
+      price: 2000,
+      description: "Full conference admission for working professionals (₦2,000).",
+    },
   ],
 
   genderOptions: [
@@ -181,6 +190,7 @@ export const REGISTER_PAGE_CONTENT = {
   ],
 
   labels: {
+    registrationType: "Registration Category *",
     firstName: "First Name *",
     lastName: "Last Name *",
     email: "Email Address *",

@@ -3,6 +3,19 @@
 -- Run this script in the Supabase SQL Editor
 -- =========================================================
 
+-- 0. Registration Sequence for Sequential Pass Numbers (0001, 0002, ...)
+CREATE SEQUENCE IF NOT EXISTS public.registration_number_seq START WITH 1;
+
+CREATE OR REPLACE FUNCTION public.get_next_registration_number()
+RETURNS TEXT AS $$
+DECLARE
+    next_num BIGINT;
+BEGIN
+    next_num := nextval('public.registration_number_seq');
+    RETURN LPAD(next_num::TEXT, 4, '0');
+END;
+$$ LANGUAGE plpgsql;
+
 -- 1. Create Registrations Table
 CREATE TABLE IF NOT EXISTS public.registrations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -16,9 +29,9 @@ CREATE TABLE IF NOT EXISTS public.registrations (
     referral_source VARCHAR(100),
     breakout_session_choice VARCHAR(150),
     expectations TEXT,
-    registration_type VARCHAR(50) DEFAULT 'regular',
+    registration_type VARCHAR(50) DEFAULT 'student', -- 'student' (1000 NGN) or 'professional' (2000 NGN)
     amount_paid NUMERIC(12, 2) DEFAULT 0.00,
-    payment_status VARCHAR(30) DEFAULT 'pending', -- 'pending', 'paid', 'free', 'failed'
+    payment_status VARCHAR(30) DEFAULT 'pending', -- 'pending', 'paid', 'failed'
     payment_reference VARCHAR(120),
     email_sent BOOLEAN DEFAULT false,
     created_at TIMESTAMPTZ DEFAULT NOW(),

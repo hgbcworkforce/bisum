@@ -10,9 +10,9 @@ export interface Attendee {
   referralSource?: string;
   breakoutSessionChoice?: string;
   expectations?: string;
-  registrationType: string;
+  registrationType: 'student' | 'professional' | string;
   amountPaid?: number;
-  paymentStatus?: 'pending' | 'paid' | 'free' | 'failed';
+  paymentStatus?: 'pending' | 'paid' | 'failed';
   paymentReference?: string;
   emailSent?: boolean;
   createdAt?: string;

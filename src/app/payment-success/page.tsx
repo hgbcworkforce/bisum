@@ -41,20 +41,20 @@ function PaymentSuccessContent() {
         firstName: searchParams.get("firstName") || "Distinguished",
         lastName: searchParams.get("lastName") || "Attendee",
         email: searchParams.get("email") || "attendee@bisum.org",
-        registrationType: searchParams.get("tier") || "regular",
-        breakoutSessionChoice: searchParams.get("track") || "AI & Emerging Technologies",
-        amountPaid: searchParams.get("amount") || 15000,
+        registrationType: searchParams.get("tier") || "Student Pass",
+        breakoutSessionChoice: searchParams.get("track") || "Investment & Wealth Creation",
+        amountPaid: Number(searchParams.get("amount")) || 1000,
         createdAt: new Date().toISOString(),
       });
     } else {
       setReceiptData({
-        registrationNumber: "BISUM-2025-DELEGATE-8821",
+        registrationNumber: "0001",
         firstName: "Distinguished",
-        lastName: "Delegate",
+        lastName: "Attendee",
         email: "attendee@bisum.org",
-        registrationType: "VIP Pass",
-        breakoutSessionChoice: "AI & Next-Gen Architecture",
-        amountPaid: 25000,
+        registrationType: "Student Pass",
+        breakoutSessionChoice: "Investment & Wealth Creation",
+        amountPaid: 1000,
         createdAt: new Date().toISOString(),
       });
     }

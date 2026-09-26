@@ -118,11 +118,14 @@ function PaymentCallbackContent() {
                         <span>Conference Pass Details</span>
                       </div>
                       <div className="text-slate-400">Registration ID:</div>
-                      <div className="font-mono text-sm font-bold text-slate-900">
-                        {resultData.registration_number || resultData.registrationNumber}
+                      <div className="font-mono text-base font-extrabold text-slate-900">
+                        {resultData.registration_number || resultData.registrationNumber || "0001"}
                       </div>
                       <div className="text-slate-500 pt-1 border-t border-slate-200">
                         Attendee: <span className="font-semibold text-slate-800">{resultData.first_name || resultData.firstName} {resultData.last_name || resultData.lastName}</span>
+                      </div>
+                      <div className="text-slate-500">
+                        Category: <span className="font-semibold text-slate-800 capitalize">{(resultData.registration_type || resultData.registrationType || "student")} Pass</span>
                       </div>
                     </>
                   )}

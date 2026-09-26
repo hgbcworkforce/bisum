@@ -18,7 +18,7 @@ export default function RegistrationPage() {
     referralSource: "",
     breakoutSessionChoice: "",
     expectations: "",
-    registrationType: "regular",
+    registrationType: "student",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -81,14 +81,6 @@ export default function RegistrationPage() {
           // Paid registration -> Redirect to Paystack Checkout
           sessionStorage.setItem("lastRegistration", JSON.stringify(result.data));
           window.location.href = result.data.authorizationUrl;
-        } else if (result.data.registration) {
-          // Free registration -> Show success screen
-          const regNum =
-            result.data.registration.registrationNumber ||
-            (result.data.registration as any).registration_number ||
-            "BISUM-2025-" + Math.floor(100000 + Math.random() * 900000);
-          setRegistrationNumber(regNum);
-          setIsSuccess(true);
         } else {
           setIsSuccess(true);
         }
@@ -155,7 +147,57 @@ export default function RegistrationPage() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Category Selector */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2.5">
+                  {REGISTER_PAGE_CONTENT.labels.registrationType || "Select Registration Category *"}
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {registrationTypes.map((type) => {
+                    const isSelected = formData.registrationType === type.value;
+                    return (
+                      <div
+                        key={type.value}
+                        onClick={() => setFormData((prev) => ({ ...prev, registrationType: type.value }))}
+                        className={`relative p-5 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                          isSelected
+                            ? "border-blue-600 bg-blue-50/50 shadow-sm"
+                            : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/60"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <div className="flex items-center space-x-2">
+                              <span className="font-extrabold text-slate-900 text-base">{type.label}</span>
+                              {type.value === "student" && (
+                                <span className="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide rounded-full bg-blue-100 text-blue-700">
+                                  Subsidized
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-slate-500 mt-1">{type.description}</p>
+                          </div>
+                          <div
+                            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                              isSelected ? "border-blue-600 bg-blue-600" : "border-slate-300"
+                            }`}
+                          >
+                            {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
+                          </div>
+                        </div>
+                        <div className="mt-4 pt-3 border-t border-slate-200/60 flex items-baseline justify-between">
+                          <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Pass Fee</span>
+                          <span className="text-lg font-mono font-black text-slate-900">
+                            ₦{type.price.toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Name fields */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
@@ -248,7 +290,6 @@ export default function RegistrationPage() {
                 </div>
               </div>
 
-
               {/* Referral Source & Breakout Session */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
@@ -298,18 +339,36 @@ export default function RegistrationPage() {
                 />
               </div>
 
+              {/* Pricing & Fee Summary */}
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs">
+                <div className="flex justify-between text-slate-600">
+                  <span>{selectedTypeObj.label} Admission Pass</span>
+                  <span className="font-semibold text-slate-900 font-mono">₦{currentPrice.toLocaleString()}</span>
+                </div>
+                {paystackFee > 0 && (
+                  <div className="flex justify-between text-slate-500">
+                    <span>Paystack Gateway Processing Fee</span>
+                    <span className="font-mono">₦{paystackFee.toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="pt-2 border-t border-slate-200 flex justify-between items-center text-sm font-bold text-slate-900">
+                  <span>Total Payable</span>
+                  <span className="font-mono text-base font-extrabold text-blue-600">₦{chargedPrice.toLocaleString()}</span>
+                </div>
+              </div>
+
               {/* Submit Button */}
-              <div className="pt-3">
+              <div className="pt-2">
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-8 rounded-xl transition-colors flex items-center justify-center space-x-2 text-base disabled:opacity-50"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-8 rounded-xl transition-colors flex items-center justify-center space-x-2 text-base disabled:opacity-50 cursor-pointer shadow-md"
                 >
                   {isSubmitting ? (
                     <span>{REGISTER_PAGE_CONTENT.submittingButtonText}</span>
                   ) : (
                     <>
-                      <span>{REGISTER_PAGE_CONTENT.submitButtonText}</span>
+                      <span>Proceed to Payment (₦{chargedPrice.toLocaleString()})</span>
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}

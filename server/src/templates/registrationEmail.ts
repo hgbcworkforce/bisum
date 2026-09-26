@@ -12,9 +12,13 @@ interface EmailTemplateProps {
 }
 
 export function generateRegistrationEmailTemplate(data: EmailTemplateProps): string {
+  const displayRegNumber = data.registrationNumber || '0001';
+  const passTypeLabel = data.registrationType.toLowerCase() === 'student' ? 'Student Pass' : 'Professional Pass';
   const formattedAmount = data.amountPaid
     ? new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(data.amountPaid)
-    : 'Free';
+    : data.registrationType.toLowerCase() === 'student'
+    ? '₦1,000'
+    : '₦2,000';
 
   return `
 <!DOCTYPE html>
@@ -103,12 +107,12 @@ export function generateRegistrationEmailTemplate(data: EmailTemplateProps): str
     }
     .ticket-number {
       font-family: 'Courier New', Courier, monospace;
-      font-size: 26px;
-      font-weight: 800;
+      font-size: 32px;
+      font-weight: 900;
       color: #0f172a;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
       background: #e2e8f0;
-      padding: 8px 16px;
+      padding: 10px 24px;
       border-radius: 8px;
       display: inline-block;
       margin-bottom: 12px;
@@ -199,20 +203,24 @@ export function generateRegistrationEmailTemplate(data: EmailTemplateProps): str
 
       <!-- Ticket Card -->
       <div class="ticket-card">
-        <div class="ticket-title">Your Registration ID / Pass Code</div>
-        <div class="ticket-number">${data.registrationNumber}</div>
-        <div class="ticket-hint">Please save this code or present this email at the accreditation desk upon arrival.</div>
+        <div class="ticket-title">Your Registration ID / Pass Number</div>
+        <div class="ticket-number">${displayRegNumber}</div>
+        <div class="ticket-hint">Please save this Registration ID and present this email at the accreditation desk upon arrival.</div>
       </div>
 
       <!-- Registration Summary -->
       <table class="details-table">
         <tr>
+          <td class="label">Registration ID</td>
+          <td class="value" style="font-family: monospace; font-size: 15px; letter-spacing: 1px;">${displayRegNumber}</td>
+        </tr>
+        <tr>
           <td class="label">Attendee Name</td>
           <td class="value">${data.firstName} ${data.lastName}</td>
         </tr>
         <tr>
-          <td class="label">Pass Type</td>
-          <td class="value" style="text-transform: capitalize;">${data.registrationType}</td>
+          <td class="label">Pass Category</td>
+          <td class="value">${passTypeLabel}</td>
         </tr>
         ${
           data.breakoutSessionChoice
