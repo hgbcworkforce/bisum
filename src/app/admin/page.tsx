@@ -11,12 +11,11 @@ import { Attendee } from "@/types";
 import {
   Users,
   CreditCard,
-  Award,
-  Radio,
+  ShoppingBag,
+  Clock,
   ArrowRight,
   TrendingUp,
   FileSpreadsheet,
-  UserPlus,
 } from "lucide-react";
 
 export default function AdminDashboardPage() {
@@ -90,28 +89,53 @@ export default function AdminDashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {/* Card 1: Total Registrations */}
           <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                 Total Registrations
               </span>
-              <div className="w-10 h-10 rounded-xl bg-primary-50 text-primary flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
                 <Users className="w-5 h-5" />
               </div>
             </div>
             <div className="text-3xl font-black text-slate-900 mt-3 font-mono">
-              {realtimeStats.totalAttendees}
+              {realtimeStats.totalRegistrations}
             </div>
-            <span className="text-xs text-emerald-600 font-bold mt-1 flex items-center space-x-1">
-              <TrendingUp className="w-3.5 h-3.5" />
-              <span>Active conference participants</span>
+            <span className="text-xs text-slate-400 mt-1 flex items-center space-x-1">
+              <span className="font-semibold text-slate-600">
+                {realtimeStats.studentCount} Student
+              </span>
+              <span>•</span>
+              <span className="font-semibold text-slate-600">
+                {realtimeStats.professionalCount} Professional
+              </span>
             </span>
           </div>
 
+          {/* Card 2: Total Merchandise Purchased */}
           <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Gross Ticket Revenue
+                Total Merchandise Purchased
+              </span>
+              <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                <ShoppingBag className="w-5 h-5" />
+              </div>
+            </div>
+            <div className="text-3xl font-black text-slate-900 mt-3 font-mono">
+              {realtimeStats.totalMerchandisePurchased}
+            </div>
+            <span className="text-xs text-slate-400 mt-1 block">
+              {realtimeStats.paidMerchandiseOrders} paid store orders
+            </span>
+          </div>
+
+          {/* Card 3: Total Revenue (reg + merch) */}
+          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Total Revenue (reg + merch)
               </span>
               <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
                 ₦
@@ -120,42 +144,27 @@ export default function AdminDashboardPage() {
             <div className="text-3xl font-black text-slate-900 mt-3 font-mono">
               {formatCurrency(realtimeStats.totalRevenue)}
             </div>
-            <span className="text-xs text-slate-400 mt-1 block">
-              Settled Paystack transactions
+            <span className="text-xs text-emerald-600 font-bold mt-1 flex items-center space-x-1">
+              <TrendingUp className="w-3.5 h-3.5" />
+              <span>Settled Paystack transactions</span>
             </span>
           </div>
 
+          {/* Card 4: Pending Transactions (reg + merch) */}
           <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Student Passes (₦1k)
+                Pending Transactions (reg + merch)
               </span>
-              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-                <Users className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                <Clock className="w-5 h-5" />
               </div>
             </div>
             <div className="text-3xl font-black text-slate-900 mt-3 font-mono">
-              {realtimeStats.studentCount}
+              {realtimeStats.pendingTransactions}
             </div>
             <span className="text-xs text-slate-400 mt-1 block">
-              Subsidized student tier
-            </span>
-          </div>
-
-          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Professional Passes (₦2k)
-              </span>
-              <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-                <Award className="w-5 h-5" />
-              </div>
-            </div>
-            <div className="text-3xl font-black text-slate-900 mt-3 font-mono">
-              {realtimeStats.professionalCount}
-            </div>
-            <span className="text-xs text-slate-400 mt-1 block">
-              Professional tier
+              Awaiting payment settlement
             </span>
           </div>
         </div>
