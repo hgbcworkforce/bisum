@@ -9,6 +9,9 @@ import { env } from './config/env';
 
 const app = express();
 
+// Trust reverse proxy (Render / Cloudflare) for accurate IP resolution in rate-limiting
+app.set('trust proxy', 1);
+
 // Security Headers
 app.use(helmet());
 
@@ -19,6 +22,8 @@ const allowedOrigins = [
   'http://localhost:5173',
   'https://bisum.org',
   'https://www.bisum.org',
+  'https://bisum.hgbcinfluencers.org',
+  'https://hgbcinfluencers.org',
 ];
 
 app.use(

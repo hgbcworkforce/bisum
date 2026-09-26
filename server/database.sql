@@ -119,12 +119,22 @@ ALTER TABLE public.merchandise_orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.payments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.admin_users ENABLE ROW LEVEL SECURITY;
 
+-- 1. Registrations Policies
+DROP POLICY IF EXISTS "Allow public read for own registration by reg_number" ON public.registrations;
+DROP POLICY IF EXISTS "Allow public insert for registrations" ON public.registrations;
+DROP POLICY IF EXISTS "Allow public update for registrations" ON public.registrations;
+DROP POLICY IF EXISTS "Allow authenticated admins full access to registrations" ON public.registrations;
+
 CREATE POLICY "Allow public read for own registration by reg_number"
     ON public.registrations FOR SELECT
     USING (true);
 
-CREATE POLICY "Allow public read for own merchandise order by order_number"
-    ON public.merchandise_orders FOR SELECT
+CREATE POLICY "Allow public insert for registrations"
+    ON public.registrations FOR INSERT
+    WITH CHECK (true);
+
+CREATE POLICY "Allow public update for registrations"
+    ON public.registrations FOR UPDATE
     USING (true);
 
 CREATE POLICY "Allow authenticated admins full access to registrations"
@@ -137,6 +147,24 @@ CREATE POLICY "Allow authenticated admins full access to registrations"
         )
     );
 
+-- 2. Merchandise Orders Policies
+DROP POLICY IF EXISTS "Allow public read for own merchandise order by order_number" ON public.merchandise_orders;
+DROP POLICY IF EXISTS "Allow public insert for merchandise orders" ON public.merchandise_orders;
+DROP POLICY IF EXISTS "Allow public update for merchandise orders" ON public.merchandise_orders;
+DROP POLICY IF EXISTS "Allow authenticated admins full access to merchandise_orders" ON public.merchandise_orders;
+
+CREATE POLICY "Allow public read for own merchandise order by order_number"
+    ON public.merchandise_orders FOR SELECT
+    USING (true);
+
+CREATE POLICY "Allow public insert for merchandise orders"
+    ON public.merchandise_orders FOR INSERT
+    WITH CHECK (true);
+
+CREATE POLICY "Allow public update for merchandise orders"
+    ON public.merchandise_orders FOR UPDATE
+    USING (true);
+
 CREATE POLICY "Allow authenticated admins full access to merchandise_orders"
     ON public.merchandise_orders FOR ALL
     TO authenticated
@@ -147,6 +175,19 @@ CREATE POLICY "Allow authenticated admins full access to merchandise_orders"
         )
     );
 
+-- 3. Payments Policies
+DROP POLICY IF EXISTS "Allow public insert for payments" ON public.payments;
+DROP POLICY IF EXISTS "Allow public update for payments" ON public.payments;
+DROP POLICY IF EXISTS "Allow authenticated admins full access to payments" ON public.payments;
+
+CREATE POLICY "Allow public insert for payments"
+    ON public.payments FOR INSERT
+    WITH CHECK (true);
+
+CREATE POLICY "Allow public update for payments"
+    ON public.payments FOR UPDATE
+    USING (true);
+
 CREATE POLICY "Allow authenticated admins full access to payments"
     ON public.payments FOR ALL
     TO authenticated
@@ -156,6 +197,9 @@ CREATE POLICY "Allow authenticated admins full access to payments"
             WHERE admin_users.user_id = auth.uid() AND admin_users.is_active = true
         )
     );
+
+-- 4. Admin Users Policies
+DROP POLICY IF EXISTS "Allow authenticated users to read admin_users" ON public.admin_users;
 
 CREATE POLICY "Allow authenticated users to read admin_users"
     ON public.admin_users FOR SELECT
