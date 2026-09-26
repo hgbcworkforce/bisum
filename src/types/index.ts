@@ -66,8 +66,6 @@ export interface Attendee {
   phone?: string;
   gender?: string;
   ageRange?: string;
-  institution?: string;
-  church?: string;
   referralSource?: string;
   breakoutSessionChoice?: string;
   expectations?: string;
@@ -76,6 +74,28 @@ export interface Attendee {
   amountPaid?: number;
   paymentStatus?: string;
   paymentReference?: string;
+}
+
+export interface MerchandiseOrder {
+  id?: string;
+  orderNumber?: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  itemId: string;
+  itemName: string;
+  color: string;
+  size: string;
+  quantity: number;
+  unitPrice: number;
+  totalAmount: number;
+  pickupOption?: string;
+  paymentStatus?: 'pending' | 'paid' | 'failed';
+  fulfillmentStatus?: 'unfulfilled' | 'ready' | 'picked_up';
+  paymentReference?: string;
+  emailSent?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface PaymentRecord {
