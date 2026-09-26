@@ -1,0 +1,144 @@
+-- =========================================================
+-- BISUM CONFERENCE 2025 - SUPABASE DATABASE SCHEMA
+-- Run this script in the Supabase SQL Editor
+-- =========================================================
+
+-- 1. Create Registrations Table
+CREATE TABLE IF NOT EXISTS public.registrations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    registration_number VARCHAR(50) UNIQUE,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(50) NOT NULL,
+    gender VARCHAR(20),
+    age_range VARCHAR(50),
+    referral_source VARCHAR(100),
+    breakout_session_choice VARCHAR(150),
+    expectations TEXT,
+    registration_type VARCHAR(50) DEFAULT 'regular',
+    amount_paid NUMERIC(12, 2) DEFAULT 0.00,
+    payment_status VARCHAR(30) DEFAULT 'pending', -- 'pending', 'paid', 'free', 'failed'
+    payment_reference VARCHAR(120),
+    email_sent BOOLEAN DEFAULT false,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- If you already created the table previously, run this to drop the unused columns:
+-- ALTER TABLE public.registrations DROP COLUMN IF EXISTS institution, DROP COLUMN IF EXISTS church;
+
+-- 2. Create Merchandise Orders Table
+CREATE TABLE IF NOT EXISTS public.merchandise_orders (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    order_number VARCHAR(50) UNIQUE,
+    customer_name VARCHAR(150) NOT NULL,
+    customer_email VARCHAR(255) NOT NULL,
+    customer_phone VARCHAR(50) NOT NULL,
+    item_id VARCHAR(50) NOT NULL,
+    item_name VARCHAR(150) NOT NULL,
+    color VARCHAR(50) NOT NULL,
+    size VARCHAR(50) NOT NULL,
+    quantity INTEGER NOT NULL DEFAULT 1,
+    unit_price NUMERIC(12, 2) NOT NULL,
+    total_amount NUMERIC(12, 2) NOT NULL,
+    pickup_option VARCHAR(100) DEFAULT 'On-site Conference Pickup',
+    payment_status VARCHAR(30) DEFAULT 'pending', -- 'pending', 'paid', 'failed'
+    fulfillment_status VARCHAR(30) DEFAULT 'unfulfilled', -- 'unfulfilled', 'ready', 'picked_up'
+    payment_reference VARCHAR(120),
+    email_sent BOOLEAN DEFAULT false,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 3. Create Payments Log Table
+CREATE TABLE IF NOT EXISTS public.payments (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    reference VARCHAR(120) UNIQUE NOT NULL,
+    paystack_id VARCHAR(100),
+    customer_name VARCHAR(255),
+    customer_email VARCHAR(255) NOT NULL,
+    amount NUMERIC(12, 2) NOT NULL,
+    currency VARCHAR(10) DEFAULT 'NGN',
+    status VARCHAR(30) DEFAULT 'pending', -- 'pending', 'success', 'failed'
+    channel VARCHAR(50),
+    metadata JSONB,
+    paid_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 4. Create Admin Profiles Table (Associated with Supabase auth.users)
+CREATE TABLE IF NOT EXISTS public.admin_users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    full_name VARCHAR(200) NOT NULL,
+    role VARCHAR(50) DEFAULT 'admin', -- 'admin', 'superadmin', 'viewer'
+    is_approved BOOLEAN DEFAULT true,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS idx_registrations_email ON public.registrations(email);
+CREATE INDEX IF NOT EXISTS idx_registrations_reg_number ON public.registrations(registration_number);
+CREATE INDEX IF NOT EXISTS idx_registrations_payment_status ON public.registrations(payment_status);
+CREATE INDEX IF NOT EXISTS idx_registrations_reference ON public.registrations(payment_reference);
+
+CREATE INDEX IF NOT EXISTS idx_merch_orders_email ON public.merchandise_orders(customer_email);
+CREATE INDEX IF NOT EXISTS idx_merch_orders_order_number ON public.merchandise_orders(order_number);
+CREATE INDEX IF NOT EXISTS idx_merch_orders_payment_status ON public.merchandise_orders(payment_status);
+CREATE INDEX IF NOT EXISTS idx_merch_orders_reference ON public.merchandise_orders(payment_reference);
+
+CREATE INDEX IF NOT EXISTS idx_payments_reference ON public.payments(reference);
+CREATE INDEX IF NOT EXISTS idx_payments_customer_email ON public.payments(customer_email);
+CREATE INDEX IF NOT EXISTS idx_admin_users_user_id ON public.admin_users(user_id);
+
+-- Row Level Security (RLS) Policies
+ALTER TABLE public.registrations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.merchandise_orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.payments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.admin_users ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public read for own registration by reg_number"
+    ON public.registrations FOR SELECT
+    USING (true);
+
+CREATE POLICY "Allow public read for own merchandise order by order_number"
+    ON public.merchandise_orders FOR SELECT
+    USING (true);
+
+CREATE POLICY "Allow authenticated admins full access to registrations"
+    ON public.registrations FOR ALL
+    TO authenticated
+    USING (
+        EXISTS (
+            SELECT 1 FROM public.admin_users
+            WHERE admin_users.user_id = auth.uid() AND admin_users.is_active = true
+        )
+    );
+
+CREATE POLICY "Allow authenticated admins full access to merchandise_orders"
+    ON public.merchandise_orders FOR ALL
+    TO authenticated
+    USING (
+        EXISTS (
+            SELECT 1 FROM public.admin_users
+            WHERE admin_users.user_id = auth.uid() AND admin_users.is_active = true
+        )
+    );
+
+CREATE POLICY "Allow authenticated admins full access to payments"
+    ON public.payments FOR ALL
+    TO authenticated
+    USING (
+        EXISTS (
+            SELECT 1 FROM public.admin_users
+            WHERE admin_users.user_id = auth.uid() AND admin_users.is_active = true
+        )
+    );
+
+CREATE POLICY "Allow authenticated users to read admin_users"
+    ON public.admin_users FOR SELECT
+    TO authenticated
+    USING (true);
