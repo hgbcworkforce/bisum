@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS public.registrations (
     age_range VARCHAR(50),
     referral_source VARCHAR(100),
     breakout_session_choice VARCHAR(150),
+    attendance_mode VARCHAR(50) DEFAULT 'On-site', -- 'On-site' or 'Online'
     expectations TEXT,
     registration_type VARCHAR(50) DEFAULT 'student', -- 'student' (1000 NGN) or 'professional' (2000 NGN)
     amount_paid NUMERIC(12, 2) DEFAULT 0.00,
@@ -51,6 +52,9 @@ BEGIN
     -- Add any newly introduced columns safely
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='registrations' AND column_name='expectations') THEN
         ALTER TABLE public.registrations ADD COLUMN expectations TEXT;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='registrations' AND column_name='attendance_mode') THEN
+        ALTER TABLE public.registrations ADD COLUMN attendance_mode VARCHAR(50) DEFAULT 'On-site';
     END IF;
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='registrations' AND column_name='payment_reference') THEN
         ALTER TABLE public.registrations ADD COLUMN payment_reference VARCHAR(120);

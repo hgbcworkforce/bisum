@@ -15,6 +15,7 @@ export default function RegistrationPage() {
     phone: "",
     gender: "",
     ageRange: "",
+    attendanceMode: "On-site",
     referralSource: "",
     breakoutSessionChoice: "",
     expectations: "",
@@ -53,6 +54,7 @@ export default function RegistrationPage() {
     if (!formData.phone.trim()) newErrors.phone = REGISTER_PAGE_CONTENT.validationMessages.phone;
     if (!formData.gender) newErrors.gender = REGISTER_PAGE_CONTENT.validationMessages.gender;
     if (!formData.ageRange) newErrors.ageRange = REGISTER_PAGE_CONTENT.validationMessages.ageRange;
+    if (!formData.attendanceMode) newErrors.attendanceMode = REGISTER_PAGE_CONTENT.validationMessages.attendanceMode;
     if (!formData.referralSource) newErrors.referralSource = REGISTER_PAGE_CONTENT.validationMessages.referralSource;
     if (!formData.breakoutSessionChoice) newErrors.breakoutSessionChoice = REGISTER_PAGE_CONTENT.validationMessages.breakoutSessionChoice;
 
@@ -135,6 +137,10 @@ export default function RegistrationPage() {
               <p className="text-xs font-bold text-blue-600 uppercase tracking-wider">{REGISTER_PAGE_CONTENT.registrationNumberLabel}</p>
               <p className="text-2xl font-mono font-extrabold text-slate-900 mt-1">{registrationNumber}</p>
               <p className="text-xs text-slate-500 mt-2">{REGISTER_PAGE_CONTENT.emailNoticePrefix} {formData.email}</p>
+              <div className="mt-3 pt-3 border-t border-slate-200 flex justify-between text-xs text-slate-600">
+                <span>Attendance Mode:</span>
+                <span className="font-bold text-slate-900">{formData.attendanceMode}</span>
+              </div>
             </div>
           </div>
         ) : (
@@ -288,6 +294,55 @@ export default function RegistrationPage() {
                   </select>
                   {errors.ageRange && <p className="text-red-500 text-xs mt-1">{errors.ageRange}</p>}
                 </div>
+              </div>
+
+              {/* Attendance Mode (On-site vs Online) */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                  {REGISTER_PAGE_CONTENT.labels.attendanceMode || "How do you want to attend? *"}
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {REGISTER_PAGE_CONTENT.attendanceModeOptions
+                    .filter((opt) => opt.value !== "")
+                    .map((opt) => {
+                      const isSelected = formData.attendanceMode === opt.value;
+                      return (
+                        <div
+                          key={opt.value}
+                          onClick={() => {
+                            setFormData((prev) => ({ ...prev, attendanceMode: opt.value }));
+                            if (errors.attendanceMode) {
+                              setErrors((prev) => ({ ...prev, attendanceMode: "" }));
+                            }
+                          }}
+                          className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${
+                            isSelected
+                              ? "border-blue-600 bg-blue-50/50 shadow-xs"
+                              : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/60"
+                          }`}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <div
+                              className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${
+                                isSelected ? "border-blue-600 bg-blue-600" : "border-slate-300"
+                              }`}
+                            >
+                              {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                            </div>
+                            <div>
+                              <span className="font-bold text-slate-900 text-sm">{opt.label}</span>
+                              <p className="text-[11px] text-slate-500">
+                                {opt.value === "On-site"
+                                  ? "In-person at HGBC, Ogbomoso"
+                                  : "Live interactive streaming"}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+                {errors.attendanceMode && <p className="text-red-500 text-xs mt-1">{errors.attendanceMode}</p>}
               </div>
 
               {/* Referral Source & Breakout Session */}

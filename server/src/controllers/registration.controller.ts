@@ -14,6 +14,7 @@ export const registrationSchema = z.object({
   ageRange: z.string().optional(),
   referralSource: z.string().optional(),
   breakoutSessionChoice: z.string().optional(),
+  attendanceMode: z.string().optional(),
   expectations: z.string().optional(),
   registrationType: z.enum(['student', 'professional'], {
     errorMap: () => ({ message: 'Registration type must be either Student or Professional' }),
@@ -51,6 +52,7 @@ export const registrationController = {
           phone: data.phone,
           registration_type: data.registrationType,
           breakout_session_choice: data.breakoutSessionChoice,
+          attendance_mode: data.attendanceMode || 'On-site',
         },
       });
 

@@ -27,13 +27,14 @@ export const adminController = {
    */
   async getAttendees(req: AuthenticatedRequest, res: Response) {
     try {
-      const { search, status, registrationType, breakoutSession, page, limit } = req.query;
+      const { search, status, registrationType, breakoutSession, attendanceMode, page, limit } = req.query;
 
       const result = await attendeeService.listAttendees({
         search: search as string,
         status: status as string,
         registrationType: registrationType as string,
         breakoutSession: breakoutSession as string,
+        attendanceMode: attendanceMode as string,
         page: page ? Number(page) : 1,
         limit: limit ? Number(limit) : 20,
       });
@@ -123,6 +124,7 @@ export const adminController = {
         phone: attendee.phone,
         registrationNumber: attendee.registration_number || 'N/A',
         registrationType: attendee.registration_type,
+        attendanceMode: attendee.attendance_mode,
         breakoutSessionChoice: attendee.breakout_session_choice,
         amountPaid: attendee.amount_paid,
       });
@@ -185,6 +187,7 @@ export const adminController = {
         'Phone',
         'Gender',
         'Age Range',
+        'Attendance Mode',
         'Pass Type',
         'Breakout Session',
         'Amount Paid (NGN)',
@@ -200,6 +203,7 @@ export const adminController = {
         `"${a.phone || ''}"`,
         `"${a.gender || ''}"`,
         `"${a.age_range || ''}"`,
+        `"${a.attendance_mode || 'On-site'}"`,
         `"${a.registration_type || ''}"`,
         `"${a.breakout_session_choice || ''}"`,
         `"${a.amount_paid || 0}"`,

@@ -85,6 +85,11 @@ export const registrationAPI = {
         phone: r.phone,
         registrationType: r.registration_type,
         breakoutSessionChoice: r.breakout_session_choice,
+        attendanceMode: r.attendance_mode || 'On-site',
+        expectations: r.expectations,
+        gender: r.gender,
+        ageRange: r.age_range,
+        referralSource: r.referral_source,
         createdAt: r.created_at,
         amountPaid: r.amount_paid,
         paymentStatus: r.payment_status,
@@ -124,6 +129,11 @@ export const registrationAPI = {
         phone: formData.phone || '',
         registration_type: formData.registrationType || 'student',
         breakout_session_choice: formData.breakoutSessionChoice || 'General',
+        attendance_mode: formData.attendanceMode || 'On-site',
+        gender: formData.gender,
+        age_range: formData.ageRange,
+        referral_source: formData.referralSource,
+        expectations: formData.expectations,
         registration_number: regNumber,
         payment_status: formData.paymentStatus || 'paid',
         amount_paid: formData.amountPaid || 1000,
@@ -148,6 +158,7 @@ export const registrationAPI = {
           phone: data.phone,
           registrationType: data.registration_type,
           breakoutSessionChoice: data.breakout_session_choice,
+          attendanceMode: data.attendance_mode || 'On-site',
           createdAt: data.created_at,
         },
       };
@@ -271,6 +282,7 @@ export const adminAPI = {
         if (updates.gender !== undefined) payload.gender = updates.gender;
         if (updates.ageRange !== undefined) payload.age_range = updates.ageRange;
         if (updates.breakoutSessionChoice !== undefined) payload.breakout_session_choice = updates.breakoutSessionChoice;
+        if (updates.attendanceMode !== undefined) payload.attendance_mode = updates.attendanceMode;
         if (updates.registrationType !== undefined) payload.registration_type = updates.registrationType;
         if (updates.paymentStatus !== undefined) payload.payment_status = updates.paymentStatus;
         if (updates.amountPaid !== undefined) payload.amount_paid = updates.amountPaid;

@@ -54,6 +54,7 @@ export const attendeeService = {
     ageRange?: string;
     referralSource?: string;
     breakoutSessionChoice?: string;
+    attendanceMode?: string;
     expectations?: string;
     registrationType: 'student' | 'professional' | string;
     amountPaid: number;
@@ -85,6 +86,7 @@ export const attendeeService = {
           age_range: payload.ageRange,
           referral_source: payload.referralSource,
           breakout_session_choice: payload.breakoutSessionChoice,
+          attendance_mode: payload.attendanceMode || 'On-site',
           expectations: payload.expectations,
           registration_type: payload.registrationType,
           amount_paid: payload.amountPaid,
@@ -112,6 +114,7 @@ export const attendeeService = {
           age_range: payload.ageRange,
           referral_source: payload.referralSource,
           breakout_session_choice: payload.breakoutSessionChoice,
+          attendance_mode: payload.attendanceMode || 'On-site',
           expectations: payload.expectations,
           registration_type: payload.registrationType,
           amount_paid: payload.amountPaid,
@@ -252,6 +255,7 @@ export const attendeeService = {
     status?: string;
     registrationType?: string;
     breakoutSession?: string;
+    attendanceMode?: string;
     page?: number;
     limit?: number;
   }) {
@@ -263,7 +267,7 @@ export const attendeeService = {
 
     if (params.search) {
       const s = `%${params.search}%`;
-      query = query.or(`first_name.ilike.${s},last_name.ilike.${s},email.ilike.${s},registration_number.ilike.${s},phone.ilike.${s}`);
+      query = query.or(`first_name.ilike.${s},last_name.ilike.${s},email.ilike.${s},registration_number.ilike.${s},phone.ilike.${s},attendance_mode.ilike.${s}`);
     }
 
     if (params.status && params.status !== 'all') {
@@ -276,6 +280,10 @@ export const attendeeService = {
 
     if (params.breakoutSession && params.breakoutSession !== 'all') {
       query = query.eq('breakout_session_choice', params.breakoutSession);
+    }
+
+    if (params.attendanceMode && params.attendanceMode !== 'all') {
+      query = query.eq('attendance_mode', params.attendanceMode);
     }
 
     query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1);
@@ -307,8 +315,10 @@ export const attendeeService = {
     if (updates.gender) payload.gender = updates.gender;
     if (updates.ageRange) payload.age_range = updates.ageRange;
     if (updates.breakoutSessionChoice) payload.breakout_session_choice = updates.breakoutSessionChoice;
+    if (updates.attendanceMode) payload.attendance_mode = updates.attendanceMode;
     if (updates.registrationType) payload.registration_type = updates.registrationType;
     if (updates.paymentStatus) payload.payment_status = updates.paymentStatus;
+    if (updates.expectations !== undefined) payload.expectations = updates.expectations;
 
     const { data, error } = await supabaseAdmin
       .from('registrations')
@@ -335,7 +345,7 @@ export const attendeeService = {
    */
   async getDashboardAnalytics() {
     const [attendeesResult, paymentsResult] = await Promise.all([
-      supabaseAdmin.from('registrations').select('id, payment_status, registration_type, breakout_session_choice, amount_paid, created_at'),
+      supabaseAdmin.from('registrations').select('id, payment_status, registration_type, breakout_session_choice, attendance_mode, amount_paid, created_at'),
       supabaseAdmin.from('payments').select('id, amount, status, created_at'),
     ]);
 
@@ -367,15 +377,31 @@ export const attendeeService = {
     const studentCount = attendees.filter((a) => (a.registration_type || '').toLowerCase() === 'student').length;
     const professionalCount = attendees.filter((a) => (a.registration_type || '').toLowerCase() === 'professional').length;
 
+    // Attendance mode breakdown (On-site vs Online)
+    const onsiteCount = attendees.filter((a) => {
+      const mode = (a.attendance_mode || 'On-site').toLowerCase();
+      return mode === 'on-site' || mode === 'onsite';
+    }).length;
+    const onlineCount = attendees.filter((a) => {
+      const mode = (a.attendance_mode || '').toLowerCase();
+      return mode === 'online';
+    }).length;
+
     return {
       totalRegistrations,
       paidRegistrations,
       pendingRegistrations,
       studentCount,
       professionalCount,
+      onsiteCount,
+      onlineCount,
       totalRevenue,
       sessionsBreakdown: sessionsMap,
       typesBreakdown: typesMap,
+      attendanceBreakdown: {
+        'On-site': onsiteCount,
+        'Online': onlineCount,
+      },
       totalPaymentsCount: payments.length,
     };
   },

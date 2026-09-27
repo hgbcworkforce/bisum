@@ -90,27 +90,34 @@ export default function AdminDashboardPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {/* Card 1: Total Registrations */}
-          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Total Registrations
-              </span>
-              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-                <Users className="w-5 h-5" />
+          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  Total Registrations
+                </span>
+                <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                  <Users className="w-5 h-5" />
+                </div>
+              </div>
+              <div className="text-3xl font-black text-slate-900 mt-3 font-mono">
+                {realtimeStats.totalRegistrations}
               </div>
             </div>
-            <div className="text-3xl font-black text-slate-900 mt-3 font-mono">
-              {realtimeStats.totalRegistrations}
+            <div className="text-[11px] text-slate-500 mt-3 pt-2.5 border-t border-slate-100 space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-400">Attendance:</span>
+                <span className="font-semibold text-slate-700">
+                  <strong className="text-blue-600">{realtimeStats.onsiteCount}</strong> On-site • <strong className="text-purple-600">{realtimeStats.onlineCount}</strong> Online
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-400">Tiers:</span>
+                <span className="text-slate-600">
+                  {realtimeStats.studentCount} Student • {realtimeStats.professionalCount} Prof
+                </span>
+              </div>
             </div>
-            <span className="text-xs text-slate-400 mt-1 flex items-center space-x-1">
-              <span className="font-semibold text-slate-600">
-                {realtimeStats.studentCount} Student
-              </span>
-              <span>•</span>
-              <span className="font-semibold text-slate-600">
-                {realtimeStats.professionalCount} Professional
-              </span>
-            </span>
           </div>
 
           {/* Card 2: Total Merchandise Purchased */}
@@ -235,6 +242,7 @@ export default function AdminDashboardPage() {
                 <tr className="bg-slate-50 border-b border-slate-100 text-[11px] font-bold text-slate-500 uppercase">
                   <th className="py-3 px-6">Name</th>
                   <th className="py-3 px-6">Email</th>
+                  <th className="py-3 px-6">Attendance</th>
                   <th className="py-3 px-6">Tier</th>
                   <th className="py-3 px-6">Registration ID</th>
                 </tr>
@@ -247,6 +255,17 @@ export default function AdminDashboardPage() {
                         {att.firstName} {att.lastName}
                       </td>
                       <td className="py-3.5 px-6 text-slate-500">{att.email}</td>
+                      <td className="py-3.5 px-6">
+                        <span
+                          className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            (att.attendanceMode || "On-site").toLowerCase() === "online"
+                              ? "bg-purple-50 text-purple-700 border border-purple-200"
+                              : "bg-blue-50 text-blue-700 border border-blue-200"
+                          }`}
+                        >
+                          {att.attendanceMode || "On-site"}
+                        </span>
+                      </td>
                       <td className="py-3.5 px-6 uppercase font-bold text-[10px] text-primary">
                         {att.registrationType}
                       </td>
@@ -257,7 +276,7 @@ export default function AdminDashboardPage() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={4} className="py-8 text-center text-slate-400">
+                    <td colSpan={5} className="py-8 text-center text-slate-400">
                       No attendee signups recorded yet.
                     </td>
                   </tr>

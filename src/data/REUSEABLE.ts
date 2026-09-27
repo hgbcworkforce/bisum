@@ -211,8 +211,15 @@ export const REGISTER_PAGE_CONTENT = {
     { value: "foods", label: "Confectionery & Food Business" },
   ],
 
+  attendanceModeOptions: [
+    { value: "", label: "Select Attendance Mode" },
+    { value: "On-site", label: "On-site" },
+    { value: "Online", label: "Online" },
+  ],
+
   labels: {
     registrationType: "Registration Category *",
+    attendanceMode: "How do you want to attend? *",
     firstName: "First Name *",
     lastName: "Last Name *",
     email: "Email Address *",
@@ -240,6 +247,7 @@ export const REGISTER_PAGE_CONTENT = {
     phone: "Phone number is required",
     gender: "Gender is required",
     ageRange: "Age range is required",
+    attendanceMode: "Please select how you want to attend (On-site or Online)",
     referralSource: "Please select how you heard about BISUM",
     breakoutSessionChoice: "Please select a breakout session",
   },

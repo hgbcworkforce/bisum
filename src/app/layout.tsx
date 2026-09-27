@@ -69,9 +69,9 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/BISUM logo.webp",
-    shortcut: "/BISUM logo.webp",
-    apple: "/BISUM logo.webp",
+    icon: "/BISUM logo white.webp",
+    shortcut: "/BISUM logo white.webp",
+    apple: "/BISUM logo white.webp",
   },
 };
 

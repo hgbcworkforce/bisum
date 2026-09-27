@@ -10,6 +10,7 @@ interface SendConfirmationParams {
   phone?: string;
   registrationNumber: string;
   registrationType: string;
+  attendanceMode?: string;
   breakoutSessionChoice?: string;
   amountPaid?: number;
 }

@@ -11,6 +11,8 @@ export interface DashboardStats {
   pendingTransactions: number;
   studentCount: number;
   professionalCount: number;
+  onsiteCount: number;
+  onlineCount: number;
   paidRegistrations: number;
   paidMerchandiseOrders: number;
   activeSessions: number;
@@ -28,6 +30,8 @@ export const useDashboardRealtime = (): DashboardStats => {
     pendingTransactions: 0,
     studentCount: 0,
     professionalCount: 0,
+    onsiteCount: 0,
+    onlineCount: 0,
     paidRegistrations: 0,
     paidMerchandiseOrders: 0,
     activeSessions: 6,
@@ -38,7 +42,7 @@ export const useDashboardRealtime = (): DashboardStats => {
     const fetchCounts = async () => {
       try {
         const [regRes, merchRes, payRes] = await Promise.all([
-          supabase.from('registrations').select('id, registration_type, payment_status, amount_paid'),
+          supabase.from('registrations').select('id, registration_type, attendance_mode, payment_status, amount_paid'),
           supabase.from('merchandise_orders').select('id, quantity, total_amount, payment_status, fulfillment_status'),
           supabase.from('payments').select('id, amount, status'),
         ]);
@@ -50,6 +54,8 @@ export const useDashboardRealtime = (): DashboardStats => {
         // 1. Registrations stats
         let studentCount = 0;
         let profCount = 0;
+        let onsiteCount = 0;
+        let onlineCount = 0;
         let paidRegCount = 0;
         let pendingRegCount = 0;
         let regRevenue = 0;
@@ -58,6 +64,13 @@ export const useDashboardRealtime = (): DashboardStats => {
           const t = (a.registration_type || '').toLowerCase();
           if (t === 'student') studentCount++;
           else if (t === 'professional') profCount++;
+
+          const mode = (a.attendance_mode || 'On-site').toLowerCase();
+          if (mode === 'online') {
+            onlineCount++;
+          } else {
+            onsiteCount++;
+          }
 
           const st = (a.payment_status || '').toLowerCase();
           if (st === 'paid') {
@@ -110,6 +123,8 @@ export const useDashboardRealtime = (): DashboardStats => {
           pendingTransactions: combinedPending,
           studentCount,
           professionalCount: profCount,
+          onsiteCount,
+          onlineCount,
           paidRegistrations: paidRegCount,
           paidMerchandiseOrders: paidMerchCount,
           activeSessions: 6,

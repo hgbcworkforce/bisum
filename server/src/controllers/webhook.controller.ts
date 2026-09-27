@@ -122,6 +122,7 @@ export const webhookController = {
               phone: attendee.phone,
               registrationNumber: attendee.registration_number,
               registrationType: attendee.registration_type,
+              attendanceMode: attendee.attendance_mode,
               breakoutSessionChoice: attendee.breakout_session_choice,
               amountPaid: attendee.amount_paid,
             });

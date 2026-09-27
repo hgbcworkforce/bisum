@@ -119,6 +119,12 @@ function PaymentSuccessContent() {
               <div className="text-slate-500">
                 Category: <span className="font-semibold text-slate-800 capitalize">{data.registrationType || "Student"} Pass</span>
               </div>
+
+              {(data.attendanceMode || data.attendance_mode) && (
+                <div className="text-slate-500">
+                  Attendance: <span className="font-semibold text-slate-800">{data.attendanceMode || data.attendance_mode}</span>
+                </div>
+              )}
             </div>
           )}
 

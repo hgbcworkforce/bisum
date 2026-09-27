@@ -171,7 +171,7 @@ export default function MerchandiseDetailsClient({ id }: MerchandiseDetailsClien
                 </div>
 
                 {/* Countdown Badge */}
-                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 my-6">
+                <div className="bg-blue-200 border border-slate-200 rounded-2xl p-4 my-6">
                   <p className="text-xs font-bold text-red-600 uppercase tracking-wider mb-2 text-center">
                     {MERCHANDISE_DETAILS_CONTENT.countdownHeading}
                   </p>

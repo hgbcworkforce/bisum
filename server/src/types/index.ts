@@ -9,6 +9,7 @@ export interface Attendee {
   ageRange?: string;
   referralSource?: string;
   breakoutSessionChoice?: string;
+  attendanceMode?: 'On-site' | 'Online' | string;
   expectations?: string;
   registrationType: 'student' | 'professional' | string;
   amountPaid?: number;

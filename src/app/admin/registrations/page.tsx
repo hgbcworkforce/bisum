@@ -40,6 +40,7 @@ export default function AdminRegistrationsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [filterBreakout, setFilterBreakout] = useState("all");
+  const [filterAttendance, setFilterAttendance] = useState("all");
   const [sortBy, setSortBy] = useState("registration_date-desc");
   const [isExporting, setIsExporting] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -183,17 +184,22 @@ export default function AdminRegistrationsPage() {
           (attendee.lastName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
           (attendee.email || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
           (attendee.registrationNumber || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (attendee.phone || "").toLowerCase().includes(searchTerm.toLowerCase());
+          (attendee.phone || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (attendee.attendanceMode || "").toLowerCase().includes(searchTerm.toLowerCase());
 
         const matchesType =
           filterType === "all" ||
           (attendee.registrationType || "").toLowerCase() === filterType.toLowerCase();
 
+        const matchesAttendance =
+          filterAttendance === "all" ||
+          (attendee.attendanceMode || "On-site").toLowerCase() === filterAttendance.toLowerCase();
+
         const matchesBreakout =
           filterBreakout === "all" ||
           (attendee.breakoutSessionChoice || "").toLowerCase().includes(filterBreakout.toLowerCase());
 
-        return matchesSearch && matchesType && matchesBreakout;
+        return matchesSearch && matchesType && matchesAttendance && matchesBreakout;
       })
       .sort((a, b) => {
         if (sortBy === "registration_date-desc") {
@@ -213,7 +219,7 @@ export default function AdminRegistrationsPage() {
         }
         return 0;
       });
-  }, [attendees, searchTerm, filterType, filterBreakout, sortBy]);
+  }, [attendees, searchTerm, filterType, filterAttendance, filterBreakout, sortBy]);
 
   const totalPages = Math.ceil(filteredAttendees.length / itemsPerPage) || 1;
   const paginatedAttendees = useMemo(() => {
@@ -223,7 +229,7 @@ export default function AdminRegistrationsPage() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, filterType, filterBreakout, sortBy]);
+  }, [searchTerm, filterType, filterAttendance, filterBreakout, sortBy]);
 
   const handleCopy = (regNumber: string) => {
     navigator.clipboard.writeText(regNumber);
@@ -254,6 +260,7 @@ export default function AdminRegistrationsPage() {
       "Last Name",
       "Email",
       "Phone",
+      "Attendance Mode",
       "Category",
       "Breakout Session",
       "Payment Status",
@@ -268,6 +275,7 @@ export default function AdminRegistrationsPage() {
       att.lastName || "",
       att.email || "",
       att.phone || "N/A",
+      att.attendanceMode || "On-site",
       (att.registrationType || "student").toUpperCase(),
       att.breakoutSessionChoice || "N/A",
       (att.paymentStatus || "pending").toUpperCase(),
@@ -320,6 +328,7 @@ export default function AdminRegistrationsPage() {
         att.registrationNumber || "N/A",
         `${att.firstName || ""} ${att.lastName || ""}`.trim(),
         att.email || "N/A",
+        att.attendanceMode || "On-site",
         (att.registrationType || "student").toUpperCase(),
         att.breakoutSessionChoice || "N/A",
         (att.paymentStatus || "pending").toUpperCase(),
@@ -329,7 +338,7 @@ export default function AdminRegistrationsPage() {
       if (typeof doc.autoTable === "function") {
         doc.autoTable({
           startY: 34,
-          head: [["#", "Reg ID", "Full Name", "Email", "Category", "Breakout Masterclass", "Payment", "Date Registered"]],
+          head: [["#", "Reg ID", "Full Name", "Email", "Attendance", "Category", "Breakout Masterclass", "Payment", "Date Registered"]],
           body: tableData,
           headStyles: {
             fillColor: [37, 99, 235],
@@ -360,7 +369,12 @@ export default function AdminRegistrationsPage() {
     const student = attendees.filter((a) => (a.registrationType || "").toLowerCase() === "student").length;
     const professional = attendees.filter((a) => (a.registrationType || "").toLowerCase() === "professional").length;
     const paid = attendees.filter((a) => (a.paymentStatus || "").toLowerCase() === "paid").length;
-    return { total, student, professional, paid };
+    const onsite = attendees.filter((a) => {
+      const m = (a.attendanceMode || "On-site").toLowerCase();
+      return m === "on-site" || m === "onsite";
+    }).length;
+    const online = attendees.filter((a) => (a.attendanceMode || "").toLowerCase() === "online").length;
+    return { total, student, professional, paid, onsite, online };
   }, [attendees]);
 
   const getTypeBadge = (type?: string) => {
@@ -436,7 +450,9 @@ export default function AdminRegistrationsPage() {
               </div>
             </div>
             <div className="text-2xl font-extrabold text-slate-900 mt-2">{stats.total}</div>
-            <span className="text-xs text-slate-400 mt-0.5 block">Live system count</span>
+            <span className="text-xs text-slate-400 mt-0.5 block">
+              <strong className="text-blue-600">{stats.onsite}</strong> On-site • <strong className="text-purple-600">{stats.online}</strong> Online
+            </span>
           </div>
 
           <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
@@ -482,13 +498,13 @@ export default function AdminRegistrationsPage() {
         {/* Search & Filters */}
         <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-            <div className="md:col-span-5 relative">
+            <div className="md:col-span-4 relative">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                 <Search className="w-4 h-4" />
               </div>
               <input
                 type="text"
-                placeholder="Search name, email, reg number, phone..."
+                placeholder="Search name, email, reg number, phone, attendance..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white transition-colors"
@@ -515,7 +531,19 @@ export default function AdminRegistrationsPage() {
               </select>
             </div>
 
-            <div className="md:col-span-4">
+            <div className="md:col-span-2">
+              <select
+                value={filterAttendance}
+                onChange={(e) => setFilterAttendance(e.target.value)}
+                className="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white transition-colors cursor-pointer"
+              >
+                <option value="all">All Attendance</option>
+                <option value="On-site">On-site</option>
+                <option value="Online">Online</option>
+              </select>
+            </div>
+
+            <div className="md:col-span-3">
               <select
                 value={filterBreakout}
                 onChange={(e) => setFilterBreakout(e.target.value)}
@@ -586,6 +614,7 @@ export default function AdminRegistrationsPage() {
                     <th className="py-3.5 px-4">Reg ID</th>
                     <th className="py-3.5 px-4">Attendee</th>
                     <th className="py-3.5 px-4">Contact</th>
+                    <th className="py-3.5 px-4">Attendance</th>
                     <th className="py-3.5 px-4">Category</th>
                     <th className="py-3.5 px-4">Breakout Track</th>
                     <th className="py-3.5 px-4">Status</th>
@@ -631,6 +660,18 @@ export default function AdminRegistrationsPage() {
                         <td className="py-3.5 px-4">
                           <div className="text-slate-700 font-medium">{attendee.email}</div>
                           <div className="text-[11px] text-slate-400">{attendee.phone || "No phone"}</div>
+                        </td>
+
+                        <td className="py-3.5 px-4 whitespace-nowrap">
+                          <span
+                            className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide border ${
+                              (attendee.attendanceMode || "On-site").toLowerCase() === "online"
+                                ? "bg-purple-50 text-purple-700 border-purple-200"
+                                : "bg-blue-50 text-blue-700 border-blue-200"
+                            }`}
+                          >
+                            {attendee.attendanceMode || "On-site"}
+                          </span>
                         </td>
 
                         <td className="py-3.5 px-4">
@@ -812,13 +853,23 @@ export default function AdminRegistrationsPage() {
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-xl border border-slate-200/80 bg-white">
-                  <span className="text-slate-400 block font-semibold uppercase tracking-wider text-[10px]">
-                    Breakout Masterclass
-                  </span>
-                  <span className="font-semibold text-slate-900">
-                    {selectedAttendee.breakoutSessionChoice || "General Sessions"}
-                  </span>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-3.5 rounded-xl border border-slate-200/80 bg-white">
+                    <span className="text-slate-400 block font-semibold uppercase tracking-wider text-[10px]">
+                      Attendance Mode
+                    </span>
+                    <span className="font-semibold text-slate-900">
+                      {selectedAttendee.attendanceMode || "On-site"}
+                    </span>
+                  </div>
+                  <div className="p-3.5 rounded-xl border border-slate-200/80 bg-white">
+                    <span className="text-slate-400 block font-semibold uppercase tracking-wider text-[10px]">
+                      Breakout Masterclass
+                    </span>
+                    <span className="font-semibold text-slate-900 truncate">
+                      {selectedAttendee.breakoutSessionChoice || "General Sessions"}
+                    </span>
+                  </div>
                 </div>
 
                 {selectedAttendee.expectations && (
@@ -944,7 +995,26 @@ export default function AdminRegistrationsPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Attendance Mode
+                    </label>
+                    <select
+                      value={editingAttendee.attendanceMode || "On-site"}
+                      onChange={(e) =>
+                        setEditingAttendee({
+                          ...editingAttendee,
+                          attendanceMode: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none cursor-pointer"
+                    >
+                      <option value="On-site">On-site</option>
+                      <option value="Online">Online</option>
+                    </select>
+                  </div>
+
                   <div>
                     <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
                       Pass Category

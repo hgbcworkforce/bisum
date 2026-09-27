@@ -68,6 +68,7 @@ export interface Attendee {
   ageRange?: string;
   referralSource?: string;
   breakoutSessionChoice?: string;
+  attendanceMode?: string;
   expectations?: string;
   registrationType: string;
   createdAt?: string;

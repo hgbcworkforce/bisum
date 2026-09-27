@@ -5,6 +5,7 @@ interface EmailTemplateProps {
   lastName: string;
   registrationNumber: string;
   registrationType: string;
+  attendanceMode?: string;
   breakoutSessionChoice?: string;
   amountPaid?: number;
   email: string;
@@ -14,6 +15,7 @@ interface EmailTemplateProps {
 export function generateRegistrationEmailTemplate(data: EmailTemplateProps): string {
   const displayRegNumber = data.registrationNumber || '0001';
   const passTypeLabel = data.registrationType.toLowerCase() === 'student' ? 'Student Pass' : 'Professional Pass';
+  const attendanceModeLabel = data.attendanceMode || 'On-site';
   const formattedAmount = data.amountPaid
     ? new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(data.amountPaid)
     : data.registrationType.toLowerCase() === 'student'
@@ -221,6 +223,10 @@ export function generateRegistrationEmailTemplate(data: EmailTemplateProps): str
         <tr>
           <td class="label">Pass Category</td>
           <td class="value">${passTypeLabel}</td>
+        </tr>
+        <tr>
+          <td class="label">Attendance Mode</td>
+          <td class="value">${attendanceModeLabel}</td>
         </tr>
         ${
           data.breakoutSessionChoice
