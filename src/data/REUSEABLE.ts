@@ -53,6 +53,12 @@ export const HERO_CONTENT = {
   ctaText: "Register Now",
   ctaHref: "/register",
   imageAlt: "BISUM Conference 2026 Background",
+  slides: [
+    { src: "/slides/slide-1.webp", alt: "BISUM Conference 2026 - Slide 1" },
+    { src: "/slides/slide-2.webp", alt: "BISUM Conference 2026 - Slide 2" },
+    { src: "/slides/slide-3.webp", alt: "BISUM Conference 2026 - Slide 3" },
+    { src: "/slides/slide-4.webp", alt: "BISUM Conference 2026 - Slide 4" },
+  ],
 };
 
 export const ABOUT_CONTENT = {
