@@ -63,8 +63,8 @@ export const HERO_CONTENT = {
 
 export const ABOUT_CONTENT = {
   sectionId: "about",
-  title: "About BISUM Conference",
-  p1: "The BISUM Conference is a transformative event designed to empower students and young professionals with the knowledge, skills, and mindset needed to excel in business, investment, leadership, and personal development.",
+  title: "About BISUM",
+  p1: "The BISUM is a transformative event designed to empower students and young professionals with the knowledge, skills, and mindset needed to excel in business, investment, leadership, and personal development.",
   p2: "Through engaging sessions, expert insights, and practical discussions, BISUM inspires participants to think beyond academics, embrace innovation, and take actionable steps toward building successful and purpose-driven futures.",
   ctaText: "Meet Our Speakers",
   ctaHref: "/speakers",

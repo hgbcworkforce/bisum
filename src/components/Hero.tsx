@@ -128,7 +128,7 @@ export default function Hero() {
         </p>
 
         {/* Conference Date & Location Info Box */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 bg-slate-900/90 backdrop-blur-md border border-slate-800/80 shadow-2xl rounded-2xl px-6 py-4 mb-8 text-sm">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 bg-white/10 backdrop-blur-md border border-white/20 p-4 shadow-lg text-center rounded-2xl px-6 py-4 mb-8 text-sm">
           <div className="flex items-center space-x-2.5 text-slate-200">
             <Calendar className="w-4 h-4 text-blue-400 flex-shrink-0" />
             <span className="font-semibold">{HERO_CONTENT.dates}</span>
@@ -136,7 +136,7 @@ export default function Hero() {
           <div className="hidden sm:block text-slate-700">|</div>
           <div className="flex items-center space-x-2.5 text-slate-300 text-center sm:text-left">
             <MapPin className="w-4 h-4 text-blue-400 flex-shrink-0" />
-            <span>{HERO_CONTENT.location}</span>
+            <span className="font-semibold">{HERO_CONTENT.location}</span>
           </div>
         </div>
 
@@ -149,7 +149,7 @@ export default function Hero() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href={HERO_CONTENT.ctaHref}
-            className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-xl text-base font-bold shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 transition-all active:scale-[0.98]"
+            className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-xl text-base font-bold shadow-lg shadow-blue-600/30 transition-all active:scale-[0.98]"
           >
             <span>{HERO_CONTENT.ctaText}</span>
             <ArrowRight className="w-4 h-4" />
