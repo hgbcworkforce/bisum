@@ -1,8 +1,10 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { MapPin, Mail, Phone } from "lucide-react";
 import { FacebookIcon, InstagramIcon, YouTubeIcon } from "./SocialIcons";
 import { FOOTER_CONTENT } from "./REUSEABLE";
+import { NAVIGATION_CONTENT } from "./REUSEABLE";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -39,9 +41,15 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-12">
           {/* Brand Section */}
           <div className="lg:col-span-5">
-            <div className="mb-4">
-              <h3 className="text-2xl font-extrabold text-blue-400 tracking-tight">{FOOTER_CONTENT.brandName}</h3>
-              <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">{FOOTER_CONTENT.brandSubtitle}</p>
+            <div className="mb-2">
+              <Image
+                              src="/BISUM logo white.webp"
+                              alt={NAVIGATION_CONTENT.logoAlt}
+                              width={140}
+                              height={42}
+                              priority
+                              className="h-24 w-auto object-contain"
+                            />
             </div>
             <p className="text-slate-400 mb-6 leading-relaxed text-sm max-w-md">
               {FOOTER_CONTENT.description}

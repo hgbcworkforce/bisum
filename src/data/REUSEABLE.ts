@@ -4,12 +4,12 @@
  */
 
 export const SITE_CONFIG = {
-  name: "BISUM Conference 2025",
-  shortName: "BISUM 2025",
-  title: "BISUM Conference 2025 | Annual Business, Investment & Leadership Summit",
-  description: "Empowering students, young professionals, and creatives in business, investment, technology, fashion, agribusiness, and leadership. November 13–15, 2025 at Higher Ground Baptist Church, Ogbomoso, Nigeria.",
+  name: "BISUM Conference 2026",
+  shortName: "BISUM 2026",
+  title: "BISUM Conference 2026 | Annual Business, Investment & Leadership Summit",
+  description: "Empowering students, young professionals, and creatives in business, investment, technology, fashion, agribusiness, and leadership. November 13–15, 2026 at Higher Ground Baptist Church, Ogbomoso, Nigeria.",
   keywords: [
-    "BISUM Conference 2025",
+    "BISUM Conference 2026",
     "BISUM Ogbomoso",
     "Higher Ground Baptist Church",
     "Business and Investment Summit Nigeria",
@@ -24,8 +24,8 @@ export const SITE_CONFIG = {
   ],
   url: "https://bisum.hgbcinfluencers.org",
   ogImage: "/hero.webp",
-  conferenceDate: "November 13, 2025 17:00:00",
-  dateRange: "November 13 - 15, 2025",
+  conferenceDate: "November 13, 2026 17:00:00",
+  dateRange: "November 13 - 15, 2026",
   location: "Higher Ground Baptist Church, Ogbomoso, Nigeria.",
   shortLocation: "HGBC Auditorium, Ogbomoso",
   logoAlt: "BISUM Logo",
@@ -45,14 +45,14 @@ export const NAVIGATION_CONTENT = {
 
 export const HERO_CONTENT = {
   titlePrefix: "BISUM Conference",
-  highlightYear: "2025",
+  highlightYear: "2026",
   description: "Join us to experience an atmosphere of learning, connection, and transformation. Gain practical insights, meet inspiring leaders, and take bold steps toward your future.",
-  dates: "November 13 - 15, 2025",
+  dates: "November 13 - 15, 2026",
   location: "Higher Ground Baptist Church, Ogbomoso, Nigeria.",
-  targetDate: "November 13, 2025 17:00:00",
+  targetDate: "November 13, 2026 17:00:00",
   ctaText: "Register Now",
   ctaHref: "/register",
-  imageAlt: "BISUM Conference 2025 Background",
+  imageAlt: "BISUM Conference 2026 Background",
 };
 
 export const ABOUT_CONTENT = {
@@ -94,7 +94,7 @@ export const MERCHANDISE_SECTION_CONTENT = {
 
 export const SPEAKERS_PAGE_CONTENT = {
   bannerTitle: "Our Speakers",
-  bannerSubtitle: "Meet the industry leaders and experts who will be sharing their insights at BISUM Conference 2025",
+  bannerSubtitle: "Meet the industry leaders and experts who will be sharing their insights at BISUM Conference 2026",
   badge1: "10+ Inspiring Leaders",
   badge2: "Visionary Entrepreneurs",
   searchPlaceholder: "Search speakers, topics, or companies...",
@@ -107,16 +107,16 @@ export const SPEAKERS_PAGE_CONTENT = {
   emptyStateButtonText: "Clear Filters",
   ctaTitle: "Don't Miss These Amazing Speakers",
   ctaSubtitle: "Register now to secure your spot and gain practical insights from leaders across business, ministry, and technology.",
-  ctaButtonText: "Register for BISUM 2025",
+  ctaButtonText: "Register for BISUM 2026",
   ctaButtonHref: "/register",
 };
 
 export const SCHEDULE_PAGE_CONTENT = {
   bannerTitle: "Conference Schedule",
   bannerSubtitle: "Explore the comprehensive 3-day program featuring keynotes, success stories, and breakout masterclasses",
-  badge1: "Nov 13 - 15, 2025",
+  badge1: "Nov 13 - 15, 2026",
   badge2: "HGBC Auditorium, Ogbomoso",
-  ctaTitle: "Ready to Attend BISUM 2025?",
+  ctaTitle: "Ready to Attend BISUM 2026?",
   ctaSubtitle: "Secure your registration today to participate in all keynotes, breakout sessions, and networking opportunities.",
   ctaButtonText: "Register Now",
   ctaButtonHref: "/register",
@@ -126,7 +126,7 @@ export const MERCHANDISE_PAGE_CONTENT = {
   bannerTitle: "Official Merchandise",
   bannerSubtitle: "Grab your exclusive BISUM Conference merchandise and show your support!",
   badge1: "Premium Quality Apparel",
-  badge2: "Limited Edition 2025",
+  badge2: "Limited Edition 2026",
 };
 
 export const MERCHANDISE_DETAILS_CONTENT = {
@@ -145,13 +145,13 @@ export const MERCHANDISE_DETAILS_CONTENT = {
 };
 
 export const REGISTER_PAGE_CONTENT = {
-  bannerTitle: "Register for BISUM 2025",
-  bannerSubtitle: "November 13 - 15, 2025 | Higher Ground Baptist Church, Ogbomoso",
+  bannerTitle: "Register for BISUM 2026",
+  bannerSubtitle: "November 13 - 15, 2026 | Higher Ground Baptist Church, Ogbomoso",
   formTitle: "Personal & Conference Details",
   submitButtonText: "Complete Registration",
   submittingButtonText: "Processing Registration...",
   successTitle: "Registration Successful!",
-  successSubtitle: "Welcome to BISUM Conference 2025. We look forward to having you!",
+  successSubtitle: "Welcome to BISUM Conference 2026. We look forward to having you!",
   registrationNumberLabel: "Your Registration Number",
   emailNoticePrefix: "A confirmation email has been dispatched to",
   defaultErrorMessage: "Registration failed. Please try again.",
@@ -223,7 +223,7 @@ export const REGISTER_PAGE_CONTENT = {
     lastName: "e.g. Doe",
     email: "john.doe@example.com",
     phone: "+234 800 000 0000",
-    expectations: "What do you hope to gain from BISUM 2025?",
+    expectations: "What do you hope to gain from BISUM 2026?",
   },
 
   validationMessages: {
@@ -241,7 +241,7 @@ export const REGISTER_PAGE_CONTENT = {
 
 export const FOOTER_CONTENT = {
   brandName: "BISUM",
-  brandSubtitle: "Conference 2025",
+  brandSubtitle: "Conference 2026",
   description: "Join us to experience an atmosphere of learning, connection, and transformation. Gain practical insights, meet inspiring leaders, and take bold steps toward your future.",
   quickLinksHeading: "Quick Links",
   contactInfoHeading: "Contact Info",

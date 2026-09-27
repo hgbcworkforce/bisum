@@ -40,7 +40,7 @@ export default function Navigation({ onNavigate }: NavigationProps) {
                 width={140}
                 height={42}
                 priority
-                className="h-10 w-auto object-contain"
+                className="h-16 w-auto object-contain"
               />
             </Link>
           </div>

@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   ],
   creator: "Higher Ground Baptist Church (HGBC)",
   publisher: "BISUM Conference",
-  applicationName: "BISUM Conference 2025",
+  applicationName: "BISUM Conference | Business and Investment Summit ",
   category: "Conference / Business, Investment & Leadership",
   alternates: {
     canonical: "/",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
         url: "/hero.webp",
         width: 1200,
         height: 630,
-        alt: "BISUM Conference 2025 - Annual Business, Investment & Leadership Summit",
+        alt: "BISUM Conference - Annual Business, Investment & Leadership Summit",
       },
       {
         url: "/BISUM logo.webp",
@@ -78,10 +78,10 @@ export const metadata: Metadata = {
 const jsonLdEvent = {
   "@context": "https://schema.org",
   "@type": "Event",
-  name: "BISUM Conference 2025",
+  name: "BISUM Conference",
   description: SITE_CONFIG.description,
-  startDate: "2025-11-13T17:00:00+01:00",
-  endDate: "2025-11-15T21:00:00+01:00",
+  startDate: "2026-12-13T17:00:00+01:00",
+  endDate: "2026-15-15T21:00:00+01:00",
   eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
   eventStatus: "https://schema.org/EventScheduled",
   location: {
@@ -104,7 +104,7 @@ const jsonLdEvent = {
       priceCurrency: "NGN",
       availability: "https://schema.org/InStock",
       url: "https://bisum.hgbcinfluencers.org/register",
-      validFrom: "2025-01-01T00:00:00+01:00",
+      validFrom: "2026-01-01T00:00:00+01:00",
     },
     {
       "@type": "Offer",
@@ -113,7 +113,7 @@ const jsonLdEvent = {
       priceCurrency: "NGN",
       availability: "https://schema.org/InStock",
       url: "https://bisum.hgbcinfluencers.org/register",
-      validFrom: "2025-01-01T00:00:00+01:00",
+      validFrom: "2026-01-01T00:00:00+01:00",
     },
   ],
   organizer: {
