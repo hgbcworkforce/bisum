@@ -356,6 +356,10 @@ export default function MerchandiseDetailsClient({ id }: MerchandiseDetailsClien
                   </>
                 )}
               </button>
+              <div className="mt-3 flex items-center justify-center space-x-1.5 text-[11px] text-slate-500 text-center">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Secured by Paystack • Supports <strong>OPay</strong>, <strong>Cards</strong>, <strong>Bank Transfer</strong> & <strong>USSD</strong></span>
+              </div>
             </form>
           </div>
         </div>

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Navigation, Footer } from "../../components";
 import { registrationAPI, handleApiError } from "../../services/supabaseService";
-import { ArrowRight, CheckCircle } from "lucide-react";
+import { ArrowRight, CheckCircle, ShieldCheck } from "lucide-react";
 import { REGISTER_PAGE_CONTENT } from "../../data/REUSEABLE";
 
 export default function RegistrationPage() {
@@ -428,6 +428,10 @@ export default function RegistrationPage() {
                     </>
                   )}
                 </button>
+                <div className="mt-3 flex items-center justify-center space-x-1.5 text-[11px] text-slate-500 text-center">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>Secured by Paystack • Supports <strong>OPay</strong>, <strong>Cards</strong>, <strong>Bank Transfer</strong> & <strong>USSD</strong></span>
+                </div>
               </div>
             </form>
           </div>

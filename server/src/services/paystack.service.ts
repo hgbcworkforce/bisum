@@ -14,6 +14,7 @@ export const paystackService = {
     amount: number; // in NGN (will be converted to kobo)
     reference: string;
     callbackUrl?: string;
+    channels?: string[];
     metadata?: Record<string, any>;
   }): Promise<PaystackInitResponse> {
     try {
@@ -25,6 +26,15 @@ export const paystackService = {
           reference: params.reference,
           callback_url: params.callbackUrl || `${env.FRONTEND_URL}/payment/callback`,
           metadata: params.metadata || {},
+          channels: params.channels || [
+            'card',
+            'bank',
+            'ussd',
+            'qr',
+            'mobile_money',
+            'bank_transfer',
+            'eft',
+          ],
         },
         {
           headers: {
