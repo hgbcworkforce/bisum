@@ -162,6 +162,11 @@ export const REGISTER_PAGE_CONTENT = {
   emailNoticePrefix: "A confirmation email has been dispatched to",
   defaultErrorMessage: "Registration failed. Please try again.",
 
+  // Flat registration fee
+  registrationFee: 2000,
+  passName: "Conference Admission Pass",
+
+  /*
   registrationTypes: [
     {
       value: "student",
@@ -176,6 +181,7 @@ export const REGISTER_PAGE_CONTENT = {
       description: "Full conference admission for working professionals (₦2,000).",
     },
   ],
+  */
 
   genderOptions: [
     { value: "", label: "Select Gender" },

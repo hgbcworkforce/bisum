@@ -19,7 +19,7 @@ export default function RegistrationPage() {
     referralSource: "",
     breakoutSessionChoice: "",
     expectations: "",
-    registrationType: "student",
+    registrationType: "standard",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -28,9 +28,13 @@ export default function RegistrationPage() {
   const [registrationNumber, setRegistrationNumber] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
+  /*
+  // Student and Professional tier selection (commented out in favor of flat fee)
   const registrationTypes = REGISTER_PAGE_CONTENT.registrationTypes;
   const selectedTypeObj = registrationTypes.find((t) => t.value === formData.registrationType) || registrationTypes[0];
   const currentPrice = selectedTypeObj.price;
+  */
+  const currentPrice = (REGISTER_PAGE_CONTENT as any).registrationFee || 2000;
   const paystackFee = currentPrice > 0 ? Math.round(currentPrice * 0.015 + 100) : 0;
   const chargedPrice = currentPrice + paystackFee;
 
@@ -154,13 +158,14 @@ export default function RegistrationPage() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Category Selector */}
+              {/* Category Selector (Commented out: Flat fee of ₦2,000 applies to everyone) */}
+              {/*
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2.5">
                   {REGISTER_PAGE_CONTENT.labels.registrationType || "Select Registration Category *"}
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {registrationTypes.map((type) => {
+                  {registrationTypes?.map((type: any) => {
                     const isSelected = formData.registrationType === type.value;
                     return (
                       <div
@@ -203,6 +208,7 @@ export default function RegistrationPage() {
                   })}
                 </div>
               </div>
+              */}
 
               {/* Name fields */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -397,7 +403,7 @@ export default function RegistrationPage() {
               {/* Pricing & Fee Summary */}
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs">
                 <div className="flex justify-between text-slate-600">
-                  <span>{selectedTypeObj.label} Admission Pass</span>
+                  <span>{(REGISTER_PAGE_CONTENT as any).passName || "Conference Admission Pass"}</span>
                   <span className="font-semibold text-slate-900 font-mono">₦{currentPrice.toLocaleString()}</span>
                 </div>
                 {paystackFee > 0 && (
