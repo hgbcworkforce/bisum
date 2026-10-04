@@ -16,10 +16,13 @@ export const registrationSchema = z.object({
   breakoutSessionChoice: z.string().optional(),
   attendanceMode: z.string().optional(),
   expectations: z.string().optional(),
+  /*
   registrationType: z.enum(['student', 'professional'], {
     errorMap: () => ({ message: 'Registration type must be either Student or Professional' }),
   }).default('student'),
-  amount: z.number().positive('Registration requires a valid paid amount (₦1,000 for Student, ₦2,000 for Professional)'),
+  */
+  registrationType: z.string().default('standard'),
+  amount: z.number().positive('Registration requires a valid paid amount (₦2,000)'),
   callbackUrl: z.string().url().optional(),
 });
 

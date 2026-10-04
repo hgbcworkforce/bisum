@@ -14,12 +14,20 @@ interface EmailTemplateProps {
 
 export function generateRegistrationEmailTemplate(data: EmailTemplateProps): string {
   const displayRegNumber = data.registrationNumber || '0001';
-  const passTypeLabel = data.registrationType.toLowerCase() === 'student' ? 'Student Pass' : 'Professional Pass';
+  /*
+  const passTypeLabel = data.registrationType?.toLowerCase() === 'student' ? 'Student Pass' : 'Professional Pass';
+  */
+  const passTypeLabel = 'Conference Pass';
   const attendanceModeLabel = data.attendanceMode || 'On-site';
+  /*
   const formattedAmount = data.amountPaid
     ? new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(data.amountPaid)
     : data.registrationType.toLowerCase() === 'student'
     ? '₦1,000'
+    : '₦2,000';
+  */
+  const formattedAmount = data.amountPaid
+    ? new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(data.amountPaid)
     : '₦2,000';
 
   return `
