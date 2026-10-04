@@ -124,8 +124,13 @@ function PaymentCallbackContent() {
                       <div className="text-slate-500 pt-1 border-t border-slate-200">
                         Attendee: <span className="font-semibold text-slate-800">{resultData.first_name || resultData.firstName} {resultData.last_name || resultData.lastName}</span>
                       </div>
+                      {/*
                       <div className="text-slate-500">
                         Category: <span className="font-semibold text-slate-800 capitalize">{(resultData.registration_type || resultData.registrationType || "student")} Pass</span>
+                      </div>
+                      */}
+                      <div className="text-slate-500">
+                        Pass Type: <span className="font-semibold text-slate-800 capitalize">{(resultData.registration_type || resultData.registrationType || "Conference")} Pass</span>
                       </div>
                       {(resultData.attendance_mode || resultData.attendanceMode) && (
                         <div className="text-slate-500">

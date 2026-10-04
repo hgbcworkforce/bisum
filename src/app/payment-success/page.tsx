@@ -36,7 +36,8 @@ function PaymentSuccessContent() {
         firstName: searchParams.get("firstName") || "Distinguished",
         lastName: searchParams.get("lastName") || "Attendee",
         email: searchParams.get("email") || "attendee@bisum.org",
-        registrationType: searchParams.get("tier") || "Student Pass",
+        // registrationType: searchParams.get("tier") || "Student Pass",
+        registrationType: searchParams.get("tier") || "Conference Pass",
         breakoutSessionChoice: searchParams.get("track") || "General",
       });
     } else {
@@ -45,7 +46,8 @@ function PaymentSuccessContent() {
         firstName: "Distinguished",
         lastName: "Attendee",
         email: "attendee@bisum.org",
-        registrationType: "Student Pass",
+        // registrationType: "Student Pass",
+        registrationType: "Conference Pass",
         breakoutSessionChoice: "General",
       });
     }
@@ -116,8 +118,13 @@ function PaymentSuccessContent() {
                 Attendee: <span className="font-semibold text-slate-800">{data.firstName} {data.lastName}</span>
               </div>
 
+              {/*
               <div className="text-slate-500">
                 Category: <span className="font-semibold text-slate-800 capitalize">{data.registrationType || "Student"} Pass</span>
+              </div>
+              */}
+              <div className="text-slate-500">
+                Pass Type: <span className="font-semibold text-slate-800">{data.registrationType?.includes("Pass") ? data.registrationType : `${data.registrationType || "Conference"} Pass`}</span>
               </div>
 
               {(data.attendanceMode || data.attendance_mode) && (

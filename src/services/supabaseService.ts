@@ -127,7 +127,8 @@ export const registrationAPI = {
         last_name: formData.lastName,
         email: formData.email,
         phone: formData.phone || '',
-        registration_type: formData.registrationType || 'student',
+        // registration_type: formData.registrationType || 'student',
+        registration_type: formData.registrationType || 'standard',
         breakout_session_choice: formData.breakoutSessionChoice || 'General',
         attendance_mode: formData.attendanceMode || 'On-site',
         gender: formData.gender,
@@ -136,7 +137,8 @@ export const registrationAPI = {
         expectations: formData.expectations,
         registration_number: regNumber,
         payment_status: formData.paymentStatus || 'paid',
-        amount_paid: formData.amountPaid || 1000,
+        // amount_paid: formData.amountPaid || 1000,
+        amount_paid: formData.amountPaid || 2000,
       };
 
       const { data, error } = await supabase

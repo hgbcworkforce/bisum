@@ -276,10 +276,10 @@ export default function AdminRegistrationsPage() {
       att.email || "",
       att.phone || "N/A",
       att.attendanceMode || "On-site",
-      (att.registrationType || "student").toUpperCase(),
+      (att.registrationType || "standard").toUpperCase(),
       att.breakoutSessionChoice || "N/A",
       (att.paymentStatus || "pending").toUpperCase(),
-      att.amountPaid || (att.registrationType === "professional" ? 2000 : 1000),
+      att.amountPaid || (att.registrationType === "student" ? 1000 : 2000),
       att.createdAt ? new Date(att.createdAt).toISOString() : "N/A",
     ]);
 
@@ -329,7 +329,7 @@ export default function AdminRegistrationsPage() {
         `${att.firstName || ""} ${att.lastName || ""}`.trim(),
         att.email || "N/A",
         att.attendanceMode || "On-site",
-        (att.registrationType || "student").toUpperCase(),
+        (att.registrationType || "standard").toUpperCase(),
         att.breakoutSessionChoice || "N/A",
         (att.paymentStatus || "pending").toUpperCase(),
         formatDate(att.createdAt),
@@ -680,7 +680,9 @@ export default function AdminRegistrationsPage() {
                               attendee.registrationType
                             )}`}
                           >
-                            {attendee.registrationType || "Student"} Pass
+                            {attendee.registrationType && !["student", "professional"].includes(attendee.registrationType.toLowerCase())
+                              ? "Conference Pass"
+                              : `${attendee.registrationType} Pass`}
                           </span>
                         </td>
 
@@ -696,7 +698,7 @@ export default function AdminRegistrationsPage() {
                                 : "bg-amber-50 text-amber-700 border border-amber-200"
                             }`}
                           >
-                            {isPaid ? "Paid (₦" + (attendee.amountPaid || (attendee.registrationType === "professional" ? 2000 : 1000)).toLocaleString() + ")" : "Pending"}
+                            {isPaid ? "Paid (₦" + (attendee.amountPaid || (attendee.registrationType === "student" ? 1000 : 2000)).toLocaleString() + ")" : "Pending"}
                           </span>
                         </td>
 
