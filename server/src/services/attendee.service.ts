@@ -370,7 +370,8 @@ export const attendeeService = {
     // Registration types breakdown
     const typesMap: Record<string, number> = {};
     attendees.forEach((a) => {
-      const type = a.registration_type || 'student';
+      // const type = a.registration_type || 'student';
+      const type = a.registration_type || 'standard';
       typesMap[type] = (typesMap[type] || 0) + 1;
     });
 

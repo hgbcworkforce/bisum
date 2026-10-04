@@ -30,7 +30,8 @@ CREATE TABLE IF NOT EXISTS public.registrations (
     breakout_session_choice VARCHAR(150),
     attendance_mode VARCHAR(50) DEFAULT 'On-site', -- 'On-site' or 'Online'
     expectations TEXT,
-    registration_type VARCHAR(50) DEFAULT 'student', -- 'student' (1000 NGN) or 'professional' (2000 NGN)
+    -- registration_type VARCHAR(50) DEFAULT 'student', -- 'student' (1000 NGN) or 'professional' (2000 NGN)
+    registration_type VARCHAR(50) DEFAULT 'standard', -- Flat 2000 NGN Conference Pass
     amount_paid NUMERIC(12, 2) DEFAULT 0.00,
     payment_status VARCHAR(30) DEFAULT 'pending', -- 'pending', 'paid', 'failed'
     payment_reference VARCHAR(120),
@@ -62,7 +63,16 @@ BEGIN
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='registrations' AND column_name='email_sent') THEN
         ALTER TABLE public.registrations ADD COLUMN email_sent BOOLEAN DEFAULT false;
     END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='registrations' AND column_name='amount_paid') THEN
+        ALTER TABLE public.registrations ADD COLUMN amount_paid NUMERIC(12, 2) DEFAULT 0.00;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='registrations' AND column_name='payment_status') THEN
+        ALTER TABLE public.registrations ADD COLUMN payment_status VARCHAR(30) DEFAULT 'pending';
+    END IF;
 END $$;
+
+-- Reload Supabase PostgREST schema cache
+NOTIFY pgrst, 'reload schema';
 
 -- 2. Create Merchandise Orders Table
 CREATE TABLE IF NOT EXISTS public.merchandise_orders (
