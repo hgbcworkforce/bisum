@@ -6,10 +6,13 @@
 export const SITE_CONFIG = {
   name: "BISUM Conference 2026",
   shortName: "BISUM 2026",
-  title: "BISUM Conference 2026 | Annual Business, Investment & Leadership Summit",
-  description: "Empowering students, young professionals, and creatives in business, investment, technology, fashion, agribusiness, and leadership. November 13–15, 2026 at Higher Ground Baptist Church, Ogbomoso, Nigeria.",
+  theme: "BOAZ: Kingdom, Wealth, Honour",
+  title: "BISUM Conference 2026 | BOAZ: Kingdom, Wealth, Honour",
+  description: "Empowering students, young professionals, and creatives in business, investment, technology, fashion, agribusiness, and leadership under the theme BOAZ: Kingdom, Wealth, Honour. November 13–15, 2026 at Higher Ground Baptist Church, Ogbomoso, Nigeria.",
   keywords: [
     "BISUM Conference 2026",
+    "BOAZ",
+    "Kingdom Wealth Honour",
     "BISUM Ogbomoso",
     "Higher Ground Baptist Church",
     "Business and Investment Summit Nigeria",
@@ -47,7 +50,11 @@ export const NAVIGATION_CONTENT = {
 export const HERO_CONTENT = {
   titlePrefix: "BISUM Conference",
   highlightYear: "2026",
-  description: "Join us to experience an atmosphere of learning, connection, and transformation. Gain practical insights, meet inspiring leaders, and take bold steps toward your future.",
+  themeLabel: "Conference Theme",
+  theme: "BOAZ",
+  themePillars: ["Kingdom", "Wealth", "Honour"],
+  themeSubtitle: "Kingdom, Wealth, Honour",
+  description: "Join us for BISUM 2026 under the theme BOAZ: Kingdom, Wealth, Honour. Experience an atmosphere of learning, connection, and spiritual impartation to excel in business, investment, and leadership.",
   dates: "November 13 - 15, 2026",
   location: "Higher Ground Baptist Church, Ogbomoso, Nigeria.",
   targetDate: "November 13, 2026 17:00:00",

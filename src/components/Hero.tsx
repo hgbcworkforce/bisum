@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import CountdownTimer from "./CountdownTimer";
 import { HERO_CONTENT } from "./REUSEABLE";
-import { Calendar, MapPin, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar, MapPin, ArrowRight, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 
 export default function Hero() {
   const conferenceDate = new Date(HERO_CONTENT.targetDate).getTime();
@@ -115,12 +115,34 @@ export default function Hero() {
       <div className="absolute inset-0 bg-radial from-transparent via-slate-950/20 to-slate-950/30 z-[2]" />
 
       {/* Main Content */}
-      <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
-        {/* Main Heading */}
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight tracking-tight text-white drop-shadow-sm">
-          {HERO_CONTENT.titlePrefix}{" "}
-          <span className="text-blue-500">{HERO_CONTENT.highlightYear}</span>
-        </h1>
+      <div className="relative z-10 flex flex-col items-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
+        {/* Conference Eyebrow Badge */}
+        <div className="inline-flex items-center space-x-2 bg-blue-300/10 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-full text-blue-500 text-xs sm:text-sm font-semibold tracking-wider uppercase mb-5 shadow-sm">
+          <span>{HERO_CONTENT.titlePrefix} {HERO_CONTENT.highlightYear}</span>
+        </div>
+
+        {/* Theme Presentation */}
+        <div className="mb-6 max-w-4xl">
+
+          {/* Theme Title: BOAZ */}
+          <h1 className="text-6xl sm:text-8xl lg:text-9xl font-black tracking-tight text-white uppercase drop-shadow-xl leading-none my-1">
+            {HERO_CONTENT.theme || "BOAZ"}
+          </h1>
+
+          {/* Pillars: Kingdom • Wealth • Honour */}
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mt-4 text-sm sm:text-lg md:text-xl font-bold tracking-wide">
+            {(HERO_CONTENT.themePillars || ["Kingdom", "Wealth", "Honour"]).map((pillar, idx, arr) => (
+              <React.Fragment key={pillar}>
+                <span className="px-3.5 py-1 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md text-white drop-shadow-sm font-semibold">
+                  {pillar}
+                </span>
+                {idx < arr.length - 1 && (
+                  <span className="text-amber-400 font-extrabold text-base">•</span>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
 
         {/* Description */}
         <p className="text-base sm:text-lg lg:text-xl text-slate-200 mb-8 max-w-3xl mx-auto font-normal leading-relaxed drop-shadow-sm">
