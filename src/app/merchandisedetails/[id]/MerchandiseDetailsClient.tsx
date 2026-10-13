@@ -116,6 +116,23 @@ export default function MerchandiseDetailsClient({ id }: MerchandiseDetailsClien
           <span>{MERCHANDISE_DETAILS_CONTENT.backLinkText}</span>
         </Link>
 
+        {/* Coming Soon Notice */}
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 sm:p-5 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center space-x-3">
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping flex-shrink-0" />
+            <div>
+              <p className="font-bold text-amber-900 text-sm">Merchandise Details Coming Soon...</p>
+              <p className="text-amber-700 text-xs mt-0.5">Official 2026 gear designs, colors, and order processing are currently being finalized.</p>
+            </div>
+          </div>
+          <Link
+            href="/register"
+            className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 px-4 rounded-lg transition-colors flex-shrink-0"
+          >
+            Register for Summit
+          </Link>
+        </div>
+
         <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 p-6 sm:p-10 lg:p-12">
             {/* Product Image Column */}
@@ -230,11 +247,11 @@ export default function MerchandiseDetailsClient({ id }: MerchandiseDetailsClien
               <div>
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(true)}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2 text-base"
+                  disabled
+                  className="w-full bg-slate-200 text-slate-500 font-bold py-4 px-6 rounded-xl cursor-not-allowed flex items-center justify-center space-x-2 text-base transition-all"
                 >
-                  <ShoppingCart className="w-5 h-5" />
-                  <span>Pre-Order & Checkout ({formatCurrency(totalPrice)})</span>
+                  <ShoppingCart className="w-5 h-5 text-slate-400" />
+                  <span>Pre-Orders Coming Soon...</span>
                 </button>
                 <div className="flex items-center justify-center space-x-6 text-xs text-slate-500 pt-3">
                   <span className="flex items-center"><ShieldCheck className="w-4 h-4 mr-1 text-emerald-600" /> {MERCHANDISE_DETAILS_CONTENT.trustBadge1}</span>

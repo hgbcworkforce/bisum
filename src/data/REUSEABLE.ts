@@ -36,9 +36,10 @@ export const NAVIGATION_CONTENT = {
   navItems: [
     { id: "home", label: "Home", href: "/", isRoute: true },
     { id: "about", label: "About", href: "/#about", isSection: true },
-    { id: "speakers", label: "Speakers", href: "/speakers", isRoute: true },
-    { id: "schedule", label: "Schedule", href: "/schedule", isRoute: true },
-    { id: "merchandise", label: "Merchandise", href: "/merchandise", isRoute: true },
+    // Temporarily commented out until conference details are finalized:
+    // { id: "speakers", label: "Speakers", href: "/speakers", isRoute: true },
+    // { id: "schedule", label: "Schedule", href: "/schedule", isRoute: true },
+    // { id: "merchandise", label: "Merchandise", href: "/merchandise", isRoute: true },
     { id: "register", label: "Register", href: "/register", isRoute: true, isCTA: true },
   ],
 };

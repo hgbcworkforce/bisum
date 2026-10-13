@@ -9,11 +9,11 @@ import { NAVIGATION_CONTENT } from "./REUSEABLE";
 interface NavigationProps {
   onNavigate?: (sectionId: string) => void;
 }
-
 export default function Navigation({ onNavigate }: NavigationProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
+  // Speaker, Schedule, and Merchandise nav items are temporarily commented out in NAVIGATION_CONTENT
   const navItems = NAVIGATION_CONTENT.navItems;
 
   const handleSectionClick = (e: React.MouseEvent, sectionId: string) => {
