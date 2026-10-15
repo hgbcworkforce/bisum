@@ -59,34 +59,37 @@ export const speakersData: Speaker[] = [
     quote: "Integrity and excellence in professional service provide the strongest foundation for entrepreneurial impact."
   },
   {
-    id: 3,
-    name: "Taiwo Olaonipekun",
-    title: "Founder & CEO, Farmfixers",
-    company: "Farmfixers",
-    bio: "Taiwo Olaonipekun is an agritech innovator, commercial farmer, and the Founder and CEO of Farmfixers. With deep domain knowledge in sustainable crop production, farm mechanization, and rural farmer inclusion, Taiwo has built Farmfixers into a fast-growing agribusiness that connects farmland investors with experienced farm managers to maximize yields and financial returns.",
-    image: "/speakers/olanipekun.webp",
-    expertise: [
-      "Agri-Tech Innovation",
-      "Commercial Farmland Management",
-      "Agricultural Value Chain",
-      "Rural Development"
-    ],
-    category: "keynote",
-    experience: "10+ years in hands-on commercial farming, agribusiness incubation, and agri-technology.",
-    achievements: [
-      "Founder of Farmfixers, a pioneering agri-tech company",
-      "Successfully managed 400+ acres of farmland",
-      "Created platforms for local farmers to showcase innovative practices",
-      "Empowered rural farmers and youth with modern agricultural training",
-      "Delivered consistent returns to investors while improving community livelihoods"
-    ],
-    social: {
-      linkedin: "https://www.linkedin.com/in/taiwo-olaonipekun-33b455120",
-      twitter: "https://x.com/taiwothefarmer",
-      instagram: "https://www.instagram.com/ola.onipekuntaiwo/",
-      facebook: "https://web.facebook.com/taiwo.olaonipekun.94/"
-    }
-  }
+  id: 3,
+  name: "Pastor Mrs. Victory Tolulope Ayangoke",
+  title: "Growth Strategist, Business Development Manager, Mentor",
+  company: "GlobalX",
+  bio: "Pastor Mrs. Victory Tolulope Ayangoke is a Growth Strategist, Business Development Manager, and Mentor passionate about driving growth across businesses, creators, and women. She currently serves as Business Development Manager at GlobalX, where she focuses on building strategic partnerships and unlocking market opportunities that drive business expansion. With a strong background in business development and strategy, she has supported the growth of brands such as Petrong Software Solutions, Niyisuk, and Doxaroyale, helping them translate ideas into structured, sustainable growth through product development, marketing, and execution. As a creative strategist and video editor, she also helps content creators build visibility and grow impactful platforms through intentional content. Beyond the corporate and creative space, she is deeply committed to purpose and personal development. She mentors young women through her Total Woman Mentorship Program, emphasizing that true growth is not just about doing more, but becoming more. She is married to Samson Oluwaseun Ayangoke, the Lead Pastor at Higher Ground Baptist Church, Ogbomosho, Oyo State, and they are blessed with their children, Judah Ireti-Ogo and Anna Ireti-Ayo Ayangoke.",
+  image: "/speakers/victory.jpeg",
+  expertise: [
+    "Business Development",
+    "Growth Strategy",
+    "Brand Strategy",
+    "Content Creation",
+    "Mentorship",
+    "Women Development"
+  ],
+  category: ["breakout"],
+  experience: "Extensive experience in business development, strategic growth, and mentorship across corporate and creative sectors",
+  achievements: [
+    "Business Development Manager at GlobalX",
+    "Contributed to the growth of brands like Petrong Software Solutions, Niyisuk, and Doxaroyale",
+    "Founder of Total Woman Mentorship Program",
+    "Mentor to young women in personal and professional development",
+    "Creative strategist supporting content creators and digital platforms"
+  ],
+  social: {
+    linkedin: "",
+    twitter: "",
+    instagram: "",
+    facebook: ""
+  },
+  quote: "True growth is not just about doing more, but becoming more."
+},
 ];
 
 export const speakerCategories = [

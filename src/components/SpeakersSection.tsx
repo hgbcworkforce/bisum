@@ -3,18 +3,23 @@
 import React, { useState } from "react";
 import Link from "next/link";
 // SpeakerCard, SpeakerModal, and speakersData commented out until speakers are confirmed
-// import SpeakerCard from "./SpeakerCard";
-// import SpeakerModal from "./SpeakerModal";
-// import { speakersData } from "../data/speakersData";
-// import { Speaker } from "../types";
+import SpeakerCard from "./SpeakerCard";
+import SpeakerModal from "./SpeakerModal";
+import { speakersData } from "../data/speakersData";
+import { Speaker } from "../types";
 import { SPEAKERS_SECTION_CONTENT } from "./REUSEABLE";
 import { Users, Sparkles, ArrowRight } from "lucide-react";
 
 export default function SpeakersSection() {
   // State preserved for when speaker data is confirmed:
-  // const [selectedSpeaker, setSelectedSpeaker] = useState<Speaker | null>(null);
-  // const [isModalOpen, setIsModalOpen] = useState(false);
-  // const featuredSpeakers = speakersData.slice(0, 3);
+  const [selectedSpeaker, setSelectedSpeaker] = useState<Speaker | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const featuredSpeakers = speakersData.slice(0, 3);
+
+  const handleSpeakerClick = (speaker: Speaker) => {
+    setSelectedSpeaker(speaker);
+    setIsModalOpen(true);
+  }
 
   return (
     <section id={SPEAKERS_SECTION_CONTENT.sectionId} className="py-20 bg-slate-50 border-t border-slate-200">
@@ -34,7 +39,7 @@ export default function SpeakersSection() {
         </div>
 
         {/* Coming Soon Card */}
-        <div className="max-w-2xl mx-auto bg-white rounded-3xl p-8 sm:p-12 border border-slate-200/90 shadow-sm text-center relative overflow-hidden">
+        {/* <div className="max-w-2xl mx-auto bg-white rounded-3xl p-8 sm:p-12 border border-slate-200/90 shadow-sm text-center relative overflow-hidden">
           <div className="absolute -top-12 -right-12 w-44 h-44 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
           <div className="absolute -bottom-12 -left-12 w-44 h-44 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
 
@@ -63,12 +68,9 @@ export default function SpeakersSection() {
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-        </div>
+        </div> */}
 
-        {/* 
-        ========================================================================
-        Speakers Grid & Modal - Commented out until speaker details are finalized
-        ========================================================================
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {featuredSpeakers.map((speaker) => (
             <SpeakerCard
@@ -97,7 +99,6 @@ export default function SpeakersSection() {
             setSelectedSpeaker(null);
           }}
         />
-        */}
       </div>
     </section>
   );
