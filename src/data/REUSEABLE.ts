@@ -8,7 +8,7 @@ export const SITE_CONFIG = {
   shortName: "BISUM 2026",
   theme: "BOAZ: Kingdom, Wealth, Honour",
   title: "BISUM Conference 2026 | BOAZ: Kingdom, Wealth, Honour",
-  description: "Empowering students, young professionals, and creatives in business, investment, technology, fashion, agribusiness, and leadership under the theme BOAZ: Kingdom, Wealth, Honour. November 12–15, 2026 at Higher Ground Baptist Church, Ogbomoso, Nigeria.",
+  description: "Empowering students, young professionals, and creatives in business, food, craft, online visibility, real estate, and leadership under the theme BOAZ: Kingdom, Wealth, Honour. November 12–15, 2026 at Higher Ground Baptist Church, Ogbomoso, Nigeria.",
   keywords: [
     "BISUM Conference 2026",
     "BOAZ",
@@ -18,10 +18,10 @@ export const SITE_CONFIG = {
     "Business and Investment Summit Nigeria",
     "Youth Leadership Conference",
     "Student Career & Entrepreneurship Summit",
-    "Technology and Digital Skills Masterclass",
-    "Agribusiness and Farming Masterclass",
-    "Fashion and Branding Summit",
-    "Food and Confectionery Business Workshop",
+    "Food Masterclass",
+    "Craft Masterclass",
+    "Online Visibility Masterclass",
+    "Real Estate Masterclass",
     "Ogbomoso Youth Conference",
     "HGBC Influencers",
   ],
@@ -218,11 +218,10 @@ export const REGISTER_PAGE_CONTENT = {
 
   breakoutSessionOptions: [
     { value: "", label: "Select Breakout Session" },
-    { value: "investment", label: "Investment & Wealth Creation" },
-    { value: "tech", label: "Technology & Digital Skills" },
-    { value: "fashion", label: "Fashion, Styling & Branding" },
-    { value: "agriculture", label: "Agribusiness & Farming" },
-    { value: "foods", label: "Confectionery & Food Business" },
+    { value: "Food", label: "Food" },
+    { value: "Craft", label: "Craft" },
+    { value: "Online Visibility", label: "Online Visibility" },
+    { value: "Real Estate", label: "Real Estate" },
   ],
 
   attendanceModeOptions: [
