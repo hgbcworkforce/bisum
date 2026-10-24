@@ -495,11 +495,10 @@ export default function RegistrationPage() {
                         } text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white\`}
                       >
                         <option value="">Choose a session track</option>
-                        <option value="tech">Technology & AI Innovation</option>
-                        <option value="investment">Investment & Wealth Creation</option>
-                        <option value="fashion">Fashion & Creative Arts</option>
-                        <option value="agriculture">Agribusiness & Sustainability</option>
-                        <option value="foods">Food & Culinary Enterprises</option>
+                        <option value="Food">Food</option>
+                        <option value="Craft">Craft</option>
+                        <option value="Online Visibility">Online Visibility</option>
+                        <option value="Real Estate">Real Estate</option>
                       </select>
                       {errors.breakoutSessionChoice && (
                         <p className="mt-1 text-xs text-rose-600 font-semibold">{errors.breakoutSessionChoice}</p>

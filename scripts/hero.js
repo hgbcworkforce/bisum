@@ -144,7 +144,7 @@ export default function Hero() {
           </div>
           <div className="flex items-center space-x-2 text-slate-300 text-xs sm:text-sm font-medium">
             <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
-            <span>5 Breakout Tracks</span>
+            <span>4 Breakout Tracks</span>
           </div>
           <div className="flex items-center space-x-2 text-slate-300 text-xs sm:text-sm font-medium">
             <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />

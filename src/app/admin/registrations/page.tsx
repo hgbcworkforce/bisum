@@ -550,11 +550,10 @@ export default function AdminRegistrationsPage() {
                 className="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white transition-colors cursor-pointer"
               >
                 <option value="all">All Breakout Masterclasses</option>
-                <option value="investment">Investment & Wealth Creation</option>
-                <option value="tech">Technology & Digital Skills</option>
-                <option value="fashion">Fashion, Styling & Branding</option>
-                <option value="agriculture">Agribusiness & Farming</option>
-                <option value="foods">Confectionery & Food Business</option>
+                <option value="Food">Food</option>
+                <option value="Craft">Craft</option>
+                <option value="Online Visibility">Online Visibility</option>
+                <option value="Real Estate">Real Estate</option>
               </select>
             </div>
           </div>
@@ -1063,15 +1062,20 @@ export default function AdminRegistrationsPage() {
                     Breakout Masterclass
                   </label>
                   <select
-                    value={editingAttendee.breakoutSessionChoice || "Investment & Wealth Creation"}
+                    value={editingAttendee.breakoutSessionChoice || "Food"}
                     onChange={(e) => setEditingAttendee({ ...editingAttendee, breakoutSessionChoice: e.target.value })}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none cursor-pointer"
                   >
-                    <option value="Investment & Wealth Creation">Investment & Wealth Creation</option>
-                    <option value="Technology & Digital Skills">Technology & Digital Skills</option>
-                    <option value="Fashion, Styling & Branding">Fashion, Styling & Branding</option>
-                    <option value="Agribusiness & Farming">Agribusiness & Farming</option>
-                    <option value="Confectionery & Food Business">Confectionery & Food Business</option>
+                    {editingAttendee.breakoutSessionChoice &&
+                      !["Food", "Craft", "Online Visibility", "Real Estate"].includes(editingAttendee.breakoutSessionChoice) && (
+                        <option value={editingAttendee.breakoutSessionChoice}>
+                          {editingAttendee.breakoutSessionChoice} (Current)
+                        </option>
+                      )}
+                    <option value="Food">Food</option>
+                    <option value="Craft">Craft</option>
+                    <option value="Online Visibility">Online Visibility</option>
+                    <option value="Real Estate">Real Estate</option>
                   </select>
                 </div>
 

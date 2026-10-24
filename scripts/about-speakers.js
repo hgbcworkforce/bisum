@@ -35,7 +35,7 @@ export default function AboutSection() {
   const stats = [
     { label: "Days of Immersion", value: "3" },
     { label: "Distinguished Speakers", value: "15+" },
-    { label: "Specialized Tracks", value: "5" },
+    { label: "Specialized Tracks", value: "4" },
     { label: "Delegates & Leaders", value: "1,000+" },
   ];
 
