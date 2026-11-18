@@ -16,6 +16,7 @@ const envSchema = z.object({
   CONFERENCE_NAME: z.string().default('BISUM Conference 2025'),
   CONFERENCE_DATES: z.string().default('November 13 - 15, 2025'),
   CONFERENCE_VENUE: z.string().default('Higher Ground Baptist Church, Ogbomoso, Nigeria.'),
+  REGISTRATION_OPEN: z.enum(['true', 'false']).default('false').transform((value) => value === 'true'),
 });
 
 const _env = envSchema.safeParse(process.env);
@@ -43,4 +44,5 @@ export const env = _env.success
       CONFERENCE_NAME: 'BISUM Conference 2025',
       CONFERENCE_DATES: 'November 13 - 15, 2025',
       CONFERENCE_VENUE: 'Higher Ground Baptist Church, Ogbomoso, Nigeria.',
+      REGISTRATION_OPEN: process.env.REGISTRATION_OPEN === 'true',
     };

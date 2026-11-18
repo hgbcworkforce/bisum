@@ -4,6 +4,7 @@ import { attendeeService } from '../services/attendee.service';
 import { paystackService } from '../services/paystack.service';
 import { paymentService } from '../services/payment.service';
 import { emailService } from '../services/email.service';
+import { env } from '../config/env';
 
 export const registrationSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
@@ -27,11 +28,27 @@ export const registrationSchema = z.object({
 });
 
 export const registrationController = {
+  async getRegistrationStatus(_req: Request, res: Response) {
+    return res.status(200).json({
+      success: true,
+      data: {
+        open: env.REGISTRATION_OPEN,
+      },
+    });
+  },
+
   /**
    * Initiates registration and creates a Paystack checkout session
    */
   async initiate(req: Request, res: Response) {
     try {
+      if (!env.REGISTRATION_OPEN) {
+        return res.status(409).json({
+          success: false,
+          message: 'Registration is currently closed.',
+        });
+      }
+
       const data = req.body;
       const paymentReference = `BISUM-TX-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
 

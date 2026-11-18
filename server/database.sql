@@ -156,13 +156,9 @@ CREATE POLICY "Allow public read for own registration by reg_number"
     ON public.registrations FOR SELECT
     USING (true);
 
-CREATE POLICY "Allow public insert for registrations"
-    ON public.registrations FOR INSERT
-    WITH CHECK (true);
-
-CREATE POLICY "Allow public update for registrations"
-    ON public.registrations FOR UPDATE
-    USING (true);
+-- Public conference registration writes are disabled. The backend uses the
+-- service-role key for registration operations, while anonymous clients cannot
+-- insert or alter registration records.
 
 CREATE POLICY "Allow authenticated admins full access to registrations"
     ON public.registrations FOR ALL
