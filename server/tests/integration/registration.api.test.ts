@@ -6,6 +6,7 @@ import { attendeeService } from '../../src/services/attendee.service';
 import { paystackService } from '../../src/services/paystack.service';
 import { paymentService } from '../../src/services/payment.service';
 import { emailService } from '../../src/services/email.service';
+import { env } from '../../src/config/env';
 
 // Mock backend services to isolate API layer
 vi.mock('../../src/services/attendee.service', () => ({
@@ -41,6 +42,7 @@ vi.mock('../../src/services/email.service', () => ({
 describe('API Integration Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    env.REGISTRATION_OPEN = true;
   });
 
   describe('GET /api/health', () => {

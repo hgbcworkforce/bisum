@@ -50,7 +50,7 @@ export default function Navigation({ onNavigate }: NavigationProps) {
             {navItems.map((item) => {
               const isActive = item.isRoute && pathname === item.href;
 
-              if (item.isCTA) {
+              if ("isCTA" in item && item.isCTA) {
                 return (
                   <Link
                     key={item.id}
@@ -115,7 +115,7 @@ export default function Navigation({ onNavigate }: NavigationProps) {
             {navItems.map((item) => {
               const isActive = item.isRoute && pathname === item.href;
 
-              if (item.isCTA) {
+              if ("isCTA" in item && item.isCTA) {
                 return (
                   <div key={item.id} className="pt-2 px-2">
                     <Link

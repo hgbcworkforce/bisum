@@ -118,52 +118,7 @@ export const registrationAPI = {
           data: backendRes.data.registration,
         };
       }
-
-      // Fallback direct write to Supabase
-      const regNumber = 'BISUM-2025-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-
-      const payload = {
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        email: formData.email,
-        phone: formData.phone || '',
-        // registration_type: formData.registrationType || 'student',
-        registration_type: formData.registrationType || 'standard',
-        breakout_session_choice: formData.breakoutSessionChoice || 'General',
-        attendance_mode: formData.attendanceMode || 'On-site',
-        gender: formData.gender,
-        age_range: formData.ageRange,
-        referral_source: formData.referralSource,
-        expectations: formData.expectations,
-        registration_number: regNumber,
-        payment_status: formData.paymentStatus || 'paid',
-        // amount_paid: formData.amountPaid || 1000,
-        amount_paid: formData.amountPaid || 2000,
-      };
-
-      const { data, error } = await supabase
-        .from('registrations')
-        .insert([payload])
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      return {
-        success: true,
-        data: {
-          id: data.id,
-          registrationNumber: data.registration_number,
-          firstName: data.first_name,
-          lastName: data.last_name,
-          email: data.email,
-          phone: data.phone,
-          registrationType: data.registration_type,
-          breakoutSessionChoice: data.breakout_session_choice,
-          attendanceMode: data.attendance_mode || 'On-site',
-          createdAt: data.created_at,
-        },
-      };
+      return backendRes as ApiResponse<Attendee>;
     } catch (err: any) {
       return { success: false, message: err.message, error: err };
     }

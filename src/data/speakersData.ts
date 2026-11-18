@@ -36,7 +36,7 @@ export const speakersData: Speaker[] = [
     title: "Consultant Obstetrician & Gynaecologist, Entrepreneur, Educator",
     company: "Bowen University Teaching Hospital",
     bio: "Dr Adebayo Adekunle is a distinguished Consultant Obstetrician and Gynaecologist at the Bowen University Teaching Hospital (BUTH), Ogbomoso, where he also serves as a Senior Lecturer in the Department of Obstetrics and Gynaecology. With over two decades of experience in clinical practice, research, and medical education, Dr Adekunle has contributed significantly to maternal and child healthcare delivery and training in Nigeria.\n\nBeyond medicine, he is an astute entrepreneur and visionary investor with growing interests across real estate, agriculture, and hospitality sectors. He is deeply committed to youth mentorship, leadership development, and economic empowerment.",
-    image: "/speakers/adebayo.webp",
+    image: "/speakers/adebayo.jpg",
     expertise: [
       "Maternal & Child Health",
       "Medical Education & Research",
@@ -83,13 +83,43 @@ export const speakersData: Speaker[] = [
     "Creative strategist supporting content creators and digital platforms"
   ],
   social: {
-    linkedin: "",
-    twitter: "",
-    instagram: "",
-    facebook: ""
+    linkedin: "https://ng.linkedin.com/in/victoryayangoke",
+    instagram: "https://www.instagram.com/victoryayangoke/"
   },
   quote: "True growth is not just about doing more, but becoming more."
 },
+{
+    id: 4,
+    name: "Adeyemi C. Aderinto",
+    title: "ICT Consultant, Technology Executive, Founder",
+    company: "SQI College of ICT",
+    bio: "Adeyemi C. Aderinto is a seasoned ICT consultant and technology executive with over 18 years of expertise spanning software engineering, systems architecture, and product management. Driven by a vision to position Africa as a premier global tech talent hub, he founded SQI College of ICT in 2008. Under his leadership, the government-accredited institution has trained over 70,000 individuals, producing elite alumni who now drive innovation at tech giants like Google, Microsoft, Andela, and NatWest Group.\n\nAs the founder of Edozzier, an AI-powered Enterprise Resource Planning (ERP) system, he provides optimized operational frameworks for corporate and educational institutions across Nigeria. He also serves as a lead technology consultant for prominent organizations, including the Nigerian Baptist Theological Seminary and Bowen University Teaching Hospital. A dedicated mentor to over 1,000 professionals, his contributions to educational and technological development have earned him an Honorary Doctorate, the UNESCO Distinguished Leadership Award, and recognition as one of Oyo State's 100 Most Influential Personalities in Technology.",
+    image: "/speakers/aderinto.webp",
+    expertise: [
+      "Software Engineering & Systems Architecture",
+      "Product Management",
+      "ICT Education & Talent Development",
+      "AI-Powered ERP Solutions",
+      "Mentorship & Leadership"
+    ],
+    category: "keynote",
+    experience: "Over 18 years in software engineering, systems architecture, product management, and ICT education leadership.",
+    achievements: [
+      "Founded SQI College of ICT in 2008, a government-accredited institution that has trained over 70,000 individuals.",
+      "Produced alumni now working at Google, Microsoft, Andela, and NatWest Group.",
+      "Founded Edozzier, an AI-powered ERP system for corporate and educational institutions across Nigeria.",
+      "Lead technology consultant to the Nigerian Baptist Theological Seminary and Bowen University Teaching Hospital.",
+      "Mentored over 1,000 professionals.",
+      "Recipient of an Honorary Doctorate and the UNESCO Distinguished Leadership Award.",
+      "Named one of Oyo State's 100 Most Influential Personalities in Technology."
+    ],
+    social: {
+      linkedin: "https://ng.linkedin.com/in/adeyemi-aderinto-4318172b", // add his LinkedIn URL
+      instagram: "https://www.instagram.com/adeyemic.aderinto/", // add his Instagram URL
+      facebook: "https://www.facebook.com/aderinto.y.christopher/"  // add his Facebook URL
+    },
+    quote: "" // add a quote from him
+  },
 ];
 
 export const speakerCategories = [

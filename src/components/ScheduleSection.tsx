@@ -56,13 +56,6 @@ export default function ScheduleSection() {
               We are finalizing the comprehensive 3-day agenda featuring keynote addresses, breakout masterclasses, worship sessions, and networking times across November 13–15, 2026.
             </p>
 
-            <Link
-              href="/register"
-              className="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-8 rounded-xl text-sm transition-colors shadow-sm active:scale-[0.98]"
-            >
-              <span>Reserve Your Seat</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
           </div>
         </div>
 

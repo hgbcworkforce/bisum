@@ -6,6 +6,7 @@ import { Navigation, Footer } from "../../components";
 import { registrationAPI, handleApiError } from "../../services/supabaseService";
 import { ArrowRight, CheckCircle, ShieldCheck } from "lucide-react";
 import { REGISTER_PAGE_CONTENT } from "../../data/REUSEABLE";
+import { isRegistrationOpen } from "../../lib/registration";
 
 export default function RegistrationPage() {
   const [formData, setFormData] = useState({
@@ -100,6 +101,31 @@ export default function RegistrationPage() {
       setIsSubmitting(false);
     }
   };
+
+  if (!isRegistrationOpen) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <Navigation />
+        <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-32 sm:py-40">
+          <div className="bg-white rounded-3xl border border-slate-200 p-8 sm:p-12 text-center shadow-sm">
+            <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <ShieldCheck className="w-9 h-9 text-amber-700" />
+            </div>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-700 mb-3">
+              Registration Closed
+            </p>
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-4">
+              Registration is temporarily closed
+            </h1>
+            <p className="text-slate-600 max-w-xl mx-auto leading-relaxed">
+              We are no longer accepting new conference registrations. Existing confirmed participants do not need to register again.
+            </p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">

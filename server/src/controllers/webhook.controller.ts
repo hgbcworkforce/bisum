@@ -92,6 +92,11 @@ export const webhookController = {
           console.log(`✅ Webhook: Processed merchandise order and sent confirmation: ${reference}`);
         } else {
           // --- Handle Conference Registration ---
+          if (!env.REGISTRATION_OPEN) {
+            console.warn(`Registration closed; webhook left transaction pending: ${reference}`);
+            return res.status(200).json({ received: true, ignored: true });
+          }
+
           let attendee;
           if (metadata?.registration_id) {
             attendee = await attendeeService.confirmRegistrationById(metadata.registration_id, amountInNaira);

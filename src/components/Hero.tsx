@@ -170,13 +170,6 @@ export default function Hero() {
         {/* Call to Action Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            href={HERO_CONTENT.ctaHref}
-            className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-xl text-base font-bold shadow-lg shadow-blue-600/30 transition-all active:scale-[0.98]"
-          >
-            <span>{HERO_CONTENT.ctaText}</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-          <Link
             href="/#about"
             className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-slate-800/90 hover:bg-slate-800 text-slate-200 hover:text-white border border-slate-700/80 backdrop-blur-sm px-7 py-3.5 rounded-xl text-base font-semibold shadow-lg hover:border-slate-600 transition-all active:scale-[0.98]"
           >

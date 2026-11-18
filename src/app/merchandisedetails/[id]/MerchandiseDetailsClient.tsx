@@ -125,12 +125,6 @@ export default function MerchandiseDetailsClient({ id }: MerchandiseDetailsClien
               <p className="text-amber-700 text-xs mt-0.5">Official 2026 gear designs, colors, and order processing are currently being finalized.</p>
             </div>
           </div>
-          <Link
-            href="/register"
-            className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 px-4 rounded-lg transition-colors flex-shrink-0"
-          >
-            Register for Summit
-          </Link>
         </div>
 
         <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">

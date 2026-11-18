@@ -34,41 +34,9 @@ export default function SpeakersSection() {
             {SPEAKERS_SECTION_CONTENT.title}
           </h2>
           <p className="text-lg text-slate-600 leading-relaxed">
-            Speaker details are currently being finalized. Stay tuned for our distinguished lineup!
+            {SPEAKERS_SECTION_CONTENT.subtitle}
           </p>
         </div>
-
-        {/* Coming Soon Card */}
-        {/* <div className="max-w-2xl mx-auto bg-white rounded-3xl p-8 sm:p-12 border border-slate-200/90 shadow-sm text-center relative overflow-hidden">
-          <div className="absolute -top-12 -right-12 w-44 h-44 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
-          <div className="absolute -bottom-12 -left-12 w-44 h-44 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
-
-          <div className="relative z-10">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-2xl bg-blue-50 border border-blue-200/80 flex items-center justify-center text-blue-600 mb-6 shadow-inner">
-              <Sparkles className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600 animate-pulse" />
-            </div>
-
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-700 border border-amber-200/80 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
-              <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
-              <span>Coming Soon...</span>
-            </div>
-
-            <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-3 tracking-tight">
-              Speaker Lineup Announcing Soon
-            </h3>
-            <p className="text-slate-600 max-w-lg mx-auto text-sm sm:text-base leading-relaxed mb-8">
-              We are assembling an inspiring roster of keynote ministers, industry trailblazers, and seasoned entrepreneurs for BISUM 2026. The full speaker lineup will be unveiled shortly!
-            </p>
-
-            <Link
-              href="/register"
-              className="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-8 rounded-xl text-sm transition-colors shadow-sm active:scale-[0.98]"
-            >
-              <span>Register for the Summit</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-        </div> */}
 
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

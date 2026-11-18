@@ -43,7 +43,6 @@ export const NAVIGATION_CONTENT = {
     { id: "speakers", label: "Speakers", href: "/speakers", isRoute: true },
     // { id: "schedule", label: "Schedule", href: "/schedule", isRoute: true },
     // { id: "merchandise", label: "Merchandise", href: "/merchandise", isRoute: true },
-    { id: "register", label: "Register", href: "/register", isRoute: true, isCTA: true },
   ],
 };
 
@@ -278,7 +277,6 @@ export const FOOTER_CONTENT = {
     { name: "Schedule", href: "/schedule" },
     { name: "Speakers", href: "/speakers" },
     { name: "Merchandise", href: "/merchandise" },
-    { name: "Register", href: "/register" },
   ],
 
   contactInfo: [
