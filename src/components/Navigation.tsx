@@ -9,11 +9,11 @@ import { NAVIGATION_CONTENT } from "./REUSEABLE";
 interface NavigationProps {
   onNavigate?: (sectionId: string) => void;
 }
-
 export default function Navigation({ onNavigate }: NavigationProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
+  // Speaker, Schedule, and Merchandise nav items are temporarily commented out in NAVIGATION_CONTENT
   const navItems = NAVIGATION_CONTENT.navItems;
 
   const handleSectionClick = (e: React.MouseEvent, sectionId: string) => {
@@ -50,7 +50,7 @@ export default function Navigation({ onNavigate }: NavigationProps) {
             {navItems.map((item) => {
               const isActive = item.isRoute && pathname === item.href;
 
-              if (item.isCTA) {
+              if ("isCTA" in item && item.isCTA) {
                 return (
                   <Link
                     key={item.id}
@@ -115,7 +115,7 @@ export default function Navigation({ onNavigate }: NavigationProps) {
             {navItems.map((item) => {
               const isActive = item.isRoute && pathname === item.href;
 
-              if (item.isCTA) {
+              if ("isCTA" in item && item.isCTA) {
                 return (
                   <div key={item.id} className="pt-2 px-2">
                     <Link

@@ -36,7 +36,7 @@ export const speakersData: Speaker[] = [
     title: "Consultant Obstetrician & Gynaecologist, Entrepreneur, Educator",
     company: "Bowen University Teaching Hospital",
     bio: "Dr Adebayo Adekunle is a distinguished Consultant Obstetrician and Gynaecologist at the Bowen University Teaching Hospital (BUTH), Ogbomoso, where he also serves as a Senior Lecturer in the Department of Obstetrics and Gynaecology. With over two decades of experience in clinical practice, research, and medical education, Dr Adekunle has contributed significantly to maternal and child healthcare delivery and training in Nigeria.\n\nBeyond medicine, he is an astute entrepreneur and visionary investor with growing interests across real estate, agriculture, and hospitality sectors. He is deeply committed to youth mentorship, leadership development, and economic empowerment.",
-    image: "/speakers/adebayo.webp",
+    image: "/speakers/adebayo.jpg",
     expertise: [
       "Maternal & Child Health",
       "Medical Education & Research",
@@ -59,34 +59,67 @@ export const speakersData: Speaker[] = [
     quote: "Integrity and excellence in professional service provide the strongest foundation for entrepreneurial impact."
   },
   {
-    id: 3,
-    name: "Taiwo Olaonipekun",
-    title: "Founder & CEO, Farmfixers",
-    company: "Farmfixers",
-    bio: "Taiwo Olaonipekun is an agritech innovator, commercial farmer, and the Founder and CEO of Farmfixers. With deep domain knowledge in sustainable crop production, farm mechanization, and rural farmer inclusion, Taiwo has built Farmfixers into a fast-growing agribusiness that connects farmland investors with experienced farm managers to maximize yields and financial returns.",
-    image: "/speakers/olanipekun.webp",
+  id: 3,
+  name: "Pastor Mrs. Victory Tolulope Ayangoke",
+  title: "Growth Strategist, Business Development Manager, Mentor",
+  company: "GlobalX",
+  bio: "Pastor Mrs. Victory Tolulope Ayangoke is a Growth Strategist, Business Development Manager, and Mentor passionate about driving growth across businesses, creators, and women. She currently serves as Business Development Manager at GlobalX, where she focuses on building strategic partnerships and unlocking market opportunities that drive business expansion. With a strong background in business development and strategy, she has supported the growth of brands such as Petrong Software Solutions, Niyisuk, and Doxaroyale, helping them translate ideas into structured, sustainable growth through product development, marketing, and execution. As a creative strategist and video editor, she also helps content creators build visibility and grow impactful platforms through intentional content. Beyond the corporate and creative space, she is deeply committed to purpose and personal development. She mentors young women through her Total Woman Mentorship Program, emphasizing that true growth is not just about doing more, but becoming more. She is married to Samson Oluwaseun Ayangoke, the Lead Pastor at Higher Ground Baptist Church, Ogbomosho, Oyo State, and they are blessed with their children, Judah Ireti-Ogo and Anna Ireti-Ayo Ayangoke.",
+  image: "/speakers/victory.jpeg",
+  expertise: [
+    "Business Development",
+    "Growth Strategy",
+    "Brand Strategy",
+    "Content Creation",
+    "Mentorship",
+    "Women Development"
+  ],
+  category: ["breakout"],
+  experience: "Extensive experience in business development, strategic growth, and mentorship across corporate and creative sectors",
+  achievements: [
+    "Business Development Manager at GlobalX",
+    "Contributed to the growth of brands like Petrong Software Solutions, Niyisuk, and Doxaroyale",
+    "Founder of Total Woman Mentorship Program",
+    "Mentor to young women in personal and professional development",
+    "Creative strategist supporting content creators and digital platforms"
+  ],
+  social: {
+    linkedin: "https://ng.linkedin.com/in/victoryayangoke",
+    instagram: "https://www.instagram.com/victoryayangoke/"
+  },
+  quote: "True growth is not just about doing more, but becoming more."
+},
+{
+    id: 4,
+    name: "Adeyemi C. Aderinto",
+    title: "ICT Consultant, Technology Executive, Founder",
+    company: "SQI College of ICT",
+    bio: "Adeyemi C. Aderinto is a seasoned ICT consultant and technology executive with over 18 years of expertise spanning software engineering, systems architecture, and product management. Driven by a vision to position Africa as a premier global tech talent hub, he founded SQI College of ICT in 2008. Under his leadership, the government-accredited institution has trained over 70,000 individuals, producing elite alumni who now drive innovation at tech giants like Google, Microsoft, Andela, and NatWest Group.\n\nAs the founder of Edozzier, an AI-powered Enterprise Resource Planning (ERP) system, he provides optimized operational frameworks for corporate and educational institutions across Nigeria. He also serves as a lead technology consultant for prominent organizations, including the Nigerian Baptist Theological Seminary and Bowen University Teaching Hospital. A dedicated mentor to over 1,000 professionals, his contributions to educational and technological development have earned him an Honorary Doctorate, the UNESCO Distinguished Leadership Award, and recognition as one of Oyo State's 100 Most Influential Personalities in Technology.",
+    image: "/speakers/aderinto.webp",
     expertise: [
-      "Agri-Tech Innovation",
-      "Commercial Farmland Management",
-      "Agricultural Value Chain",
-      "Rural Development"
+      "Software Engineering & Systems Architecture",
+      "Product Management",
+      "ICT Education & Talent Development",
+      "AI-Powered ERP Solutions",
+      "Mentorship & Leadership"
     ],
     category: "keynote",
-    experience: "10+ years in hands-on commercial farming, agribusiness incubation, and agri-technology.",
+    experience: "Over 18 years in software engineering, systems architecture, product management, and ICT education leadership.",
     achievements: [
-      "Founder of Farmfixers, a pioneering agri-tech company",
-      "Successfully managed 400+ acres of farmland",
-      "Created platforms for local farmers to showcase innovative practices",
-      "Empowered rural farmers and youth with modern agricultural training",
-      "Delivered consistent returns to investors while improving community livelihoods"
+      "Founded SQI College of ICT in 2008, a government-accredited institution that has trained over 70,000 individuals.",
+      "Produced alumni now working at Google, Microsoft, Andela, and NatWest Group.",
+      "Founded Edozzier, an AI-powered ERP system for corporate and educational institutions across Nigeria.",
+      "Lead technology consultant to the Nigerian Baptist Theological Seminary and Bowen University Teaching Hospital.",
+      "Mentored over 1,000 professionals.",
+      "Recipient of an Honorary Doctorate and the UNESCO Distinguished Leadership Award.",
+      "Named one of Oyo State's 100 Most Influential Personalities in Technology."
     ],
     social: {
-      linkedin: "https://www.linkedin.com/in/taiwo-olaonipekun-33b455120",
-      twitter: "https://x.com/taiwothefarmer",
-      instagram: "https://www.instagram.com/ola.onipekuntaiwo/",
-      facebook: "https://web.facebook.com/taiwo.olaonipekun.94/"
-    }
-  }
+      linkedin: "https://ng.linkedin.com/in/adeyemi-aderinto-4318172b", // add his LinkedIn URL
+      instagram: "https://www.instagram.com/adeyemic.aderinto/", // add his Instagram URL
+      facebook: "https://www.facebook.com/aderinto.y.christopher/"  // add his Facebook URL
+    },
+    quote: "" // add a quote from him
+  },
 ];
 
 export const speakerCategories = [

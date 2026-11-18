@@ -2,29 +2,30 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+// SpeakerCard, SpeakerModal, and speakersData commented out until speakers are confirmed
 import SpeakerCard from "./SpeakerCard";
 import SpeakerModal from "./SpeakerModal";
 import { speakersData } from "../data/speakersData";
 import { Speaker } from "../types";
 import { SPEAKERS_SECTION_CONTENT } from "./REUSEABLE";
-import { Users, ArrowRight } from "lucide-react";
+import { Users, Sparkles, ArrowRight } from "lucide-react";
 
 export default function SpeakersSection() {
+  // State preserved for when speaker data is confirmed:
   const [selectedSpeaker, setSelectedSpeaker] = useState<Speaker | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const featuredSpeakers = speakersData.slice(0, 3);
 
   const handleSpeakerClick = (speaker: Speaker) => {
     setSelectedSpeaker(speaker);
     setIsModalOpen(true);
-  };
+  }
 
   return (
     <section id={SPEAKERS_SECTION_CONTENT.sectionId} className="py-20 bg-slate-50 border-t border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-12">
           <div className="inline-flex items-center space-x-2 bg-blue-50 border border-blue-200 px-3.5 py-1.5 rounded-full text-blue-700 text-xs font-semibold uppercase tracking-wider mb-4">
             <Users className="w-3.5 h-3.5 text-blue-600" />
             <span>{SPEAKERS_SECTION_CONTENT.badge}</span>
@@ -37,7 +38,7 @@ export default function SpeakersSection() {
           </p>
         </div>
 
-        {/* Speakers Grid - 3 Keynote Columns */}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {featuredSpeakers.map((speaker) => (
             <SpeakerCard
@@ -48,7 +49,6 @@ export default function SpeakersSection() {
           ))}
         </div>
 
-        {/* View All Button */}
         <div className="text-center mt-12">
           <Link
             href={SPEAKERS_SECTION_CONTENT.ctaHref}
@@ -58,17 +58,16 @@ export default function SpeakersSection() {
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
-      </div>
 
-      {/* Speaker Modal */}
-      <SpeakerModal
-        speaker={selectedSpeaker}
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setSelectedSpeaker(null);
-        }}
-      />
+        <SpeakerModal
+          speaker={selectedSpeaker}
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedSpeaker(null);
+          }}
+        />
+      </div>
     </section>
   );
 }

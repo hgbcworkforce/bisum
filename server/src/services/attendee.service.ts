@@ -279,7 +279,7 @@ export const attendeeService = {
     }
 
     if (params.breakoutSession && params.breakoutSession !== 'all') {
-      query = query.eq('breakout_session_choice', params.breakoutSession);
+      query = query.ilike('breakout_session_choice', `%${params.breakoutSession}%`);
     }
 
     if (params.attendanceMode && params.attendanceMode !== 'all') {

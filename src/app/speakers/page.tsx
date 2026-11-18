@@ -22,11 +22,15 @@ export default function SpeakersPage() {
     setIsModalOpen(true);
   };
 
+  const activeCategoryLabel =
+    filterCategory === "all"
+      ? SPEAKERS_PAGE_CONTENT.allCategoryLabel
+      : filterCategory.charAt(0).toUpperCase() + filterCategory.slice(1);
+
   return (
     <div className="min-h-screen bg-slate-50">
       <Navigation />
 
-      {/* Page Header */}
       <section className="relative text-white py-24 pt-36 overflow-hidden bg-slate-950">
         <Image
           src="/section_banner.webp"
@@ -59,104 +63,88 @@ export default function SpeakersPage() {
         </div>
       </section>
 
-      {/* Speakers Content */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Filter and Search Controls */}
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-10 gap-4">
-            {/* Category Filter */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-4 sm:p-6 mb-10">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
             <div className="flex flex-wrap gap-2">
-              {speakerCategories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setFilterCategory(category)}
-                  className={`px-4 py-2.5 rounded-xl font-semibold text-sm transition-colors ${
-                    filterCategory === category
-                      ? "bg-blue-600 text-white"
-                      : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
-                  }`}
-                >
-                  {category === "all"
-                    ? SPEAKERS_PAGE_CONTENT.allCategoryLabel
-                    : category.charAt(0).toUpperCase() + category.slice(1)}
-                </button>
-              ))}
+              {speakerCategories.map((category) => {
+                const isActive = filterCategory === category;
+                const label = category === "all" ? SPEAKERS_PAGE_CONTENT.allCategoryLabel : category.charAt(0).toUpperCase() + category.slice(1);
+
+                return (
+                  <button
+                    key={category}
+                    type="button"
+                    onClick={() => setFilterCategory(category)}
+                    className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
+                      isActive
+                        ? "bg-blue-600 text-white shadow-sm"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
             </div>
 
-            {/* Search Bar */}
-            <div className="relative w-full lg:w-80">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                <Search className="h-4 w-4 text-slate-400" />
-              </div>
+            <div className="relative w-full max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="text"
-                placeholder={SPEAKERS_PAGE_CONTENT.searchPlaceholder}
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="block w-full pl-9 pr-4 py-2.5 border border-slate-300 rounded-xl leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder={SPEAKERS_PAGE_CONTENT.searchPlaceholder}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white"
               />
             </div>
           </div>
+        </div>
 
-          {/* Results Count */}
-          <div className="mb-6">
-            <p className="text-slate-600 text-xs font-semibold uppercase tracking-wider">
-              {SPEAKERS_PAGE_CONTENT.showingResultsPrefix} {filteredSpeakers.length} {SPEAKERS_PAGE_CONTENT.showingResultsOf} {speakersData.length} {SPEAKERS_PAGE_CONTENT.showingResultsSuffix}
-              {searchTerm && ` for "${searchTerm}"`}
-            </p>
-          </div>
+        <div className="mb-8 flex items-center justify-between flex-wrap gap-3">
+          <p className="text-sm text-slate-600">
+            {SPEAKERS_PAGE_CONTENT.showingResultsPrefix} <span className="font-semibold text-slate-900">{filteredSpeakers.length}</span> {SPEAKERS_PAGE_CONTENT.showingResultsOf} <span className="font-semibold text-slate-900">{speakersData.length}</span> {SPEAKERS_PAGE_CONTENT.showingResultsSuffix} · <span className="font-medium text-blue-600">{activeCategoryLabel}</span>
+          </p>
+        </div>
 
-          {/* Speakers Grid */}
-          {filteredSpeakers.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredSpeakers.map((speaker) => (
-                <SpeakerCard
-                  key={speaker.id}
-                  speaker={speaker}
-                  onSpeakerClick={handleSpeakerClick}
-                />
-              ))}
-            </div>
-          ) : (
-            /* Empty State */
-            <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
-              <Search className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-slate-900 mb-2">
-                {SPEAKERS_PAGE_CONTENT.emptyStateTitle}
-              </h3>
-              <p className="text-slate-600 mb-6 text-sm">
-                {SPEAKERS_PAGE_CONTENT.emptyStateDescription}
-              </p>
-              <button
-                onClick={() => {
-                  setSearchTerm("");
-                  setFilterCategory("all");
-                }}
-                className="bg-blue-600 text-white px-6 py-2.5 rounded-xl hover:bg-blue-700 transition-colors font-semibold text-sm"
-              >
-                {SPEAKERS_PAGE_CONTENT.emptyStateButtonText}
-              </button>
-            </div>
-          )}
-
-          {/* Call to Action */}
-          <div className="mt-20 bg-slate-900 rounded-3xl p-8 md:p-12 text-center text-white border border-slate-800">
-            <h2 className="text-2xl sm:text-4xl font-extrabold mb-3 tracking-tight">
-              {SPEAKERS_PAGE_CONTENT.ctaTitle}
-            </h2>
-            <p className="text-base text-slate-300 mb-8 max-w-2xl mx-auto font-normal">
-              {SPEAKERS_PAGE_CONTENT.ctaSubtitle}
-            </p>
-            <Link
-              href={SPEAKERS_PAGE_CONTENT.ctaButtonHref}
-              className="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-xl text-base font-bold transition-colors"
+        {filteredSpeakers.length === 0 ? (
+          <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center shadow-sm">
+            <h3 className="text-2xl font-bold text-slate-900 mb-2">{SPEAKERS_PAGE_CONTENT.emptyStateTitle}</h3>
+            <p className="text-slate-600 mb-6">{SPEAKERS_PAGE_CONTENT.emptyStateDescription}</p>
+            <button
+              type="button"
+              onClick={() => {
+                setFilterCategory("all");
+                setSearchTerm("");
+              }}
+              className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
             >
-              <span>{SPEAKERS_PAGE_CONTENT.ctaButtonText}</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+              {SPEAKERS_PAGE_CONTENT.emptyStateButtonText}
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+            {filteredSpeakers.map((speaker) => (
+              <SpeakerCard
+                key={speaker.id}
+                speaker={speaker}
+                onSpeakerClick={handleSpeakerClick}
+              />
+            ))}
+          </div>
+        )}
+
+        <div className="mt-16 rounded-3xl bg-slate-950 px-6 py-10 text-white shadow-sm sm:px-8 lg:px-10">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-300 mb-3">{SPEAKERS_PAGE_CONTENT.ctaTitle}</p>
+              <h2 className="text-3xl font-extrabold tracking-tight text-white">{SPEAKERS_PAGE_CONTENT.ctaTitle}</h2>
+              <p className="mt-3 max-w-2xl text-slate-300">{SPEAKERS_PAGE_CONTENT.ctaSubtitle}</p>
+            </div>
+
           </div>
         </div>
-      </section>
+      </main>
 
       <SpeakerModal
         speaker={selectedSpeaker}

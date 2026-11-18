@@ -22,7 +22,7 @@ The official web platform and conference management system for **BISUM Conferenc
   - Conference merchandise store with item variations (color, size, quantity).
 - **Participant Registration:**
   - Paid admission tiers: **Student Pass (₦1,000)** and **Professional Pass (₦2,000)**.
-  - Breakout masterclass track selection (Investment, Tech, Fashion, Agribusiness, Food Business).
+  - Breakout masterclass track selection (Food, Craft, Online Visibility, Real Estate).
   - Sequential 4-digit zero-padded registration ID generation (`0001`, `0002`, ...).
 - **Payment & Transaction Engine:**
   - Seamless Paystack payment checkout for registrations and merchandise.

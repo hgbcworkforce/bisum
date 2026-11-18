@@ -4,6 +4,7 @@ import { attendeeService } from '../services/attendee.service';
 import { merchandiseService } from '../services/merchandise.service';
 import { paymentService } from '../services/payment.service';
 import { emailService } from '../services/email.service';
+import { env } from '../config/env';
 
 export const paymentController = {
   /**
@@ -129,6 +130,14 @@ export const paymentController = {
         });
       } else {
         // --- Confirm Attendee Registration ---
+        if (!env.REGISTRATION_OPEN) {
+          return res.status(409).json({
+            success: false,
+            message: 'Registration is currently closed.',
+            data: { verified: false },
+          });
+        }
+
         let attendee;
         if (metadata.registration_id) {
           attendee = await attendeeService.confirmRegistrationById(metadata.registration_id, amountInNaira);

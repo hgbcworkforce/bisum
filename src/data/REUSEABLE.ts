@@ -6,26 +6,29 @@
 export const SITE_CONFIG = {
   name: "BISUM Conference 2026",
   shortName: "BISUM 2026",
-  title: "BISUM Conference 2026 | Annual Business, Investment & Leadership Summit",
-  description: "Empowering students, young professionals, and creatives in business, investment, technology, fashion, agribusiness, and leadership. November 13–15, 2026 at Higher Ground Baptist Church, Ogbomoso, Nigeria.",
+  theme: "BOAZ: Kingdom, Wealth, Honour",
+  title: "BISUM Conference 2026 | BOAZ: Kingdom, Wealth, Honour",
+  description: "Empowering students, young professionals, and creatives in business, food, craft, online visibility, real estate, and leadership under the theme BOAZ: Kingdom, Wealth, Honour. November 12–15, 2026 at Higher Ground Baptist Church, Ogbomoso, Nigeria.",
   keywords: [
     "BISUM Conference 2026",
+    "BOAZ",
+    "Kingdom Wealth Honour",
     "BISUM Ogbomoso",
     "Higher Ground Baptist Church",
     "Business and Investment Summit Nigeria",
     "Youth Leadership Conference",
     "Student Career & Entrepreneurship Summit",
-    "Technology and Digital Skills Masterclass",
-    "Agribusiness and Farming Masterclass",
-    "Fashion and Branding Summit",
-    "Food and Confectionery Business Workshop",
+    "Food Masterclass",
+    "Craft Masterclass",
+    "Online Visibility Masterclass",
+    "Real Estate Masterclass",
     "Ogbomoso Youth Conference",
     "HGBC Influencers",
   ],
   url: "https://bisum.hgbcinfluencers.org",
   ogImage: "/hero.webp",
-  conferenceDate: "November 13, 2026 17:00:00",
-  dateRange: "November 13 - 15, 2026",
+  conferenceDate: "November 12, 2026 17:00:00",
+  dateRange: "November 12 - 15, 2026",
   location: "Higher Ground Baptist Church, Ogbomoso, Nigeria.",
   shortLocation: "HGBC Auditorium, Ogbomoso",
   logoAlt: "BISUM Logo",
@@ -36,20 +39,24 @@ export const NAVIGATION_CONTENT = {
   navItems: [
     { id: "home", label: "Home", href: "/", isRoute: true },
     { id: "about", label: "About", href: "/#about", isSection: true },
+    // Temporarily commented out until conference details are finalized:
     { id: "speakers", label: "Speakers", href: "/speakers", isRoute: true },
-    { id: "schedule", label: "Schedule", href: "/schedule", isRoute: true },
-    { id: "merchandise", label: "Merchandise", href: "/merchandise", isRoute: true },
-    { id: "register", label: "Register", href: "/register", isRoute: true, isCTA: true },
+    // { id: "schedule", label: "Schedule", href: "/schedule", isRoute: true },
+    // { id: "merchandise", label: "Merchandise", href: "/merchandise", isRoute: true },
   ],
 };
 
 export const HERO_CONTENT = {
   titlePrefix: "BISUM Conference",
   highlightYear: "2026",
-  description: "Join us to experience an atmosphere of learning, connection, and transformation. Gain practical insights, meet inspiring leaders, and take bold steps toward your future.",
-  dates: "November 13 - 15, 2026",
+  themeLabel: "Conference Theme",
+  theme: "BOAZ",
+  themePillars: ["Kingdom", "Wealth", "Honour"],
+  themeSubtitle: "Kingdom, Wealth, Honour",
+  description: "Join us for BISUM 2026 under the theme BOAZ: Kingdom, Wealth, Honour. Experience an atmosphere of learning, connection, and spiritual impartation to excel in business, investment, and leadership.",
+  dates: "November 12 - 15, 2026",
   location: "Higher Ground Baptist Church, Ogbomoso, Nigeria.",
-  targetDate: "November 13, 2026 17:00:00",
+  targetDate: "November 12, 2026 17:00:00",
   ctaText: "Register Now",
   ctaHref: "/register",
   imageAlt: "BISUM Conference 2026 Background",
@@ -120,7 +127,7 @@ export const SPEAKERS_PAGE_CONTENT = {
 export const SCHEDULE_PAGE_CONTENT = {
   bannerTitle: "Conference Schedule",
   bannerSubtitle: "Explore the comprehensive 3-day program featuring keynotes, success stories, and breakout masterclasses",
-  badge1: "Nov 13 - 15, 2026",
+  badge1: "Nov 12 - 15, 2026",
   badge2: "HGBC Auditorium, Ogbomoso",
   ctaTitle: "Ready to Attend BISUM 2026?",
   ctaSubtitle: "Secure your registration today to participate in all keynotes, breakout sessions, and networking opportunities.",
@@ -152,7 +159,7 @@ export const MERCHANDISE_DETAILS_CONTENT = {
 
 export const REGISTER_PAGE_CONTENT = {
   bannerTitle: "Register for BISUM 2026",
-  bannerSubtitle: "November 13 - 15, 2026 | Higher Ground Baptist Church, Ogbomoso",
+  bannerSubtitle: "November 12 - 15, 2026 | Higher Ground Baptist Church, Ogbomoso",
   formTitle: "Personal & Conference Details",
   submitButtonText: "Complete Registration",
   submittingButtonText: "Processing Registration...",
@@ -210,11 +217,10 @@ export const REGISTER_PAGE_CONTENT = {
 
   breakoutSessionOptions: [
     { value: "", label: "Select Breakout Session" },
-    { value: "investment", label: "Investment & Wealth Creation" },
-    { value: "tech", label: "Technology & Digital Skills" },
-    { value: "fashion", label: "Fashion, Styling & Branding" },
-    { value: "agriculture", label: "Agribusiness & Farming" },
-    { value: "foods", label: "Confectionery & Food Business" },
+    { value: "Food", label: "Food" },
+    { value: "Craft", label: "Craft" },
+    { value: "Online Visibility", label: "Online Visibility" },
+    { value: "Real Estate", label: "Real Estate" },
   ],
 
   attendanceModeOptions: [
@@ -271,7 +277,6 @@ export const FOOTER_CONTENT = {
     { name: "Schedule", href: "/schedule" },
     { name: "Speakers", href: "/speakers" },
     { name: "Merchandise", href: "/merchandise" },
-    { name: "Register", href: "/register" },
   ],
 
   contactInfo: [

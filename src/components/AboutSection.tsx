@@ -80,7 +80,7 @@ export default function AboutSection() {
           <div className="lg:col-span-5">
             <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-100">
               <Image
-                src="/about_image.webp"
+                src="/about_image.jpg"
                 alt={ABOUT_CONTENT.bannerAlt}
                 width={700}
                 height={900}
