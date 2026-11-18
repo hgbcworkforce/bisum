@@ -142,13 +142,6 @@ export default function SpeakersPage() {
               <p className="mt-3 max-w-2xl text-slate-300">{SPEAKERS_PAGE_CONTENT.ctaSubtitle}</p>
             </div>
 
-            <Link
-              href={SPEAKERS_PAGE_CONTENT.ctaButtonHref}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-500"
-            >
-              <span>{SPEAKERS_PAGE_CONTENT.ctaButtonText}</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
           </div>
         </div>
       </main>

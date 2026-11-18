@@ -118,13 +118,6 @@ export default function MerchandiseSection() {
               Custom BISUM 2026 conference shirts, hoodies, caps, and exclusive packages are currently being designed. Pre-orders and pickup details will open shortly!
             </p>
 
-            <Link
-              href="/register"
-              className="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-8 rounded-xl text-sm transition-colors shadow-sm active:scale-[0.98]"
-            >
-              <span>Register for the Summit</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
           </div>
         </div>
 

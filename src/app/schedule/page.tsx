@@ -72,13 +72,6 @@ export default function SchedulePage() {
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link
-                  href="/register"
-                  className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-8 rounded-xl text-sm transition-colors shadow-sm active:scale-[0.98]"
-                >
-                  <span>Register for BISUM 2026</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-                <Link
                   href="/"
                   className="w-full sm:w-auto inline-flex items-center justify-center bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3.5 px-6 rounded-xl text-sm transition-colors"
                 >
